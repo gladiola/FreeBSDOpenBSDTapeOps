@@ -65,6 +65,7 @@ mkdir -p "$A_DIR" "$B_DIR/hourly" "$B_DIR/archives" "$C_DIR/incoming" "$C_DIR/re
 A_INPUT_LOG="$A_DIR/rsyslog.log"
 TAPE_FILE="$C_DIR/tape.bin"
 RESTORED_ARCHIVE="$C_DIR/recovered/restored.tar.gz"
+TOC_FILE="$C_DIR/recovered/tape-contents.tsv"
 DAY_HUMAN=$(printf '%s' "$TEST_DAY_STAMP" | sed 's/^\(....\)\(..\)\(..\)$/\1-\2-\3/')
 
 cat > "$A_INPUT_LOG" <<'EOF'
@@ -108,6 +109,14 @@ cp "$ARCHIVE_TO_SEND" "$C_DIR/incoming/$(basename "$ARCHIVE_TO_SEND")"
 if [ ! -s "$TAPE_FILE" ]; then
   log_error "$(printf 'computer-c-write-to-tape.sh did not write data to simulated tape file: %s' "$TAPE_FILE")"
   exit 5
+fi
+
+"$REPO_ROOT/scripts/computer-c-inventory-tape.sh" "$TAPE_FILE" > "$TOC_FILE"
+# Validate marker 0 row includes expected inventory summary fields:
+# file_marker=0, status=ok, encrypted=no, archive_hint starts with rsyslog-.
+if ! awk -F '	' 'NR > 1 && $1 == "0" && $2 == "ok" && $3 == "no" && $4 ~ /^rsyslog-/ { found = 1 } END { exit !found }' "$TOC_FILE"; then
+  log_error 'Tape inventory output missing expected marker/summary row'
+  exit 8
 fi
 
 target_name=$(basename "$ARCHIVE_TO_SEND")
