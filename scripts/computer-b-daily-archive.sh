@@ -26,7 +26,7 @@ Usage: computer-b-daily-archive.sh <hourly_log_dir> <archive_dir> <day_stamp>
 Builds one 24-hour tar.gz archive for the specified day (YYYYMMDD).
 Optional encryption:
   OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile   (symmetric, openssl enc)
-  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime AES-256-GCM)
+  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime; cipher via OPENSSL_ENCRYPT_CIPHER)
 USAGE
 }
 
