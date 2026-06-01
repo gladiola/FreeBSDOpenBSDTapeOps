@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Yorùbá)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Àwọn àkọsílẹ shell tó ní ìbáṣepọ̀ pẹ̀lú oníṣe tí ń tọ́ ọ lọ nípasẹ̀ àwọn iṣẹ́ teepu oofa tó wọ́pọ̀ ní lílo `mt` àti `tar`.
 
-## Language Documentation Index
+## Àtòkọ Ìwé Àlàyé Èdè
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Àwọn Skripti
 
-| Script | Target OS |
+| Skripti | OS Àfojúsùn |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Àwọn skripti méjèèjì n ṣe ìtẹ̀sí àwọn iṣẹ́ kan náà:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Béèrè fún oníṣe láti jẹ́risi pé a ti fi teepu sínú ẹrọ.
+2. Da teepu padà sí ìbẹ̀rẹ̀.
+3. Ṣe àtẹ̀jáde ipo teepu.
+4. Ṣe àkójọ ohun inú àwọn archive ní ipò fáìlì 0, 1, 2, àti 3 ní lílo `tar t`.
+5. Gbé teepu sí ipo offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Ìgbésẹ̀ kọ̀ọ̀kan máa ń dúró tí ó sì ń dúró de kí oníṣe tẹ **Enter** kí ó tó tẹ̀síwájú, èyí sì jẹ́ kí àwọn skripti yẹ fún àwọn àfihàn ibáṣepọ̀ tàbí ìtòsọ́nà nípasẹ̀ ìgbésẹ̀.
 
-## Differences Between the Two Scripts
+## Àwọn Ìyàtọ̀ Láàárín Àwọn Skripti Méjì
 
-### 1. Tape device path
+### 1. Ọ̀nà ẹrọ teepu
 
-The scripts target different tape device nodes:
+Àwọn skripti náà ń lo àwọn node ẹrọ teepu tó yàtọ̀:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Wọ́n jẹ́ àwọn node ẹrọ tí kì í tún teepu pada (àfikún-ṣáájú `n`), nítorí náà ipò teepu máa ń dúró láàárín àwọn àṣẹ, àwọn skripti sì ń ṣàkóso ìpo náà ní kedere pẹ̀lú `mt rewind` àti `mt fsf`.
 
-### 2. Tape loading step
+### 2. Ìgbésẹ̀ fífi teepu sínú ẹrọ
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Ó ń ṣe `mt -f /dev/nsa0 load` nígbà ìbẹ̀rẹ̀ láti fi cartridge teepu sínú drive lọ́nà mákànìkà kí o tó da a padà sí ìbẹ̀rẹ̀.
+- **OpenBSD**: Ó fo àṣẹ `load` kọjá nítorí pé `mt(1)` ti OpenBSD kò ṣe atilẹyin àṣẹ-kekere `load`. Skripti OpenBSD ń gba pé teepu ti wà nínú drive tẹ́lẹ̀, ó sì ń lọ taara sí ìgbésẹ̀ ìpadà sí ìbẹ̀rẹ̀.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Àwọn Skripti Pipeline Log OpenBSD A-sí-B-sí-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Àpótí `scripts/` ń pèsè àwọn skripti fún ipò tí Kọ̀ǹpútà B OpenBSD fi ń gba àwọn ìforúkọsílẹ̀ rsyslog láti Kọ̀ǹpútà A, tí ó ń kó wọn jọ lójoojúmọ́, tí ó ń fi wọ́n ránṣẹ́ sí ọ̀kan lára ọ̀pọ̀ olupin Kọ̀ǹpútà C, tí Kọ̀ǹpútà C sì ń kọ wọ́n sí teepu.
 
-| Script | Purpose |
+| Skripti | Ète |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Ó ń dá log tí a yí padà lọ́ọ̀rọ̀ wákàtí sílẹ̀ láti inú fáìlì ìwọlé rsyslog tí ń ṣiṣẹ́ lórí Kọ̀ǹpútà B. |
+| `scripts/computer-b-daily-archive.sh` | Ó ń ko ọjọ́ kan (`YYYYMMDD`) ti àwọn log wákàtí jọ sínú archive `.tar.gz` tó ní ààlà àkókò lórí Kọ̀ǹpútà B, ní fífi wákàtí tó ń lọ lọwọlọwọ sílẹ̀ kí ìjà ìkọ̀wé tó ń lọ má bà a ṣẹlẹ̀. |
+| `scripts/computer-b-send-archives.sh` | Ó ń fi àwọn archive ojoojúmọ́ tí a kò tíì rán (`.tar.gz` àti `.tar.gz.enc` àṣàyàn) rán láti Kọ̀ǹpútà B sí olupin Kọ̀ǹpútà C kan tàbí jù bẹ́ẹ̀ lọ nípasẹ̀ `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Ó ń jẹ́risi àwọn archive plaintext tó ń wọlé, ó sì ń fi àwọn archive plaintext tàbí encrypted sínú ìlà de teepu. |
+| `scripts/computer-c-write-to-tape.sh` | Ó ń kọ àwọn archive plaintext tàbí encrypted tó wà nínú ìlà de sí teepu, ó ń ṣàyẹ̀wò àyè, ó ń fi kún un láìbàjẹ́, ó sì ń fi àmì pé a ti gbasilẹ wọn. |
+| `scripts/computer-c-inventory-tape.sh` | Ó ń tẹ table-of-contents teepu jáde nípasẹ̀ file marker kí àwọn olùṣàkóso lè rí archive lọ́rẹ̀ẹ́rẹ̀. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Ó ń ṣàyẹ̀wò àwọn ipò fáìlì lórí teepu fún archive tí a béèrè, ó ń tú ìfipamọ́ àṣírí sílẹ̀ bí ó bá yẹ, ó sì ń fi data tí a gba padà pamọ́ sínú fáìlì. |
+| `scripts/test-computer-a-b-c-integration.sh` | Ó ń ṣiṣẹ́ ìdánwò ìṣọ̀kan A→B→C ìbílẹ̀ tó dájú (pẹ̀lú ìmúpadàbọ̀ teepu) tí kò dá lórí àkókò aago. |
 
-Typical scheduling:
+Ìṣètò àkókò tó wọ́pọ̀:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Ṣe `computer-b-hourly-rotate.sh` ní gbogbo wákàtí (cron lórí B).
+- Ṣe `computer-b-daily-archive.sh` lẹ́ẹ̀kan lójoojúmọ́ (cron lórí B).
+- Ṣe `computer-b-send-archives.sh` lẹ́yìn ìdásílẹ̀ archive (cron lórí B).
+- Ṣe `computer-c-receive-archives.sh` ní àkókò àkókò lórí C.
+- Ṣe `computer-c-write-to-tape.sh` ní àkókò àkókò lórí C pẹ̀lú ẹrọ teepu tó tọ́.
+- Ṣe `computer-c-inventory-tape.sh` lórí C nígbà tí o bá nílò table-of-contents marker-ní-marker.
+- Ṣe `computer-c-restore-archive-from-tape.sh` lórí C nígbà tí o bá nílò láti gba archive kan pàtó padà fún àyẹ̀wò.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Gbogbo àwọn skripti pipeline tún ń fi àwọn ìfiránṣẹ́ iṣiṣẹ́ ránṣẹ́ sí syslog nípasẹ̀ `logger` (fún àpẹẹrẹ, tí a lè rí ní rsyslog/journaling) ní àfikún sí àbájáde console.
 
-### Multi-server send from Computer B
+### Fífi ránṣẹ́ sí ọ̀pọ̀ olupin láti Kọ̀ǹpútà B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` ń ṣe atilẹyin fún mejeeji ipo olupin kan ṣoṣo àti ipo olupin púpọ̀:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Àwọn àṣàyàn yíyan olupin ní ẹgbẹ́ client:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Pese olupin kan nínú arguments láti dì í mọ́ Kọ̀ǹpútà C kan ṣoṣo.
+- Pese ọ̀pọ̀ olupin láti jẹ́ kí fallback lè ṣiṣẹ́.
+- Ṣètò `PREFERRED_SERVER=user@host` láti yan olupin pàtó kan nínú àkójọ tí a pèsè.
 
-Busy handling options on Computer B:
+Àwọn àṣàyàn mímú ipo busy lórí Kọ̀ǹpútà B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (àìyẹ́padà: `.busy`): fáìlì àmì tí a ń ṣàyẹ̀wò ní ẹgbẹ́ jijìn.
+- `BUSY_RETRY_SECONDS` (àìyẹ́padà: `60`): àkókò ìdúró láàárín àwọn ìgbìyànjú tuntun nígbà tí olupin bá busy.
+- `BUSY_MAX_RETRIES` (àìyẹ́padà: `10`): iye tó pọ̀jùlọ fún àwọn ìgbìyànjú tuntun fún olupin kọ̀ọ̀kan.
 
-### Busy state publication from Computer C
+### Ìtẹ̀jáde ipo busy láti Kọ̀ǹpútà C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` ń dá busy marker sílẹ̀ nígbà tí ó bá ń kọ archive sí teepu gan-an, ó sì máa ń yọ ọ́ kúrò nígbà tí kò bá sí iṣẹ́.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (àìyẹ́padà: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Tọ́ka `REMOTE_BUSY_MARKER` lórí Kọ̀ǹpútà B sí ibi marker tí Kọ̀ǹpútà C ń lò.
 
-### Tape safety and append behavior on Computer C
+### Ààbò teepu àti ìwà fífikún sí òpin lórí Kọ̀ǹpútà C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Kí a tó kọ archive kọ̀ọ̀kan, `computer-c-write-to-tape.sh` máa ń ṣàyẹ̀wò agbára teepu tàbí ẹrọ tó wà, ó sì nílò ó kéré tán:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Àwọn variable tó ṣe pàtàkì:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (àìyẹ́padà: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (override fún àyè tó dájú pé ó wà)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (ó ń jẹ́ kí a kọ bí a kò bá lè mọ àyè)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Fún àwọn ẹrọ teepu gidi, onkọ̀wé máa ń lọ sí òpin data (`mt eom`/`mt eod`) kíkọ tó bẹ̀rẹ̀, nítorí náà a máa ń fi ọ̀pọ̀ archive kún un dípò kí a kọ lórí ohun tó ti wà lórí teepu tẹ́lẹ̀.
 
-### Human-readable timestamps in filenames
+### Àwọn àmì àkókò tó rọrùn fún ènìyàn láti kà nínú orúkọ fáìlì
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Orúkọ àwọn log wákàtí máa ń rí báyìí: `rsyslog-2026-06-01T1600.log`
+- Orúkọ archive ojoojúmọ́ máa ń rí báyìí: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Àwọn ààlà archive ojoojúmọ́ dá lórí àwọn fáìlì wákàtí àkọ́kọ́ àti ìkẹyìn gangan tí a fi sínú archive náà.
+A ṣe àwọn orúkọ wọ̀nyí kí wọ́n lè rọrùn fún àwọn ènìyàn tí ń ṣàyẹ̀wò àwọn ferese ọjọ́ tàbí àkókò ìṣẹ̀lẹ̀ láti kà.
+A yọ wákàtí tó ń lọ lọwọlọwọ kúrò ní ìdásílẹ̀ archive ní mọ̀ọ́mọ̀ kí a má bà a rán àwọn ìkọ̀wé tó ṣì ń lọ.
 
-### Optional OpenSSL encryption for daily archives
+### Ìfíkun ìsàkóso OpenSSL fún àwọn archive ojoojúmọ́
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` lè encrypt àwọn archive pẹ̀lú OpenSSL lẹ́yìn tí ó bá dá tarball sílẹ̀:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` fún symmetric encryption (`openssl enc`, cipher àìyẹ́padà `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` fún recipient-certificate encryption (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` láti yan cipher OpenSSL fún mejeeji ipo key-file àti certificate (àìyẹ́padà: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Ọ̀kan péré nínú àwọn àṣàyàn wọ̀nyí ni a lè ṣètò ní àkókò kan. Àwọn output tí a encrypt máa ń lò `.tar.gz.enc`.
+Fún ààbò, skripti náà máa ń kọ cipher tó rọrùn ju tàbí tí kì í ṣe AEAD, ó sì nílò cipher irú GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Ìmúpadàbọ̀ archive láti teepu lórí Kọ̀ǹpútà C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Lo `computer-c-restore-archive-from-tape.sh` láti wa archive kan pàtó nípasẹ̀ wíwá àwọn fáìlì teepu ní títẹ̀lé láti ìbẹ̀rẹ̀:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Fún àwọn orúkọ archive bí `rsyslog-<start>_to_<end>.tar.gz` (tàbí `.tar.gz.enc`), skripti náà máa ń mọ ìbámu tó tọ́ nípa ṣíṣe àyẹ̀wò pé àwọn fáìlì wákàtí ààlà wà nínú payload tí a gba padà.
+- Tí ìdárúkọ archive rẹ bá yàtọ̀, ṣètò `TARGET_MEMBER_GLOB` sí àpẹrẹ shell tó bá member kan mu tí ó gbọ́dọ̀ wà nínú archive náà.
+- Tí archive kan bá jẹ́ encrypted, pese àwọn ètò decryption bí ó ṣe yẹ:
+  - `OPENSSL_DECRYPT_KEY_FILE` (ipo symmetric `openssl enc`; cipher decryption àìyẹ́padà: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` àti `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (ipo decryption S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+A máa ń kọ output tí a gba padà gẹ́gẹ́ bí fáìlì `.tar.gz` plaintext kí a lè ṣàyẹ̀wò rẹ̀ pẹ̀lú àwọn irinṣẹ́ bí `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Àkójọ table-of-contents teepu lórí Kọ̀ǹpútà C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Lo `computer-c-inventory-tape.sh` láti tẹ table-of-contents marker-ní-marker jáde:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Àwọn ọ̀wọ̀n output ní:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: ipò marker fáìlì teepu tí ó bẹ̀rẹ̀ láti odo
+- `status`: `ok`, `decrypted`, tàbí `unreadable`
+- `encrypted`: bóyá a nílò decryption láti ṣàyẹ̀wò entry náà (`yes`/`no`)
+- `archive_hint`: orúkọ irú archive tí a fojú dí rẹ̀ nígbà tí a bá lè mọ àwọn ààlà
+- `first_member` / `last_member`: member tar àkọ́kọ́ àti ìkẹyìn tí a rí nínú marker náà
+- `member_count`: iye àwọn member tar tí a rí nínú marker náà
+- `bytes`: raw bytes tí a ka ní marker náà
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Èyí máa ń jẹ́ kí olùṣàkóso mọ index marker tí a lè tọ̀ (`mt fsf <N>`) ṣáájú àwọn iṣẹ́ ìmúpadàbọ̀.
 
-### Deterministic A/B/C integration test
+### Ìdánwò ìṣọ̀kan A/B/C tó dájú
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Lo `scripts/test-computer-a-b-c-integration.sh` láti jẹ́risi ìṣọ̀kan láti ìbẹ̀rẹ̀ dé òpin fún Kọ̀ǹpútà A, B, àti C láìka àkókò tó ti kọjá sí:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Skripti yìí:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Ó ń fara wé A tí ń kọ log.
+2. Ó ń ṣiṣẹ́ rotation àti ìdásílẹ̀ archive ojoojúmọ́ ti B.
+3. Ó ń fara wé ìgbékalẹ̀ sí incoming ti C.
+4. Ó ń ṣiṣẹ́ receive àti write-to-tape ti C.
+5. Ó ń gba archive padà láti teepu, ó sì ń jẹ́risi akoonu.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Ó ń lò àmì ọjọ́ tó dídúró (`TEST_DAY_STAMP`, àìyẹ́padà `20260101`) kí ìhùwàsí lè tún ṣe, kí ó sì má bà a so mọ́ ọjọ́ tàbí àkókò ìsinsìnyí.
 
-### 72-hour retention with safety for unconfirmed data
+### Ìdádúró wákàtí 72 pẹ̀lú ààbò fún data tí a kò tíì jẹ́risi
 
-The scripts now default to a 72-hour retention window:
+Báyìí, àìyẹ́padà àwọn skripti ni ferese ìdádúró wákàtí 72:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` máa ń yọ àwọn log wákàtí àtijọ́ kúrò nígbà tí marker ìjẹ́risi `.taped` àgbègbè tó bá wọn mu bá wà nìkan.
+- `computer-b-send-archives.sh` máa ń yọ àwọn archive àgbègbè àtijọ́ kúrò nígbà tí mejeeji marker ìjẹ́risi `.sent` àti `.taped` àgbègbè bá wà.
+- `computer-c-write-to-tape.sh` máa ń yọ àwọn archive àtijọ́ kúrò nìkan tí wọ́n bá ti ní marker `.taped` tẹ́lẹ̀.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Nítorí náà, àwọn fáìlì tí a kò tíì fi ránṣẹ́ dáadáa tí a sì kò tíì gbasilẹ sórí teepu máa ń wà níbẹ̀ bó tilẹ̀ jẹ́ pé wọ́n ti dàgbà ju `RETENTION_HOURS` (àìyẹ́padà `72`) lọ.
+Lórí Kọ̀ǹpútà B, ìmúkúrò àgbègbè nílò àwọn marker `.taped` àgbègbè (fún àpẹẹrẹ láti inú ìgbésẹ̀ sync-back tàbí ìlànà ìjẹ́risi pẹ̀lú ọwọ́).
+Lórí Kọ̀ǹpútà C, ọjọ́-ori ìdádúró ni a ń wọn láti àkókò àtúnṣe marker `.taped` (ní ìgbà gbogbo a máa ń ṣètò rẹ̀ ní àsìkò tí a ṣàṣeyọrí nínú kikọ sí teepu).

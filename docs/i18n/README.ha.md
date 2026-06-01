@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Hausa)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Rubutattun shell masu hulɗa da mai amfani da ke bi ta ayyukan kaset na maganadisu na yau da kullum ta amfani da `mt` da `tar`.
 
-## Language Documentation Index
+## Fihirisar Takardun Harshe
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Rubutun shirye-shirye
 
-| Script | Target OS |
+| Rubutu | Tsarin aiki na nufi |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Duk rubutun biyu suna aiwatar da jerin ayyuka iri ɗaya:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Su nemi mai amfani ya tabbatar an loda kaset.
+2. Su mayar da kaset zuwa farko.
+3. Su buga matsayin kaset.
+4. Su jera abubuwan cikin ajiyoyi a matsayoyin fayil 0, 1, 2, da 3 ta amfani da `tar t`.
+5. Su sa kaset ya shiga yanayin offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Kowane mataki yana tsayawa yana jiran mai amfani ya danna **Enter** kafin a ci gaba, abin da ya sa rubutun suka dace da zanga-zangar hulɗa ko jagororin mataki-mataki.
 
-## Differences Between the Two Scripts
+## Bambance-Bambance Tsakanin Rubutun Biyu
 
-### 1. Tape device path
+### 1. Hanyar na'urar kaset
 
-The scripts target different tape device nodes:
+Rubutun suna nufin nodes daban-daban na na'urar kaset:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Dukansu nodes ne na na'ura marasa komawa farkon kai tsaye (gabanin `n`), saboda haka ana kiyaye matsayin kaset tsakanin umarni kuma rubutun suna sarrafa matsayi kai tsaye da `mt rewind` da `mt fsf`.
 
-### 2. Tape loading step
+### 2. Matakin loda kaset
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Yana fitar da `mt -f /dev/nsa0 load` a farawa don loda cartridge ɗin kaset cikin injin a jiki kafin a mayar da shi farko.
+- **OpenBSD**: Yana tsallake umarnin `load` saboda `mt(1)` na OpenBSD ba ya goyon bayan ƙaramin umarnin `load`. Rubutun OpenBSD yana ɗaukar cewa kaset ɗin yana cikin injin tuni kuma yana wucewa kai tsaye zuwa mayar da shi farko.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Rubutun bututun log na OpenBSD daga A zuwa B zuwa C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Kundin `scripts/` yana ba da rubutun don yanayin da Kwamfuta B ta OpenBSD ke karɓar shigarwar rsyslog daga Kwamfuta A, tana tattara su kullum, tana aika su zuwa ɗaya daga cikin sabobin Kwamfuta C da yawa, sannan Kwamfuta C ta rubuta su zuwa kaset.
 
-| Script | Purpose |
+| Rubutu | Manufa |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Yana ƙirƙirar log mai juyawa na awa ɗaya daga fayil ɗin shigarwar rsyslog mai aiki a Kwamfuta B. |
+| `scripts/computer-b-daily-archive.sh` | Yana tattara rana guda (`YYYYMMDD`) ta log na awa-awa zuwa ajiyar `.tar.gz` mai kewayon lokaci a Kwamfuta B, yana cire awa ta yanzu don guje wa rikicin rubutu mai gudana. |
+| `scripts/computer-b-send-archives.sh` | Yana aika ajiyoyin kullum da ba a aika ba (`.tar.gz` da kuma na zaɓi `.tar.gz.enc`) daga Kwamfuta B zuwa sabar Kwamfuta C ɗaya ko fiye ta hanyar `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Yana tabbatar da ajiyoyin rubutu a bayyane da ke shigowa kuma yana jera ajiyoyin rubutu a bayyane ko ɓoye don kaset. |
+| `scripts/computer-c-write-to-tape.sh` | Yana rubuta ajiyoyin rubutu a bayyane ko ɓoye da ke kan jere zuwa kaset, yana duba sarari, yana ƙara su a ƙarshen cikin aminci, kuma yana yi musu alamar an rubuta. |
+| `scripts/computer-c-inventory-tape.sh` | Yana buga teburin abubuwan cikin kaset bisa alamar fayil domin ma'aikata su iya gano ajiyoyi da sauri. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Yana duba matsayoyin fayil na kaset domin ajiyar da aka nema, yana buɗe ɓoyewa idan ya zama dole, kuma yana adana bayanan da aka dawo dasu zuwa fayil. |
+| `scripts/test-computer-a-b-c-integration.sh` | Yana gudanar da gwajin haɗin gida na A→B→C mai tabbas (ciki har da dawo da kaset) wanda bai dogara da lokacin agogo ba. |
 
-Typical scheduling:
+Tsarin jadawali na yau da kullum:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Gudanar da `computer-b-hourly-rotate.sh` kowane awa (cron a kan B).
+- Gudanar da `computer-b-daily-archive.sh` sau ɗaya a rana (cron a kan B).
+- Gudanar da `computer-b-send-archives.sh` bayan ƙirƙirar ajiya (cron a kan B).
+- Gudanar da `computer-c-receive-archives.sh` lokaci-lokaci a kan C.
+- Gudanar da `computer-c-write-to-tape.sh` lokaci-lokaci a kan C tare da na'urar kaset da ta dace.
+- Gudanar da `computer-c-inventory-tape.sh` a kan C lokacin da kake buƙatar teburin abubuwan ciki alama-da-alama.
+- Gudanar da `computer-c-restore-archive-from-tape.sh` a kan C lokacin da kake buƙatar dawo da takamaiman ajiya don dubawa.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Dukkan rubutun bututun kuma suna fitar da saƙonnin aiki zuwa syslog ta hanyar `logger` (misali, ana iya gani ta rsyslog/journaling) ban da fitarwar console.
 
-### Multi-server send from Computer B
+### Aikawa zuwa sabobi da yawa daga Kwamfuta B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` yana goyon bayan yanayin sabar guda ɗaya da yanayin sabobi da yawa:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Zaɓuɓɓukan zaɓen sabar a ɓangaren kwastoma:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Ka bayar da sabar guda ɗaya a cikin muhawara don kafe zuwa Kwamfuta C guda ɗaya.
+- Ka bayar da sabobi da yawa don ba da damar fallback.
+- Saita `PREFERRED_SERVER=user@host` don zaɓar takamaiman sabar guda ɗaya daga jerin da aka bayar.
 
-Busy handling options on Computer B:
+Zaɓuɓɓukan kula da yanayin busy a Kwamfuta B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (na tsoho: `.busy`): fayil ɗin alama da ake dubawa a ɓangaren nesa.
+- `BUSY_RETRY_SECONDS` (na tsoho: `60`): lokacin jira tsakanin sake gwadawa yayin da sabar ke busy.
+- `BUSY_MAX_RETRIES` (na tsoho: `10`): matsakaicin ƙoƙarin sake gwadawa ga kowace sabar.
 
-### Busy state publication from Computer C
+### Buga yanayin busy daga Kwamfuta C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` yana ƙirƙirar alamar busy yayin da yake rubuta ajiyoyi zuwa kaset a zahiri kuma yana cire ta idan babu aiki.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (na tsoho: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Ka nuna `REMOTE_BUSY_MARKER` a Kwamfuta B zuwa wurin alamar da Kwamfuta C ke amfani da shi.
 
-### Tape safety and append behavior on Computer C
+### Tsaron kaset da halin ƙara a ƙarshen a Kwamfuta C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Kafin rubuta kowace ajiya, `computer-c-write-to-tape.sh` yana duba ƙarfin kaset ko na'ura da yake samuwa kuma yana buƙatar aƙalla:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Mahimman canje-canje:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (na tsoho: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (override don sanannen sarari da ake da shi)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (yana ba da damar rubutawa idan ba za a iya gano sarari ba)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Ga na'urorin kaset na gaske, mai rubutawa yana matsawa zuwa ƙarshen bayanai (`mt eom`/`mt eod`) kafin rubutu, saboda haka ana ƙara ajiyoyi da yawa a ƙarshen maimakon goge abubuwan da ke kaset a baya.
 
-### Human-readable timestamps in filenames
+### Lokutan da mutum zai iya karantawa a cikin sunayen fayil
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Ana sanya wa log na awa-awa suna kamar haka: `rsyslog-2026-06-01T1600.log`
+- Ana sanya wa ajiyoyin kullum suna kamar haka: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Kewayon ajiyar yau da kullum yana dogara ne da ainihin fayilolin awa na farko da na ƙarshe da aka haɗa a cikin ajiyar.
+An yi nufin waɗannan sunaye su zama masu sauƙin karantawa ga mutanen da ke duba tagogin kwanan wata ko lokaci na abubuwan da suka faru.
+An cire awa ta yanzu da gangan daga ƙirƙirar ajiya domin kada a aika rubuce-rubuce masu aiki.
 
-### Optional OpenSSL encryption for daily archives
+### Zaɓin boye-boye na OpenSSL don ajiyoyin yau da kullum
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` na iya ɓoye ajiyoyi da OpenSSL bayan ƙirƙirar tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` don ɓoyewar daidaito (`openssl enc`, cipher na tsoho `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` don ɓoyewar takardar shaidar mai karɓa (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` don zaɓar cipher na OpenSSL ga yanayin fayil ɗin maɓalli da na takardar shaida duka (na tsoho: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Za a iya saita ɗaya kaɗai daga cikin waɗannan zaɓuɓɓuka a lokaci guda. Abubuwan fitarwa da aka ɓoye suna amfani da `.tar.gz.enc`.
+Saboda tsaro, rubutun yana ƙin zaɓin cipher masu rauni ko waɗanda ba AEAD ba, kuma yana buƙatar ciphers na ajin GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Dawo da ajiya daga kaset a Kwamfuta C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Yi amfani da `computer-c-restore-archive-from-tape.sh` don gano takamaiman ajiya ta hanyar binciken fayilolin kaset a jere tun daga farko:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Ga sunayen ajiya kamar `rsyslog-<start>_to_<end>.tar.gz` (ko `.tar.gz.enc`), rubutun yana gano daidaitaccen abin da ya dace ta duba cewa fayilolin awa na iyaka suna cikin abin da aka dawo da shi.
+- Idan tsarin sunan ajiyarka ya bambanta, saita `TARGET_MEMBER_GLOB` zuwa tsarin shell da ya dace da wani memba wanda dole ne ya kasance a cikin ajiya.
+- Idan an ɓoye ajiya, ka bayar da saitunan cire ɓoyewa idan ya zama dole:
+  - `OPENSSL_DECRYPT_KEY_FILE` (yanayin daidaito na `openssl enc`; cipher cire ɓoyewa na tsoho: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` da `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (yanayin cire ɓoyewar S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Ana rubuta abin da aka dawo da shi a matsayin fayil `.tar.gz` na rubutu a bayyane domin a iya duba shi da kayan aiki kamar `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Ƙidayar teburin abubuwan cikin kaset a Kwamfuta C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Yi amfani da `computer-c-inventory-tape.sh` don buga teburin abubuwan ciki alama-da-alama:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Ginshiƙan fitarwa sun haɗa da:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: matsayin alamar fayil na kaset da aka fara kirgawa daga sifili
+- `status`: `ok`, `decrypted`, ko `unreadable`
+- `encrypted`: ko an buƙaci cire ɓoyewa don duba shigarwar (`yes`/`no`)
+- `archive_hint`: sunan irin ajiya da aka hango lokacin da za a iya gane iyakoki
+- `first_member` / `last_member`: membobin tar na farko da na ƙarshe da aka gani a wannan alamar
+- `member_count`: adadin membobin tar da aka samu a wannan alamar
+- `bytes`: danyen bytes da aka karanta a wannan alamar
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Wannan yana ba mai aiki damar gano index ɗin alamar da za a nema (`mt fsf <N>`) kafin ayyukan dawo wa.
 
-### Deterministic A/B/C integration test
+### Gwajin haɗin A/B/C mai tabbas
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Yi amfani da `scripts/test-computer-a-b-c-integration.sh` don tabbatar da haɗin kai daga ƙarshe zuwa ƙarshe na Kwamfutocin A, B, da C ba tare da la’akari da lokacin da ya wuce ba:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Wannan rubutun:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Yana kwaikwayon A tana rubuta log.
+2. Yana gudanar da juyawar B da ƙirƙirar ajiyar yau da kullum.
+3. Yana kwaikwayon canja wuri zuwa shigarwar C.
+4. Yana gudanar da karɓar C da rubutu zuwa kaset.
+5. Yana dawo da ajiya daga kaset kuma yana tabbatar da abin ciki.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Yana amfani da tambarin rana na dindindin (`TEST_DAY_STAMP`, na tsoho `20260101`) domin hali ya kasance mai maimaituwa kuma ba ya danganta da kwanan wata ko lokacin yanzu.
 
-### 72-hour retention with safety for unconfirmed data
+### Riƙewa na awanni 72 tare da tsaro ga bayanan da ba a tabbatar ba
 
-The scripts now default to a 72-hour retention window:
+Rubutun yanzu suna amfani da taga riƙewa na awanni 72 a matsayin tsoho:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` yana cire tsoffin log na awa-awa ne kawai idan akwai alamar tabbatarwa ta gida ta `.taped` da ta dace.
+- `computer-b-send-archives.sh` yana cire tsoffin ajiyoyin gida ne kawai idan akwai duka alamomin tabbatarwa na `.sent` da na gida `.taped`.
+- `computer-c-write-to-tape.sh` yana cire tsoffin ajiyoyi ne kawai waɗanda tuni suna da alamomin `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Sakamakon haka, ana riƙe fayilolin da ba a aika su cikin nasara kuma ba a rubuta su zuwa kaset ba ko da sun wuce `RETENTION_HOURS` (na tsoho `72`).
+A Kwamfuta B, tsaftacewar gida tana buƙatar alamomin `.taped` na gida (misali daga matakin sync-back ko tsarin tabbatarwa da hannu).
+A Kwamfuta C, ana auna shekarun riƙewa daga lokacin gyaran alamar `.taped` (yawanci ana saita shi a lokacin nasarar rubutu zuwa kaset).

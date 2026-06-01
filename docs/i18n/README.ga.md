@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Gaeilge)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Scripteanna sliogáin idirghníomhacha a shiúlann trí ghnáth-oibríochtaí téipe maighnéadaí ag úsáid `mt` agus `tar`.
 
-## Language Documentation Index
+## Innéacs Doiciméadúcháin Teangacha
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Scripteanna
 
-| Script | Target OS |
+| Script | Sprioc-OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Déanann an dá script an seicheamh céanna oibríochtaí:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Iarr ar an úsáideoir a dheimhniú go bhfuil an téip luchtaithe.
+2. Athchas an téip.
+3. Priontáil stádas na téipe.
+4. Liostaigh ábhar na gcartlann ag suíomhanna comhaid 0, 1, 2, agus 3 ag úsáid `tar t`.
+5. Cuir an téip as líne.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Stopann gach céim agus fanann sí go mbrúfaidh an t-úsáideoir **Enter** sula leanann sí ar aghaidh, rud a fhágann go bhfuil na scripteanna oiriúnach mar léirithe idirghníomhacha nó mar shiúlóidí treoraithe.
 
-## Differences Between the Two Scripts
+## Difríochtaí idir an Dá Script
 
-### 1. Tape device path
+### 1. Conair ghléis na téipe
 
-The scripts target different tape device nodes:
+Díríonn na scripteanna ar nóid ghléis téipe éagsúla:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Is nóid ghléis neamh-athchasacha iad an dá cheann (an réimír `n`), mar sin caomhnaítear suíomh na téipe idir orduithe agus rialaíonn na scripteanna an suíomh go follasach le `mt rewind` agus `mt fsf`.
 
-### 2. Tape loading step
+### 2. Céim luchtaithe na téipe
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Eisíonn sé `mt -f /dev/nsa0 load` ag am tosaithe chun an chartús téipe a luchtú go meicniúil isteach sa tiomántán sula n-athchastar í.
+- **OpenBSD**: Fágann sé an t-ordú `load` ar lár mar nach dtacaíonn `mt(1)` OpenBSD le fo-ordú `load`. Glacann script OpenBSD leis go bhfuil an téip sa tiomántán cheana féin agus téann sé díreach chuig an athchasadh.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Scripteanna píblíne logaí OpenBSD A-go-B-go-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Soláthraíonn an t-eolaire `scripts/` scripteanna don chás ina bhfaigheann OpenBSD Computer B iontrálacha rsyslog ó Computer A, ina mbaisceálann sé iad go laethúil, ina seolann sé iad chuig ceann de roinnt freastalaithe Computer C, agus ina scríobhann Computer C iad ar théip.
 
-| Script | Purpose |
+| Script | Cuspóir |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Cruthaíonn sé loga rothlaithe uair an chloig ón gcomhad ionchuir rsyslog gníomhach ar Computer B. |
+| `scripts/computer-b-daily-archive.sh` | Cuachtaíonn sé lá amháin (`YYYYMMDD`) de logaí uairúla isteach i gcartlann `.tar.gz` raon-ama ar Computer B, agus an uair reatha á fágáil amach chun coinbhleachtaí le scríbhinní gníomhacha a sheachaint. |
+| `scripts/computer-b-send-archives.sh` | Seolann sé cartlanna laethúla nár seoladh fós (`.tar.gz` agus `.tar.gz.enc` roghnach) ó Computer B chuig freastalaí Computer C amháin nó níos mó trí `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Bailíochtaíonn sé cartlanna gnáth-théacs atá ag teacht isteach agus cuireann sé cartlanna gnáth-théacs/crioptaithe i scuaine don téip. |
+| `scripts/computer-c-write-to-tape.sh` | Scríobhann sé cartlanna gnáth-théacs nó crioptaithe atá sa scuaine ar théip, seiceálann sé spás, cuireann sé leo go sábháilte, agus marcálann sé mar thaifeadta iad. |
+| `scripts/computer-c-inventory-tape.sh` | Priontálann sé clár ábhair na téipe de réir marcóra comhaid ionas gur féidir le hoibreoirí cartlanna a aimsiú go tapa. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Scanann sé suíomhanna comhaid ar an téip le haghaidh cartlainne iarrtha, díchriptíonn sé nuair is gá, agus sábhálann sé sonraí aisghafa i gcomhad. |
+| `scripts/test-computer-a-b-c-integration.sh` | Ritheann sé tástáil chomhtháthaithe chinntitheach áitiúil A→B→C (lena n-áirítear aisghabháil ón téip) nach mbraitheann ar am an chloig. |
 
-Typical scheduling:
+Sceidealú tipiciúil:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Rith `computer-b-hourly-rotate.sh` gach uair an chloig (cron ar B).
+- Rith `computer-b-daily-archive.sh` uair amháin sa lá (cron ar B).
+- Rith `computer-b-send-archives.sh` tar éis cruthú na cartlainne (cron ar B).
+- Rith `computer-c-receive-archives.sh` go tréimhsiúil ar C.
+- Rith `computer-c-write-to-tape.sh` go tréimhsiúil ar C leis an ngléas téipe ceart.
+- Rith `computer-c-inventory-tape.sh` ar C nuair a theastaíonn clár ábhair marcóir ar mharcóir uait.
+- Rith `computer-c-restore-archive-from-tape.sh` ar C nuair a theastaíonn uait cartlann ar leith a aisghabháil lena hiniúchadh.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Scaoileann na scripteanna píblíne uile teachtaireachtaí oibríochtúla chuig syslog trí `logger` freisin (mar shampla, le feiceáil trí rsyslog/journaling) chomh maith leis an aschur consóil.
 
-### Multi-server send from Computer B
+### Seoladh ilfhreastalaí ó Computer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+Tacaíonn `computer-b-send-archives.sh` le mód aonfhreastalaí agus mód ilfhreastalaí araon:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- Freastalaí aonair: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Ilfhreastalaí: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Roghanna roghnúcháin freastalaí ar thaobh an chliaint:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Cuir freastalaí amháin ar fáil sna hargóintí chun é a phionnáil le Computer C amháin.
+- Cuir roinnt freastalaithe ar fáil chun cúltaca a cheadú.
+- Socraigh `PREFERRED_SERVER=user@host` chun freastalaí sonrach amháin a roghnú ón liosta a cuireadh ar fáil.
 
-Busy handling options on Computer B:
+Roghanna láimhseála gnóthachais ar Computer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (réamhshocrú: `.busy`): comhad marcóra a sheiceáiltear ar an taobh iargúlta.
+- `BUSY_RETRY_SECONDS` (réamhshocrú: `60`): am feithimh idir atrialacha fad is atá an freastalaí gnóthach.
+- `BUSY_MAX_RETRIES` (réamhshocrú: `10`): uasmhéid atrialacha in aghaidh an fhreastalaí.
 
-### Busy state publication from Computer C
+### Foilsiú staid ghnóthaigh ó Computer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+Cruthaíonn `computer-c-write-to-tape.sh` marcóir gnóthach agus é ag scríobh cartlanna go gníomhach ar théip agus baintear é nuair atá sé díomhaoin.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (réamhshocrú: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Pointeáil `REMOTE_BUSY_MARKER` ar Computer B chuig suíomh an mharcóra a úsáideann Computer C.
 
-### Tape safety and append behavior on Computer C
+### Sábháilteacht téipe agus iompar append ar Computer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Sula scríobhtar gach cartlann, seiceálann `computer-c-write-to-tape.sh` an acmhainn téipe/ghléis atá ar fáil agus éilíonn sé ar a laghad:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Athróga ábhartha:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (réamhshocrú: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (sárú le haghaidh spáis atá ar eolas a bheith ar fáil)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (ceadaíonn sé scríobh mura féidir spás a bhrath)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Maidir le fíorghléasanna téipe, lorgaíonn an scríobhaí deireadh na sonraí (`mt eom`/`mt eod`) sula scríobhann sé, ionas go gcuirtear roinnt cartlann leis in ionad ábhar téipe roimhe seo a fhorscríobh.
 
-### Human-readable timestamps in filenames
+### Stampaí ama atá inléite ag daoine in ainmneacha comhad
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Ainmnítear logaí uairúla mar seo: `rsyslog-2026-06-01T1600.log`
+- Ainmnítear cartlanna laethúla mar seo: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Tá raonta na gcartlann laethúil bunaithe ar na chéad agus na comhaid uairúla deireanacha iarbhír atá san áireamh sa chartlann.
+Tá sé beartaithe go mbeidh na hainmneacha seo inléite ag daoine atá ag scanadh do fhuinneoga dáta/ama imeachta.
+Fágtar an uair reatha ar lár d'aon ghnó ó chruthú cartlainne ionas nach seolfar scríbhinní gníomhacha.
 
-### Optional OpenSSL encryption for daily archives
+### Criptiú OpenSSL roghnach do chartlanna laethúla
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+Is féidir le `computer-b-daily-archive.sh` cartlanna a chriptiú le OpenSSL tar éis an tarball a chruthú:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` le haghaidh criptithe siméadraigh (`openssl enc`, cipher réamhshocraithe `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` le haghaidh criptithe le teastas an fhaighteora (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` chun an cipher OpenSSL a roghnú do mhodh an chomhaid eochrach agus mhodh an teastais araon (réamhshocrú: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Ní féidir ach ceann amháin de na roghanna seo a shocrú ag aon am amháin. Úsáideann aschuir chriptithe `.tar.gz.enc`.
+Ar mhaithe le slándáil, diúltaíonn an script do roghanna cipher laga nó neamh-AEAD agus éilíonn sé cipher sa rang GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Aisghabháil cartlainne ó théip ar Computer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Úsáid `computer-c-restore-archive-from-tape.sh` chun cartlann ar leith a aimsiú trí chomhaid téipe a chuardach in ord ón tús:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Maidir le hainmneacha cartlainne cosúil le `rsyslog-<start>_to_<end>.tar.gz` (nó `.tar.gz.enc`), aithníonn an script an mheaitseáil cheart trí sheiceáil go bhfuil na comhaid uairúla teorann i láthair san ualach aisghafa.
+- Má tá ainmniú do chartlann difriúil, socraigh `TARGET_MEMBER_GLOB` chuig patrún sliogáin a mheaitseálann ball a chaithfidh a bheith sa chartlann.
+- Má tá cartlann criptithe, cuir socruithe díchriptithe ar fáil de réir mar is gá:
+  - `OPENSSL_DECRYPT_KEY_FILE` (mód siméadrach `openssl enc`; cipher díchriptithe réamhshocraithe: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` agus `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (mód díchriptithe S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Scríobhtar an t-aschur aisghafa mar chomhad `.tar.gz` gnáth-théacs ionas gur féidir é a iniúchadh le huirlisí ar nós `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Fardal chlár ábhair téipe ar Computer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Úsáid `computer-c-inventory-tape.sh` chun clár ábhair a phriontáil marcóir ar mharcóir:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Áirítear leis na colúin aschuir:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: suíomh marcóra comhaid téipe bunaithe ar nialas
+- `status`: `ok`, `decrypted`, nó `unreadable`
+- `encrypted`: ar theastaigh díchriptiú chun an iontráil a iniúchadh (`yes`/`no`)
+- `archive_hint`: ainm i stíl cartlainne a thugtar le fios nuair is féidir na teorainneacha a aithint
+- `first_member` / `last_member`: an chéad agus an t-ábhar tar deireanach a fheictear sa mharcóir sin
+- `member_count`: líon na n-ábhar tar a fhaightear sa mharcóir sin
+- `bytes`: bearta amha a léitear ag an marcóir sin
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Ligeann sé seo d'oibreoir innéacs an mharcóra le lorg (`mt fsf <N>`) a aithint roimh oibríochtaí aisghabhála.
 
-### Deterministic A/B/C integration test
+### Tástáil chomhtháthaithe chinntithigh A/B/C
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Úsáid `scripts/test-computer-a-b-c-integration.sh` chun comhtháthú ceann go ceann Computers A, B, agus C a bhailíochtú beag beann ar an am atá caite:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Déanann an script seo:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Insamhlaíonn sé A ag scríobh logaí.
+2. Ritheann sé rothlú B agus cruthú cartlainne laethúla.
+3. Insamhlaíonn sé aistriú isteach chuig C incoming.
+4. Ritheann sé C receive + write-to-tape.
+5. Aisghabhann sé an chartlann ón téip agus bailíochtaíonn sé an t-ábhar.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Úsáideann sé stampa lae seasta (`TEST_DAY_STAMP`, réamhshocrú `20260101`) ionas go bhfuil an t-iompar in-athdhéanta agus nach bhfuil sé ceangailte le dáta/am reatha.
 
-### 72-hour retention with safety for unconfirmed data
+### Coinneáil 72 uair an chloig le sábháilteacht do shonraí neamhdheimhnithe
 
-The scripts now default to a 72-hour retention window:
+Úsáideann na scripteanna fuinneog choinneála 72 uair an chloig mar réamhshocrú anois:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- Ní bhaineann `computer-b-hourly-rotate.sh` sean-logaí uairúla ach amháin nuair atá marcóir deimhnithe `.taped` áitiúil meaitseála ann.
+- Ní bhaineann `computer-b-send-archives.sh` sean-chartlanna áitiúla ach amháin nuair atá marcóirí deimhnithe `.sent` agus `.taped` áitiúil araon ann.
+- Ní bhaineann `computer-c-write-to-tape.sh` ach sean-chartlanna a bhfuil marcóirí `.taped` acu cheana féin.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Mar thoradh air sin, coinnítear comhaid nár tarchuireadh agus nár taifeadadh ar théip go rathúil fós fiú nuair atá siad níos sine ná `RETENTION_HOURS` (réamhshocrú `72`).
+Ar Computer B, éilíonn glantachán áitiúil marcóirí `.taped` áitiúla (mar shampla ó chéim sync-back nó ó phróiseas deimhnithe láimhe).
+Ar Computer C, tomhaistear aois na coinneála ó am modhnaithe an mharcóra `.taped` (socraithe de ghnáth ag am rathúil scríofa ar théip).

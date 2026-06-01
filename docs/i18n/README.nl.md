@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Nederlands)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Interactieve shellscripts die veelvoorkomende bewerkingen met magneetbanden doorlopen met `mt` en `tar`.
 
-## Language Documentation Index
+## Taaldocumentatie-index
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -46,187 +46,187 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 
 ## Scripts
 
-| Script | Target OS |
+| Script | Doel-OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Beide scripts voeren dezelfde reeks bewerkingen uit:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Vraag de gebruiker te bevestigen dat de tape is geladen.
+2. Spoel de tape terug.
+3. Druk de tapestatus af.
+4. Geef de inhoud weer van archieven op bestandsposities 0, 1, 2 en 3 met `tar t`.
+5. Zet de tape offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Elke stap pauzeert en wacht tot de gebruiker op **Enter** drukt voordat wordt doorgegaan, waardoor de scripts geschikt zijn als interactieve demonstraties of begeleide walkthroughs.
 
-## Differences Between the Two Scripts
+## Verschillen tussen de twee scripts
 
-### 1. Tape device path
+### 1. Pad van het tapeapparaat
 
-The scripts target different tape device nodes:
+De scripts richten zich op verschillende apparaatknooppunten voor tape:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Beide zijn apparaatknooppunten zonder automatische rewind (het voorvoegsel `n`), zodat de tapepositie tussen opdrachten behouden blijft en de scripts de positionering expliciet regelen met `mt rewind` en `mt fsf`.
 
-### 2. Tape loading step
+### 2. Stap voor het laden van de tape
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Voert bij het opstarten `mt -f /dev/nsa0 load` uit om de tapecartridge mechanisch in het station te laden voordat wordt teruggespoeld.
+- **OpenBSD**: Slaat de opdracht `load` over omdat OpenBSD's `mt(1)` geen `load`-subopdracht ondersteunt. Het OpenBSD-script gaat ervan uit dat de tape al in het station aanwezig is en gaat direct verder met terugspoelen.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A-naar-B-naar-C-logpijplijnscripts
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+De map `scripts/` bevat scripts voor het scenario waarin OpenBSD Computer B rsyslog-vermeldingen van Computer A ontvangt, deze dagelijks bundelt, ze naar een van meerdere Computer C-servers verzendt en Computer C ze naar tape schrijft.
 
-| Script | Purpose |
+| Script | Doel |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Maakt een elk uur geroteerd logbestand van het actieve rsyslog-invoerbestand op Computer B. |
+| `scripts/computer-b-daily-archive.sh` | Bundelt één dag (`YYYYMMDD`) aan uurlogs in een `.tar.gz`-archief met tijdbereik op Computer B, waarbij het huidige uur wordt uitgesloten om conflicten met actieve schrijfbewerkingen te voorkomen. |
+| `scripts/computer-b-send-archives.sh` | Verzendt nog niet verzonden dagelijkse archieven (`.tar.gz` en optioneel `.tar.gz.enc`) van Computer B naar een of meer Computer C-servers via `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Valideert binnenkomende niet-versleutelde archieven en zet niet-versleutelde/versleutelde archieven in de wachtrij voor tape. |
+| `scripts/computer-c-write-to-tape.sh` | Schrijft niet-versleutelde of versleutelde archieven uit de wachtrij naar tape, controleert de ruimte, voegt veilig toe en markeert ze als vastgelegd. |
+| `scripts/computer-c-inventory-tape.sh` | Drukt een tape-inhoudsopgave per bestandsmarkering af zodat operators archieven snel kunnen vinden. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Scant bestandsposities op tape op een gevraagd archief, ontsleutelt indien nodig en slaat herstelde gegevens op in een bestand. |
+| `scripts/test-computer-a-b-c-integration.sh` | Voert een deterministische lokale A→B→C-integratietest uit (inclusief herstel vanaf tape) die niet afhankelijk is van kloktijd. |
 
-Typical scheduling:
+Gebruikelijke planning:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Voer `computer-b-hourly-rotate.sh` elk uur uit (cron op B).
+- Voer `computer-b-daily-archive.sh` één keer per dag uit (cron op B).
+- Voer `computer-b-send-archives.sh` uit na het maken van het archief (cron op B).
+- Voer `computer-c-receive-archives.sh` periodiek uit op C.
+- Voer `computer-c-write-to-tape.sh` periodiek uit op C met het juiste tapeapparaat.
+- Voer `computer-c-inventory-tape.sh` uit op C wanneer u een inhoudsopgave per markering nodig hebt.
+- Voer `computer-c-restore-archive-from-tape.sh` uit op C wanneer u een specifiek archief voor inspectie moet herstellen.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Alle pijplijnscripts sturen naast console-uitvoer ook operationele berichten naar syslog via `logger` (bijvoorbeeld zichtbaar via rsyslog/journaling).
 
-### Multi-server send from Computer B
+### Verzending naar meerdere servers vanaf Computer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` ondersteunt zowel de modus met één server als de modus met meerdere servers:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- Enkele server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Meerdere servers: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Opties voor serverselectie aan clientzijde:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Geef één server op in de argumenten om vast te zetten op één Computer C.
+- Geef meerdere servers op om uitwijking mogelijk te maken.
+- Stel `PREFERRED_SERVER=user@host` in om één specifieke server uit de opgegeven lijst te kiezen.
 
-Busy handling options on Computer B:
+Opties voor afhandeling van bezet-status op Computer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (standaard: `.busy`): markerbestand dat aan de externe zijde wordt gecontroleerd.
+- `BUSY_RETRY_SECONDS` (standaard: `60`): wachttijd tussen nieuwe pogingen terwijl de server bezet is.
+- `BUSY_MAX_RETRIES` (standaard: `10`): maximaal aantal nieuwe pogingen per server.
 
-### Busy state publication from Computer C
+### Publicatie van bezet-status vanaf Computer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` maakt een bezet-marker aan terwijl archieven actief naar tape worden geschreven en verwijdert die wanneer het script niet actief is.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (standaard: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Wijs `REMOTE_BUSY_MARKER` op Computer B naar de markerlocatie die door Computer C wordt gebruikt.
 
-### Tape safety and append behavior on Computer C
+### Tapeveiligheid en append-gedrag op Computer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Voordat elk archief wordt geschreven, controleert `computer-c-write-to-tape.sh` de beschikbare tape-/apparaatcapaciteit en vereist minimaal:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Relevante variabelen:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (standaard: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (overschrijving voor bekende beschikbare ruimte)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (staat schrijven toe als de ruimte niet kan worden gedetecteerd)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Bij echte tapeapparaten zoekt de schrijver vóór het schrijven naar het einde van de data (`mt eom`/`mt eod`), zodat meerdere archieven worden toegevoegd in plaats van eerdere tape-inhoud te overschrijven.
 
-### Human-readable timestamps in filenames
+### Menselijk leesbare tijdstempels in bestandsnamen
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Uurlogs krijgen namen zoals: `rsyslog-2026-06-01T1600.log`
+- Dagelijkse archieven krijgen namen zoals: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Dagelijkse archiefbereiken zijn gebaseerd op de daadwerkelijke eerste en laatste uurbestanden die in het archief zijn opgenomen.
+Deze namen zijn bedoeld om leesbaar te zijn voor mensen die zoeken naar gebeurtenisvensters op datum/tijd.
+Het huidige uur wordt bewust uitgesloten van het maken van archieven zodat actieve schrijfbewerkingen niet worden verzonden.
 
-### Optional OpenSSL encryption for daily archives
+### Optionele OpenSSL-versleuteling voor dagelijkse archieven
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` kan archieven met OpenSSL versleutelen nadat het tarball is gemaakt:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` voor symmetrische versleuteling (`openssl enc`, standaard cipher `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` voor versleuteling met een ontvangerscertificaat (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` om de OpenSSL-cipher te kiezen voor zowel de sleutelbestand- als certificaatmodus (standaard: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Slechts één van deze opties mag tegelijk worden ingesteld. Versleutelde uitvoer gebruikt `.tar.gz.enc`.
+Om veiligheidsredenen weigert het script zwakke of niet-AEAD-cipherkeuzes en vereist het ciphers uit de GCM/poly1305-klasse.
 
-### Archive recovery from tape on Computer C
+### Archiefherstel van tape op Computer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Gebruik `computer-c-restore-archive-from-tape.sh` om een specifiek archief te vinden door vanaf het begin op volgorde door tapebestanden te zoeken:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Voor archiefnamen zoals `rsyslog-<start>_to_<end>.tar.gz` (of `.tar.gz.enc`) identificeert het script de juiste overeenkomst door te controleren of de grens-uurbestanden aanwezig zijn in de herstelde payload.
+- Als uw archiefnaamgeving anders is, stel `TARGET_MEMBER_GLOB` dan in op een shellpatroon dat overeenkomt met een onderdeel dat in het archief aanwezig moet zijn.
+- Als een archief versleuteld is, geef dan waar nodig decryptie-instellingen op:
+  - `OPENSSL_DECRYPT_KEY_FILE` (symmetrische `openssl enc`-modus; standaard decryptiecipher: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` en `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME-decryptiemodus)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+De herstelde uitvoer wordt geschreven als een niet-versleuteld `.tar.gz`-bestand zodat die kan worden geïnspecteerd met hulpmiddelen zoals `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Tape-inventaris met inhoudsopgave op Computer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Gebruik `computer-c-inventory-tape.sh` om een inhoudsopgave per markering af te drukken:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+De uitvoerkolommen omvatten:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: nulgebaseerde positie van de tape-bestandsmarkering
+- `status`: `ok`, `decrypted` of `unreadable`
+- `encrypted`: of decryptie nodig was om de vermelding te inspecteren (`yes`/`no`)
+- `archive_hint`: afgeleide archiefachtige naam wanneer grenzen kunnen worden herkend
+- `first_member` / `last_member`: eerste en laatste tar-onderdelen die in die markering zijn gezien
+- `member_count`: aantal tar-onderdelen dat in die markering is gevonden
+- `bytes`: ruwe bytes die op die markering zijn gelezen
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Hiermee kan een operator de markerindex bepalen waarnaar moet worden gezocht (`mt fsf <N>`) vóór herstelbewerkingen.
 
-### Deterministic A/B/C integration test
+### Deterministische A/B/C-integratietest
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Gebruik `scripts/test-computer-a-b-c-integration.sh` om de end-to-end-integratie van Computers A, B en C te valideren, ongeacht verstreken tijd:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Dit script:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Simuleert dat A logs schrijft.
+2. Voert B-rotatie en het maken van een dagelijks archief uit.
+3. Simuleert overdracht naar C incoming.
+4. Voert C receive + write-to-tape uit.
+5. Herstelt het archief vanaf tape en valideert de inhoud.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Het gebruikt een vaste dagstempel (`TEST_DAY_STAMP`, standaard `20260101`) zodat het gedrag herhaalbaar is en niet aan de huidige datum/tijd is gekoppeld.
 
-### 72-hour retention with safety for unconfirmed data
+### 72-uursretentie met veiligheid voor niet-bevestigde gegevens
 
-The scripts now default to a 72-hour retention window:
+De scripts gebruiken nu standaard een retentievenster van 72 uur:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` verwijdert oude uurlogs alleen wanneer er een overeenkomende lokale `.taped`-bevestigingsmarker bestaat.
+- `computer-b-send-archives.sh` verwijdert oude lokale archieven alleen wanneer zowel `.sent`- als lokale `.taped`-bevestigingsmarkers bestaan.
+- `computer-c-write-to-tape.sh` verwijdert alleen oude archieven die al `.taped`-markers hebben.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Daardoor worden bestanden die nog niet succesvol zijn verzonden en op tape zijn vastgelegd behouden, zelfs wanneer ze ouder zijn dan `RETENTION_HOURS` (standaard `72`).
+Op Computer B vereist lokale opschoning lokale `.taped`-markers (bijvoorbeeld vanuit een sync-back-stap of een handmatig bevestigingsproces).
+Op Computer C wordt de retentieouderdom gemeten vanaf de wijzigingstijd van de `.taped`-marker (normaal ingesteld op het moment van succesvol schrijven naar tape).
