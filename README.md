@@ -46,6 +46,8 @@ The `scripts/` directory provides scripts for the scenario where OpenBSD Compute
 | `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
 | `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
 | `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
+| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
 
 Typical scheduling:
 
@@ -54,6 +56,7 @@ Typical scheduling:
 - Run `computer-b-send-archives.sh` after archive creation (cron on B).
 - Run `computer-c-receive-archives.sh` periodically on C.
 - Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
+- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
 
 All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
 
@@ -116,6 +119,40 @@ The current hour is intentionally excluded from archive creation so active write
 - `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-cbc`).
 
 Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
+
+### Archive recovery from tape on Computer C
+
+Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+
+```sh
+scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
+```
+
+- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
+- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
+- If an archive is encrypted, provide decryption settings as needed:
+  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode)
+  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+
+The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+
+### Deterministic A/B/C integration test
+
+Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+
+```sh
+scripts/test-computer-a-b-c-integration.sh
+```
+
+This script:
+
+1. Simulates A writing logs.
+2. Runs B rotation and daily archive creation.
+3. Simulates transfer into C incoming.
+4. Runs C receive + write-to-tape.
+5. Restores the archive from tape and validates content.
+
+It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
 
 ### 72-hour retention with safety for unconfirmed data
 
