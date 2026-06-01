@@ -85,11 +85,11 @@ fi
 require_strong_encrypt_cipher() {
   cipher_lower=$(printf '%s' "$OPENSSL_ENCRYPT_CIPHER" | tr '[:upper:]' '[:lower:]')
   case "$cipher_lower" in
-    *gcm*|*poly1305*)
+    aes-128-gcm|aes-192-gcm|aes-256-gcm|chacha20-poly1305)
       return 0
       ;;
     *)
-      log_error "$(printf 'Refusing weak/non-AEAD cipher "%s"; use GCM or better (for example: aes-256-gcm)' "$OPENSSL_ENCRYPT_CIPHER")"
+      log_error "$(printf 'Refusing cipher "%s"; use an AEAD cipher (aes-128-gcm, aes-192-gcm, aes-256-gcm, chacha20-poly1305). AEAD adds integrity protection to detect tampering.' "$OPENSSL_ENCRYPT_CIPHER")"
       return 1
       ;;
   esac
