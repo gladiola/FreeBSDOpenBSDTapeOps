@@ -21,7 +21,6 @@ fi
 
 INCOMING_DIR=$1
 RECEIVED_DIR=$2
-RETENTION_HOURS=${RETENTION_HOURS:-72}
 
 mkdir -p "$INCOMING_DIR" "$RECEIVED_DIR"
 
@@ -45,8 +44,3 @@ done
 if [ "$found" -eq 0 ]; then
   printf 'No new archives in %s\n' "$INCOMING_DIR"
 fi
-
-find "$RECEIVED_DIR" -type f -name '*.tar.gz.taped' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
-  archive=${taped_marker%.taped}
-  rm -f "$archive" "$taped_marker"
-done

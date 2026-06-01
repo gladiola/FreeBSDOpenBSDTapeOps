@@ -110,6 +110,8 @@ The scripts now default to a 72-hour retention window:
 
 - `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
 - `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-receive-archives.sh` and `computer-c-write-to-tape.sh` only remove old archives that already have `.taped` markers.
+- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
 
 As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
+On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
+On Computer C, retention age is measured from when `.taped` was created (time of successful tape write).
