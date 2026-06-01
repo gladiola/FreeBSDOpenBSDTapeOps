@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Kiswahili)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Hati za shell zinazoshirikisha mtumiaji zinazopitia shughuli za kawaida za tepu ya sumaku kwa kutumia `mt` na `tar`.
 
-## Language Documentation Index
+## Faharasa ya Nyaraka za Lugha
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Skripti
 
-| Script | Target OS |
+| Skripti | Mfumo lengwa |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Skripti zote mbili hutekeleza mfuatano uleule wa shughuli:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Muombe mtumiaji athibitishe kuwa tepu imeingizwa.
+2. Rudisha tepu mwanzo.
+3. Chapisha hali ya tepu.
+4. Orodhesha yaliyomo kwenye kumbukumbu katika nafasi za faili 0, 1, 2, na 3 kwa kutumia `tar t`.
+5. Weka tepu katika hali ya offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Kila hatua husimama na kusubiri mtumiaji abonyeze **Enter** kabla ya kuendelea, hivyo skripti zinafaa kama maonyesho ya mwingiliano au uelekezaji wa hatua kwa hatua.
 
-## Differences Between the Two Scripts
+## Tofauti Kati ya Skripti Mbili
 
-### 1. Tape device path
+### 1. Njia ya kifaa cha tepu
 
-The scripts target different tape device nodes:
+Skripti hizi hulenga nodi tofauti za kifaa cha tepu:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Zote mbili ni nodi za kifaa zisizorudisha tepu mwanzo (kiambishi awali `n`), hivyo nafasi ya tepu huhifadhiwa kati ya amri na skripti hudhibiti uwekaji nafasi moja kwa moja kwa `mt rewind` na `mt fsf`.
 
-### 2. Tape loading step
+### 2. Hatua ya kupakia tepu
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Hutoa `mt -f /dev/nsa0 load` wakati wa kuanza ili kupakia kimekanika katriji ya tepu kwenye kifaa kabla ya kurudisha mwanzo.
+- **OpenBSD**: Huruka amri ya `load` kwa sababu `mt(1)` ya OpenBSD haiungi mkono amri ndogo ya `load`. Skripti ya OpenBSD hudhani tepu tayari ipo kwenye kifaa na huendelea moja kwa moja kurudisha mwanzo.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Skripti za Msururu wa Kumbukumbu za OpenBSD A-kwa-B-kwa-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Saraka ya `scripts/` inatoa skripti kwa hali ambapo Kompyuta B ya OpenBSD hupokea ingizo za rsyslog kutoka Kompyuta A, huzikusanya kila siku, huzituma kwa mojawapo ya seva kadhaa za Kompyuta C, na Kompyuta C huziandika kwenye tepu.
 
-| Script | Purpose |
+| Skripti | Madhumuni |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Huunda kumbukumbu iliyozungushwa kila saa kutoka faili ya sasa ya ingizo la rsyslog kwenye Kompyuta B. |
+| `scripts/computer-b-daily-archive.sh` | Hufunga siku moja (`YYYYMMDD`) ya kumbukumbu za kila saa kuwa kumbukumbu ya `.tar.gz` yenye muda mbalimbali kwenye Kompyuta B, huku ikiondoa saa ya sasa ili kuepuka migongano ya uandishi unaoendelea. |
+| `scripts/computer-b-send-archives.sh` | Hutuma kumbukumbu za kila siku ambazo hazijatumwa (`.tar.gz` na hiari `.tar.gz.enc`) kutoka Kompyuta B kwenda seva moja au zaidi za Kompyuta C kupitia `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Huthibitisha kumbukumbu za maandishi wazi zinazoingia na kuweka kumbukumbu za maandishi wazi au zilizosimbwa kwenye foleni kwa ajili ya tepu. |
+| `scripts/computer-c-write-to-tape.sh` | Huandika kumbukumbu za maandishi wazi au zilizosimbwa zilizo kwenye foleni kwenye tepu, hukagua nafasi, huongeza mwishoni kwa usalama, na huzitia alama kuwa zimerekodiwa. |
+| `scripts/computer-c-inventory-tape.sh` | Huchapisha jedwali la yaliyomo kwenye tepu kulingana na alama za faili ili waendeshaji waweze kupata kumbukumbu haraka. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Huchanganua nafasi za faili za tepu kutafuta kumbukumbu iliyoombwa, husimbua inapohitajika, na huhifadhi data iliyopatikana kwenye faili. |
+| `scripts/test-computer-a-b-c-integration.sh` | Huendesha jaribio la ujumuishaji la ndani la A→B→C lenye matokeo thabiti (likijumuisha urejeshaji kutoka tepu) lisilotegemea muda wa saa. |
 
-Typical scheduling:
+Ratiba ya kawaida:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Endesha `computer-b-hourly-rotate.sh` kila saa (cron kwenye B).
+- Endesha `computer-b-daily-archive.sh` mara moja kwa siku (cron kwenye B).
+- Endesha `computer-b-send-archives.sh` baada ya uundaji wa kumbukumbu (cron kwenye B).
+- Endesha `computer-c-receive-archives.sh` mara kwa mara kwenye C.
+- Endesha `computer-c-write-to-tape.sh` mara kwa mara kwenye C ukiwa na kifaa sahihi cha tepu.
+- Endesha `computer-c-inventory-tape.sh` kwenye C unapohitaji jedwali la yaliyomo alama-kwa-alama.
+- Endesha `computer-c-restore-archive-from-tape.sh` kwenye C unapohitaji kurejesha kumbukumbu maalum kwa ukaguzi.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Skripti zote za msururu pia hutuma ujumbe wa uendeshaji kwenye syslog kupitia `logger` (kwa mfano, unaoonekana kupitia rsyslog/journaling) pamoja na matokeo ya kwenye konsoli.
 
-### Multi-server send from Computer B
+### Utumaji kwa seva nyingi kutoka Kompyuta B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` inaunga mkono hali ya seva moja na hali ya seva nyingi:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Chaguo za upande wa mteja za kuchagua seva:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Toa seva moja kwenye hoja ili kuifunga kwa Kompyuta C moja.
+- Toa seva nyingi ili kuruhusu fallback.
+- Weka `PREFERRED_SERVER=user@host` ili kuchagua seva moja maalum kutoka kwenye orodha iliyotolewa.
 
-Busy handling options on Computer B:
+Chaguo za kushughulikia hali ya busy kwenye Kompyuta B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (chaguo-msingi: `.busy`): faili ya alama inayokaguliwa upande wa mbali.
+- `BUSY_RETRY_SECONDS` (chaguo-msingi: `60`): muda wa kusubiri kati ya majaribio tena huku seva ikiwa busy.
+- `BUSY_MAX_RETRIES` (chaguo-msingi: `10`): idadi ya juu ya majaribio tena kwa kila seva.
 
-### Busy state publication from Computer C
+### Uchapishaji wa hali busy kutoka Kompyuta C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` huunda alama ya busy wakati inaandika kikamilifu kumbukumbu kwenye tepu na huiondoa inapokuwa haina shughuli.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (chaguo-msingi: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Elekeza `REMOTE_BUSY_MARKER` kwenye Kompyuta B kwenye eneo la alama linalotumiwa na Kompyuta C.
 
-### Tape safety and append behavior on Computer C
+### Usalama wa tepu na tabia ya kuongeza mwishoni kwenye Kompyuta C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Kabla ya kuandika kila kumbukumbu, `computer-c-write-to-tape.sh` hukagua uwezo wa tepu au kifaa unaopatikana na huhitaji angalau:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Vigeuzi husika:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (chaguo-msingi: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (kuondoa juu ya chaguo-msingi kwa nafasi inayojulikana kupatikana)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (huruhusu kuandika ikiwa nafasi haiwezi kutambuliwa)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Kwa vifaa halisi vya tepu, mwandishi huenda hadi mwisho wa data (`mt eom`/`mt eod`) kabla ya kuandika, hivyo kumbukumbu nyingi huongezwa mwishoni badala ya kuandika juu ya yaliyomo awali ya tepu.
 
-### Human-readable timestamps in filenames
+### Mihuri ya muda inayosomeka na binadamu katika majina ya faili
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Kumbukumbu za kila saa huitwa kama: `rsyslog-2026-06-01T1600.log`
+- Kumbukumbu za kila siku huitwa kama: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Vipindi vya kumbukumbu za kila siku vinategemea faili halisi za kwanza na za mwisho za kila saa zilizojumuishwa kwenye kumbukumbu.
+Majina haya yamekusudiwa yasomeke kwa watu wanaochunguza vipindi vya tarehe au saa ya matukio.
+Saa ya sasa imeondolewa kwa makusudi katika uundaji wa kumbukumbu ili uandishi unaoendelea usitumwe.
 
-### Optional OpenSSL encryption for daily archives
+### Usimbaji wa hiari wa OpenSSL kwa kumbukumbu za kila siku
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` inaweza kusimba kumbukumbu kwa OpenSSL baada ya kuunda tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` kwa usimbaji sawia (`openssl enc`, cipher ya chaguo-msingi `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` kwa usimbaji wa cheti cha mpokeaji (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` ili kuchagua cipher ya OpenSSL kwa hali zote za faili ya ufunguo na cheti (chaguo-msingi: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Moja tu ya chaguo hizi inaweza kuwekwa kwa wakati mmoja. Matokeo yaliyosimbwa hutumia `.tar.gz.enc`.
+Kwa usalama, skripti hukataa chaguo dhaifu au zisizo za AEAD za cipher na huhitaji cipher za daraja la GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Urejeshaji wa kumbukumbu kutoka tepu kwenye Kompyuta C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Tumia `computer-c-restore-archive-from-tape.sh` kupata kumbukumbu maalum kwa kutafuta faili za tepu kwa mpangilio kuanzia mwanzo:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Kwa majina ya kumbukumbu kama `rsyslog-<start>_to_<end>.tar.gz` (au `.tar.gz.enc`), skripti hutambua ulinganifu sahihi kwa kukagua kwamba faili za kila saa za mipaka zipo katika mzigo uliorejeshwa.
+- Ikiwa uundaji wako wa majina ya kumbukumbu ni tofauti, weka `TARGET_MEMBER_GLOB` kwenye mchoro wa shell unaolingana na mwanachama ambaye lazima awepo kwenye kumbukumbu.
+- Ikiwa kumbukumbu imesimbwa, toa mipangilio ya usimbuaji kadiri inavyohitajika:
+  - `OPENSSL_DECRYPT_KEY_FILE` (hali sawia ya `openssl enc`; cipher ya chaguo-msingi ya usimbuaji: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` na `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (hali ya usimbuaji ya S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Matokeo yaliyorejeshwa huandikwa kama faili ya `.tar.gz` ya maandishi wazi ili yaweze kukaguliwa kwa zana kama `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Hesabu ya jedwali la yaliyomo la tepu kwenye Kompyuta C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Tumia `computer-c-inventory-tape.sh` kuchapisha jedwali la yaliyomo alama-kwa-alama:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Safu za matokeo zinajumuisha:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: nafasi ya alama ya faili ya tepu inayohesabiwa kuanzia sifuri
+- `status`: `ok`, `decrypted`, au `unreadable`
+- `encrypted`: kama usimbuaji ulihitajika kukagua ingizo (`yes`/`no`)
+- `archive_hint`: jina la aina ya kumbukumbu lililodhaniwa wakati mipaka inaweza kutambuliwa
+- `first_member` / `last_member`: wanachama wa kwanza na wa mwisho wa tar walioonekana katika alama hiyo
+- `member_count`: idadi ya wanachama wa tar waliopatikana katika alama hiyo
+- `bytes`: baiti ghafi zilizosomwa katika alama hiyo
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Hii humwezesha mwendeshaji kutambua faharasa ya alama ya kutafuta (`mt fsf <N>`) kabla ya shughuli za urejeshaji.
 
-### Deterministic A/B/C integration test
+### Jaribio la ujumuishaji la A/B/C lenye matokeo thabiti
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Tumia `scripts/test-computer-a-b-c-integration.sh` kuthibitisha ujumuishaji wa mwisho-hadi-mwisho wa Kompyuta A, B, na C bila kujali muda uliopita:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Skripti hii:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Huiga A ikiandika kumbukumbu.
+2. Huendesha mzunguko na uundaji wa kumbukumbu wa B.
+3. Huiga uhamisho kwenda kwenye ingizo la C.
+4. Huendesha mapokezi ya C pamoja na uandishi kwenye tepu.
+5. Hurejesha kumbukumbu kutoka tepu na kuthibitisha yaliyomo.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Inatumia muhuri wa siku uliowekwa (`TEST_DAY_STAMP`, chaguo-msingi `20260101`) ili tabia iweze kurudiwa na isifungwe kwa tarehe au saa ya sasa.
 
-### 72-hour retention with safety for unconfirmed data
+### Uhifadhi wa saa 72 wenye usalama kwa data isiyothibitishwa
 
-The scripts now default to a 72-hour retention window:
+Skripti sasa hutumia kwa chaguo-msingi dirisha la uhifadhi la saa 72:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` huondoa kumbukumbu za zamani za kila saa tu wakati alama inayolingana ya uthibitisho ya ndani ya `.taped` ipo.
+- `computer-b-send-archives.sh` huondoa kumbukumbu za zamani za ndani tu wakati alama za uthibitisho za `.sent` na za ndani za `.taped` zote zipo.
+- `computer-c-write-to-tape.sh` huondoa kumbukumbu za zamani tu ambazo tayari zina alama za `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Kwa hiyo, faili ambazo bado hazijatumwa na kurekodiwa kwa mafanikio kwenye tepu huhifadhiwa hata zikiwa za zamani kuliko `RETENTION_HOURS` (chaguo-msingi `72`).
+Kwenye Kompyuta B, usafishaji wa ndani unahitaji alama za ndani za `.taped` (kwa mfano kutoka hatua ya kusawazisha kurudi au mchakato wa kuthibitisha kwa mkono).
+Kwenye Kompyuta C, umri wa uhifadhi hupimwa kutoka muda wa marekebisho wa alama ya `.taped` (kwa kawaida huwekwa wakati wa kuandika tepu kwa mafanikio).

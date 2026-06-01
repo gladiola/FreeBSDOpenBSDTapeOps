@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (ʻŌlelo Hawaiʻi)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Nā script shell pāhekoheko e alakaʻi ana i nā hana maʻamau o ka lipine mākenēki me `mt` a me `tar`.
 
-## Language Documentation Index
+## Papa Kuhikuhi Palapala ʻŌlelo
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Nā Script
 
-| Script | Target OS |
+| Script | OS i kuhikuhi ʻia |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Hana nā script ʻelua i ka lālani hana like:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Nīnau i ka mea hoʻohana e hōʻoia ua hoʻokomo ʻia ka lipine.
+2. Hoʻihoʻi i ka lipine i ka hoʻomaka.
+3. Paʻi i ke kūlana o ka lipine.
+4. Hōʻike i nā mea o nā waihona ma nā kūlana faila 0, 1, 2, a me 3 me `tar t`.
+5. Hoʻokomo i ka lipine i ke kūlana offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Kū iki kēlā me kēia ʻanuʻu a kali i ka mea hoʻohana e paʻi i **Enter** ma mua o ka hoʻomau ʻana, no laila kūpono nā script no nā hōʻike pāhekoheko a i ʻole nā alakaʻi hele wāwae ʻia.
 
-## Differences Between the Two Scripts
+## Nā ʻokoʻa ma waena o nā Script ʻElua
 
-### 1. Tape device path
+### 1. Ala o ka mea lipine
 
-The scripts target different tape device nodes:
+Kuhi nā script i nā node mea lipine ʻokoʻa:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+He mau node mea lipine non-rewinding lāua ʻelua (ka pīʻani mua `n`), no laila mālama ʻia ke kūlana lipine ma waena o nā kauoha a hoʻokele maopopo nā script i ke kūlana me `mt rewind` a me `mt fsf`.
 
-### 2. Tape loading step
+### 2. Ka ʻanuʻu hoʻouka lipine
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Hoʻopuka ia i `mt -f /dev/nsa0 load` i ka hoʻomaka ʻana e hoʻouka mīkini i ka pahu lipine i loko o ka drive ma mua o ka hoʻihoʻi ʻana.
+- **OpenBSD**: Kāʻalo ia i ke kauoha `load` no ka mea ʻaʻole kākoʻo ʻo `mt(1)` o OpenBSD i kahi kauoha liʻiliʻi `load`. Manaʻo ka script OpenBSD ua noho mua ka lipine i loko o ka drive a hele pololei i ka hoʻihoʻi ʻana.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Nā Script Paipu Log OpenBSD A-i-B-i-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Hāʻawi ka papa kuhikuhi `scripts/` i nā script no ke kūlana e loaʻa ai i ka Kamepiula B OpenBSD nā komo rsyslog mai ka Kamepiula A, hōʻuluʻulu iā lākou i kēlā me kēia lā, hoʻouna iā lākou i kekahi o nā kikowaena Kamepiula C he nui, a kākau ka Kamepiula C iā lākou i ka lipine.
 
-| Script | Purpose |
+| Script | Kumu |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Hana i kahi log i huli ʻia i kēlā me kēia hola mai ka faila hoʻokomo rsyslog hana ma ka Kamepiula B. |
+| `scripts/computer-b-daily-archive.sh` | Hoʻopili i hoʻokahi lā (`YYYYMMDD`) o nā log hola i loko o kahi waihona `.tar.gz` me ka laulā manawa ma ka Kamepiula B, me ka hoʻokaʻawale ʻana i ka hola o kēia manawa e pale i nā paio kākau hana. |
+| `scripts/computer-b-send-archives.sh` | Hoʻouna i nā waihona lā i hoʻouna ʻole ʻia (`.tar.gz` a me ka `.tar.gz.enc` koho) mai ka Kamepiula B i hoʻokahi a i ʻole he nui nā kikowaena Kamepiula C ma o `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Hōʻoia i nā waihona plaintext e komo ana a waiho i nā waihona plaintext a i ʻole encrypted i ka lālani no ka lipine. |
+| `scripts/computer-c-write-to-tape.sh` | Kākau i nā waihona plaintext a i ʻole encrypted i ka lālani i ka lipine, nānā i ka hakahaka, hoʻopili palekana i ka hopena, a kau i ka hōʻailona ua hoʻopaʻa ʻia. |
+| `scripts/computer-c-inventory-tape.sh` | Paʻi i kahi table-of-contents lipine ma ka file marker i hiki i nā mea hana ke ʻimi wikiwiki i nā waihona. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Nānā i nā kūlana faila lipine no ka waihona i noi ʻia, wehe i ka hūnā inā pono, a mālama i ka ʻikepili i hoʻihoʻi ʻia i kahi faila. |
+| `scripts/test-computer-a-b-c-integration.sh` | Holo i kahi hoʻāʻo hoʻohui kūloko A→B→C paʻa (me ka hoʻihoʻi lipine pū) ʻaʻole i pili i ka manawa uaki. |
 
-Typical scheduling:
+Ka papahana maʻamau:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Holo i `computer-b-hourly-rotate.sh` i kēlā me kēia hola (cron ma B).
+- Holo i `computer-b-daily-archive.sh` hoʻokahi manawa i kēlā me kēia lā (cron ma B).
+- Holo i `computer-b-send-archives.sh` ma hope o ka hana ʻana i ka waihona (cron ma B).
+- Holo i `computer-c-receive-archives.sh` ma kēlā me kēia manawa ma C.
+- Holo i `computer-c-write-to-tape.sh` ma kēlā me kēia manawa ma C me ka mea lipine kūpono.
+- Holo i `computer-c-inventory-tape.sh` ma C i ka wā e pono ai ʻoe i kahi table-of-contents marker-by-marker.
+- Holo i `computer-c-restore-archive-from-tape.sh` ma C i ka wā e pono ai ʻoe e hoʻihoʻi i kahi waihona kikoʻī no ka nānā ʻana.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Hoʻouna pū nā script paipu a pau i nā memo hana i syslog ma o `logger` (no ka laʻana, hiki ke ʻike ʻia ma rsyslog/journaling) ma waho aʻe o ka puka console.
 
-### Multi-server send from Computer B
+### Ka hoʻouna ʻana i nā kikowaena he nui mai Kamepiula B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+Kākoʻo ʻo `computer-b-send-archives.sh` i ke ʻano kikowaena hoʻokahi a me ke ʻano kikowaena he nui:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Nā koho koho kikowaena ma ka ʻaoʻao client:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Hāʻawi i hoʻokahi kikowaena i nā arguments e paʻa ai i hoʻokahi Kamepiula C.
+- Hāʻawi i nā kikowaena he nui e ʻae i fallback.
+- E hoʻonoho iā `PREFERRED_SERVER=user@host` e koho i hoʻokahi kikowaena kikoʻī mai ka papa inoa i hāʻawi ʻia.
 
-Busy handling options on Computer B:
+Nā koho no ka mālama ʻana i ke kūlana busy ma Kamepiula B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (paʻamau: `.busy`): ka faila hōʻailona i nānā ʻia ma ka ʻaoʻao mamao.
+- `BUSY_RETRY_SECONDS` (paʻamau: `60`): ka manawa kali ma waena o nā hoʻāʻo hou i ka wā busy ka kikowaena.
+- `BUSY_MAX_RETRIES` (paʻamau: `10`): ka nui loa o nā hoʻāʻo hou no kēlā me kēia kikowaena.
 
-### Busy state publication from Computer C
+### Ka paʻi ʻia ʻana o ke kūlana busy mai Kamepiula C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+Hana ʻo `computer-c-write-to-tape.sh` i kahi hōʻailona busy i ka wā e kākau maoli ana i nā waihona i ka lipine a wehe iā ia i ka wā ʻaʻohe hana.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (paʻamau: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+E kuhikuhi iā `REMOTE_BUSY_MARKER` ma Kamepiula B i ka wahi hōʻailona i hoʻohana ʻia e Kamepiula C.
 
-### Tape safety and append behavior on Computer C
+### Ka palekana lipine a me ka ʻano hoʻopili ma Kamepiula C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Ma mua o ke kākau ʻana i kēlā me kēia waihona, nānā ʻo `computer-c-write-to-tape.sh` i ka hiki o ka lipine a i ʻole ka mea i loaʻa a koi ma ka liʻiliʻi:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Nā variable pili:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (paʻamau: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (override no ka hakahaka i ʻike ʻia he loaʻa)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (ʻae i ke kākau inā ʻaʻole hiki ke ʻike ʻia ka hakahaka)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+No nā mea lipine maoli, ʻimi ka mea kākau i ka hopena o ka ʻikepili (`mt eom`/`mt eod`) ma mua o ke kākau ʻana, no laila hoʻopili ʻia nā waihona he nui ma kahi o ke kākau hou ʻana ma luna o nā mea lipine kahiko.
 
-### Human-readable timestamps in filenames
+### Nā timestamp hiki i ke kanaka ke heluhelu ma nā inoa faila
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Ua kapa ʻia nā log hola pēnei: `rsyslog-2026-06-01T1600.log`
+- Ua kapa ʻia nā waihona lā pēnei: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Hoʻokumu ʻia nā laulā waihona lā ma luna o nā faila hola mua a hope hoʻi i hoʻokomo ʻia i loko o ka waihona.
+Hoʻolālā ʻia kēia mau inoa i mea hiki i nā kānaka ke heluhelu maʻalahi i ka wā e nānā ana i nā puka lā a me ka manawa o nā hanana.
+Hoʻokaʻawale ʻia ka hola o kēia manawa mai ka hana waihona ʻana i mea e hoʻouna ʻole ʻia ai nā kākau hana.
 
-### Optional OpenSSL encryption for daily archives
+### Ka hoʻopunipuni OpenSSL koho no nā waihona lā
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+Hiki iā `computer-b-daily-archive.sh` ke encrypt i nā waihona me OpenSSL ma hope o ka hana ʻana i ka tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` no ka symmetric encryption (`openssl enc`, ka cipher paʻamau `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` no ka encryption me ka palapala hōʻoia o ka mea loaʻa (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` e koho i ka cipher OpenSSL no nā ʻano key-file a me certificate (paʻamau: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Hiki ke hoʻonohonoho ʻia hoʻokahi wale nō o kēia mau koho i ka manawa hoʻokahi. Hoʻohana nā puka encrypted i `.tar.gz.enc`.
+No ka palekana, hōʻole ka script i nā koho cipher nāwaliwali a i ʻole nā cipher ʻaʻole AEAD, a koi i nā cipher papa GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Ka hoʻihoʻi waihona mai ka lipine ma Kamepiula C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+E hoʻohana i `computer-c-restore-archive-from-tape.sh` e ʻimi i kahi waihona kikoʻī ma ka huli ʻana i nā faila lipine ma ke ʻano mai ka hoʻomaka:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- No nā inoa waihona e like me `rsyslog-<start>_to_<end>.tar.gz` (a i ʻole `.tar.gz.enc`), ʻike ka script i ka mea kūpono ma ka nānā ʻana ua noho nā faila hola palena i loko o ka payload i hoʻihoʻi ʻia.
+- Inā ʻokoʻa kāu kapa inoa waihona, e hoʻonohonoho iā `TARGET_MEMBER_GLOB` i kahi pattern shell e kūlike ana i kahi member pono e noho ma loko o ka waihona.
+- Inā ua encrypted kekahi waihona, e hāʻawi i nā hoʻonohonoho decryption e like me ka pono:
+  - `OPENSSL_DECRYPT_KEY_FILE` (ke ʻano symmetric `openssl enc`; ka cipher decryption paʻamau: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` a me `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (ke ʻano decryption S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Kākau ʻia ka puka i hoʻihoʻi ʻia ma ke ʻano he faila `.tar.gz` plaintext i hiki ke nānā ʻia me nā mea hana e like me `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Ka papa ʻike o ka table-of-contents lipine ma Kamepiula C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+E hoʻohana i `computer-c-inventory-tape.sh` e paʻi i kahi table-of-contents marker-by-marker:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Aia nā kolamu puka i loko o:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: ke kūlana file marker lipine hoʻomaka-mai-ka-ʻole
+- `status`: `ok`, `decrypted`, a i ʻole `unreadable`
+- `encrypted`: inā pono ka decryption e nānā i ka entry (`yes`/`no`)
+- `archive_hint`: ka inoa ʻano waihona i manaʻo ʻia i ka wā e hiki ai ke ʻike i nā palena
+- `first_member` / `last_member`: nā tar member mua a hope i ʻike ʻia ma kēlā marker
+- `member_count`: ka helu o nā tar member i loaʻa ma kēlā marker
+- `bytes`: nā raw bytes i heluhelu ʻia ma kēlā marker
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Hāʻawi kēia i ka mea hana i ka hiki ke ʻike i ka index marker e ʻimi ai (`mt fsf <N>`) ma mua o nā hana hoʻihoʻi.
 
-### Deterministic A/B/C integration test
+### Ka hoʻāʻo hoʻohui A/B/C paʻa
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+E hoʻohana i `scripts/test-computer-a-b-c-integration.sh` e hōʻoia i ka hoʻohui hope-a-hope o nā Kamepiula A, B, a me C me ka nānā ʻole i ka manawa i hala:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Kēia script:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Hoʻohālike iā A e kākau ana i nā log.
+2. Holo i ka rotation a me ka hana waihona lā a B.
+3. Hoʻohālike i ka hoʻoili ʻana i ka incoming o C.
+4. Holo i ka receive a C me ka write-to-tape.
+5. Hoʻihoʻi i ka waihona mai ka lipine a hōʻoia i ka ʻikepili.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Hoʻohana ia i kahi hōʻailona lā paʻa (`TEST_DAY_STAMP`, paʻamau `20260101`) i mea e hiki ai ke hana hou ʻia ke ʻano a ʻaʻole ia i paʻa i ka lā a i ʻole ka manawa o kēia manawa.
 
-### 72-hour retention with safety for unconfirmed data
+### Ka mālama 72 hola me ka palekana no ka ʻikepili i hōʻoia ʻole ʻia
 
-The scripts now default to a 72-hour retention window:
+Paʻamau kēia manawa nā script i kahi puka mālama 72 hola:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` wehe wale i nā log hola kahiko ke loaʻa ka hōʻailona hōʻoia `.taped` kūloko kūpono.
+- `computer-b-send-archives.sh` wehe wale i nā waihona kūloko kahiko ke loaʻa nā hōʻailona hōʻoia `.sent` a me ka `.taped` kūloko.
+- `computer-c-write-to-tape.sh` wehe wale i nā waihona kahiko i loaʻa mua nā hōʻailona `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Ma muli o kēia, mālama ʻia nā faila i hoʻouna ʻole ʻia a hoʻopaʻa ʻole ʻia i ka lipine me ka kūleʻa inā ʻoi aku ko lākou kahiko ma mua o `RETENTION_HOURS` (paʻamau `72`).
+Ma Kamepiula B, koi ka hoʻomaʻemaʻe kūloko i nā hōʻailona `.taped` kūloko (no ka laʻana mai kahi ʻanuʻu sync-back a i ʻole kahi kaʻina hōʻoia lima).
+Ma Kamepiula C, ana ʻia ka makahiki mālama mai ka manawa hoʻoponopono o ka hōʻailona `.taped` (maʻamau hoʻonohonoho ʻia i ka manawa kākau lipine kūleʻa).

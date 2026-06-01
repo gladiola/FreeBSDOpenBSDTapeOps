@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Kreyòl Ayisyen)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Script shell entèaktif ki gide atravè operasyon kasèt mayetik ki komen ak `mt` ak `tar`.
 
-## Language Documentation Index
+## Endèks Dokimantasyon Lang
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Script yo
 
-| Script | Target OS |
+| Script | Sistèm sib |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Tou de script yo fè menm sekans operasyon yo:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Mande itilizatè a konfime kasèt la chaje.
+2. Remete kasèt la nan kòmansman.
+3. Afiche estati kasèt la.
+4. Lis sa ki nan achiv yo nan pozisyon fichye 0, 1, 2, ak 3 avèk `tar t`.
+5. Mete kasèt la offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Chak etap pran poz epi tann itilizatè a peze **Enter** anvan li kontinye, sa ki fè script yo apwopriye pou demonstrasyon entèaktif oswa gid etap pa etap.
 
-## Differences Between the Two Scripts
+## Diferans Ant De Script Yo
 
-### 1. Tape device path
+### 1. Chemen aparèy kasèt
 
-The scripts target different tape device nodes:
+Script yo vize diferan nœud aparèy kasèt:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Tou de se nœud aparèy ki pa remete kasèt la nan kòmansman otomatikman (prefiks `n`), kidonk pozisyon kasèt la konsève ant kòmandman yo epi script yo kontwole pozisyon an klèman ak `mt rewind` ak `mt fsf`.
 
-### 2. Tape loading step
+### 2. Etap chajman kasèt la
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Li lanse `mt -f /dev/nsa0 load` lè li kòmanse pou chaje katouch kasèt la mekanikman nan drive la anvan li remete li nan kòmansman.
+- **OpenBSD**: Li sote kòmand `load` la paske `mt(1)` OpenBSD a pa sipòte yon sou-kòmand `load`. Script OpenBSD la sipoze kasèt la deja nan drive la epi li ale dirèkteman nan remete li nan kòmansman.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Script Pipeline Jounal OpenBSD soti A pou rive B pou rive C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Repètwa `scripts/` la bay script pou senaryo kote Odinatè B OpenBSD a resevwa antre rsyslog soti nan Odinatè A, rasanble yo chak jou, voye yo bay youn nan plizyè sèvè Odinatè C, epi Odinatè C ekri yo sou kasèt.
 
-| Script | Purpose |
+| Script | Objektif |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Kreye yon log ki vire chak èdtan apati fichye antre rsyslog aktif la sou Odinatè B. |
+| `scripts/computer-b-daily-archive.sh` | Rasanble yon jou (`YYYYMMDD`) log pa èdtan yo nan yon achiv `.tar.gz` ki gen entèval tan sou Odinatè B, pandan li retire èdtan aktyèl la pou evite konfli ekriti aktif. |
+| `scripts/computer-b-send-archives.sh` | Voye achiv chak jou ki poko voye yo (`.tar.gz` ak opsyonèl `.tar.gz.enc`) soti nan Odinatè B ale nan youn oswa plizyè sèvè Odinatè C atravè `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Verifye achiv tèks klè k ap antre yo epi mete achiv tèks klè oswa chiffres yo nan keu pou kasèt. |
+| `scripts/computer-c-write-to-tape.sh` | Ekri achiv tèks klè oswa chiffres ki nan keu yo sou kasèt, verifye espas, ajoute yo san danje nan fen an, epi make yo kòm anrejistre. |
+| `scripts/computer-c-inventory-tape.sh` | Afiche yon table-of-contents kasèt la pa makè fichye pou operatè yo ka jwenn achiv yo byen vit. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Eskane pozisyon fichye yo sou kasèt la pou achiv yo mande a, dekripte lè sa nesesè, epi sove done yo rekipere yo nan yon fichye. |
+| `scripts/test-computer-a-b-c-integration.sh` | Kouri yon tès entegrasyon lokal A→B→C ki detèminis (ki gen ladan restorasyon kasèt) ki pa depann de tan reyèl la. |
 
-Typical scheduling:
+Orè tipik:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Kouri `computer-b-hourly-rotate.sh` chak èdtan (cron sou B).
+- Kouri `computer-b-daily-archive.sh` yon fwa pa jou (cron sou B).
+- Kouri `computer-b-send-archives.sh` apre kreyasyon achiv la (cron sou B).
+- Kouri `computer-c-receive-archives.sh` detanzantan sou C.
+- Kouri `computer-c-write-to-tape.sh` detanzantan sou C ak bon aparèy kasèt la.
+- Kouri `computer-c-inventory-tape.sh` sou C lè ou bezwen yon table-of-contents makè pa makè.
+- Kouri `computer-c-restore-archive-from-tape.sh` sou C lè ou bezwen rekipere yon achiv espesifik pou enspeksyon.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Tout script pipeline yo tou voye mesaj operasyonèl nan syslog atravè `logger` (pa egzanp, vizib atravè rsyslog/journaling) anplis pwodiksyon konsòl la.
 
-### Multi-server send from Computer B
+### Voye sou plizyè sèvè depi Odinatè B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` sipòte ni mòd yon sèl sèvè ni mòd plizyè sèvè:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Opsyon chwa sèvè bò kliyan an:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Bay yon sèl sèvè nan agiman yo pou fikse sou yon sèl Odinatè C.
+- Bay plizyè sèvè pou pèmèt fallback.
+- Mete `PREFERRED_SERVER=user@host` pou chwazi yon sèl sèvè espesifik nan lis yo bay la.
 
-Busy handling options on Computer B:
+Opsyon pou jere eta busy sou Odinatè B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (default: `.busy`): fichye makè yo verifye sou bò a distans.
+- `BUSY_RETRY_SECONDS` (default: `60`): tan pou tann ant tantativ yo pandan sèvè a busy.
+- `BUSY_MAX_RETRIES` (default: `10`): kantite maksimòm tantativ pa sèvè.
 
-### Busy state publication from Computer C
+### Piblikasyon eta busy soti nan Odinatè C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` kreye yon makè busy pandan li ap ekri achiv yo sou kasèt la aktivman epi li retire li lè li pa okipe.
 
 - `BUSY_MARKER` (default: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Fè `REMOTE_BUSY_MARKER` sou Odinatè B montre kote makè Odinatè C ap itilize a.
 
-### Tape safety and append behavior on Computer C
+### Sekirite kasèt ak konpòtman ajoute nan fen sou Odinatè C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Anvan li ekri chak achiv, `computer-c-write-to-tape.sh` verifye kapasite kasèt oswa aparèy ki disponib epi li mande omwen:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Varyab ki enpòtan yo:
 
 - `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_AVAILABLE_BYTES` (override pou espas disponib ki deja konnen)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (pèmèt ekriti si yo pa ka detekte espas la)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Pou aparèy kasèt reyèl yo, ekriven an chèche nan fen done yo (`mt eom`/`mt eod`) anvan li ekri, konsa plizyè achiv ajoute youn apre lòt olye yo efase sa ki te deja sou kasèt la.
 
-### Human-readable timestamps in filenames
+### Dat/èdtan moun ka li nan non fichye yo
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Log pa èdtan yo gen non tankou: `rsyslog-2026-06-01T1600.log`
+- Achiv chak jou yo gen non tankou: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Entèval achiv chak jou yo baze sou premye ak dènye fichye pa èdtan ki vrèman enkli nan achiv la.
+Yo chwazi non sa yo pou moun ki ap gade fenèt dat oswa lè evènman yo ka li yo fasil.
+Yo retire èdtan aktyèl la espre nan kreyasyon achiv la pou ekriti aktif yo pa transmèt.
 
-### Optional OpenSSL encryption for daily archives
+### Chifreman OpenSSL opsyonèl pou achiv chak jou yo
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` ka chiffre achiv yo ak OpenSSL apre li fin kreye tarball la:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` pou chifreman simetrik (`openssl enc`, cipher default la `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` pou chifreman ak sètifika moun k ap resevwa a (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` pou chwazi cipher OpenSSL la pou mòd key-file ak sètifika yo toude (default: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Se yon sèl nan opsyon sa yo sèlman ki ka defini an menm tan. Sòti chiffres yo sèvi ak `.tar.gz.enc`.
+Pou sekirite, script la rejte chwa cipher ki fèb oswa ki pa AEAD, epi li mande cipher nan klas GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Rekiperasyon achiv soti sou kasèt nan Odinatè C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Sèvi ak `computer-c-restore-archive-from-tape.sh` pou jwenn yon achiv espesifik lè w ap chèche fichye kasèt yo an lòd depi nan kòmansman:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Pou non achiv tankou `rsyslog-<start>_to_<end>.tar.gz` (oswa `.tar.gz.enc`), script la idantifye bon korespondans lan lè li verifye fichye pa èdtan bò limit yo prezan nan chaj ki rekipere a.
+- Si fason ou nonmen achiv yo diferan, mete `TARGET_MEMBER_GLOB` sou yon modèl shell ki koresponn ak yon manm ki dwe egziste nan achiv la.
+- Si yon achiv chiffre, bay paramèt dechifreman yo jan sa nesesè:
+  - `OPENSSL_DECRYPT_KEY_FILE` (mòd simetrik `openssl enc`; cipher dechifreman default la: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` ak `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (mòd dechifreman S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Sòti rekipere a ekri kòm yon fichye `.tar.gz` tèks klè pou yo ka enspekte li ak zouti tankou `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Envantè table-of-contents kasèt la sou Odinatè C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Sèvi ak `computer-c-inventory-tape.sh` pou enprime yon table-of-contents makè pa makè:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Kolòn pwodiksyon yo genyen ladan yo:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: pozisyon makè fichye sou kasèt la ki kòmanse nan zewo
+- `status`: `ok`, `decrypted`, oswa `unreadable`
+- `encrypted`: si dechifreman te nesesè pou enspekte antre a (`yes`/`no`)
+- `archive_hint`: non tip achiv yo dedwi lè yo ka rekonèt limit yo
+- `first_member` / `last_member`: premye ak dènye manm tar yo wè nan makè sa a
+- `member_count`: kantite manm tar yo jwenn nan makè sa a
+- `bytes`: bytes brit yo li nan makè sa a
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Sa pèmèt yon operatè idantifye endèks makè pou chèche a (`mt fsf <N>`) anvan operasyon restorasyon yo.
 
-### Deterministic A/B/C integration test
+### Tès entegrasyon A/B/C detèminis
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Sèvi ak `scripts/test-computer-a-b-c-integration.sh` pou valide entegrasyon bout-an-bout Odinatè A, B, ak C kèlkeswa tan ki pase:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Script sa a:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Simile A ap ekri log yo.
+2. Kouri wotasyon B a ak kreyasyon achiv chak jou a.
+3. Simile transfè a nan incoming C a.
+4. Kouri resepsyon C a ansanm ak ekriti sou kasèt.
+5. Restore achiv la soti sou kasèt epi valide kontni an.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Li sèvi ak yon make jou fiks (`TEST_DAY_STAMP`, default `20260101`) pou konpòtman an repwodiktib epi li pa mare ak dat oswa lè aktyèl la.
 
-### 72-hour retention with safety for unconfirmed data
+### Konsèvasyon 72 èdtan ak sekirite pou done ki poko konfime
 
-The scripts now default to a 72-hour retention window:
+Kounye a, script yo itilize yon fenèt konsèvasyon 72 èdtan pa default:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` sèlman retire ansyen log pa èdtan yo lè gen yon makè konfimasyon lokal `.taped` ki koresponn.
+- `computer-b-send-archives.sh` sèlman retire ansyen achiv lokal yo lè gen tou de makè konfimasyon `.sent` ak `.taped` lokal.
+- `computer-c-write-to-tape.sh` sèlman retire ansyen achiv ki deja gen makè `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Kòm rezilta, fichye ki poko transmèt ak anrejistre avèk siksè sou kasèt la rete konsève menm lè yo pi ansyen pase `RETENTION_HOURS` (default `72`).
+Sou Odinatè B, netwayaj lokal la mande makè `.taped` lokal yo (pa egzanp soti nan yon etap sync-back oswa yon pwosesis konfimasyon manyèl).
+Sou Odinatè C, laj konsèvasyon an mezire apati tan modifikasyon makè `.taped` la (anjeneral yo mete li lè ekriti kasèt la reyisi).

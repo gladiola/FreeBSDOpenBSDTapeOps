@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Ελληνικά)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Διαδραστικά σενάρια φλοιού που παρουσιάζουν κοινές λειτουργίες μαγνητικής ταινίας χρησιμοποιώντας `mt` και `tar`.
 
-## Language Documentation Index
+## Ευρετήριο Τεκμηρίωσης Γλωσσών
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Σενάρια
 
-| Script | Target OS |
+| Σενάριο | Λειτουργικό Σύστημα |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Και τα δύο σενάρια εκτελούν την ίδια ακολουθία λειτουργιών:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Ζητούν από τον χρήστη να επιβεβαιώσει ότι η ταινία έχει τοποθετηθεί.
+2. Επαναφέρουν την ταινία στην αρχή.
+3. Εκτυπώνουν την κατάσταση της ταινίας.
+4. Εμφανίζουν τα περιεχόμενα των αρχείων στις θέσεις αρχείου 0, 1, 2 και 3 χρησιμοποιώντας `tar t`.
+5. Θέτουν την ταινία εκτός σύνδεσης.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Κάθε βήμα διακόπτεται και περιμένει τον χρήστη να πατήσει **Enter** πριν συνεχίσει, καθιστώντας τα σενάρια κατάλληλα ως διαδραστικές επιδείξεις ή καθοδηγούμενες παρουσιάσεις.
 
-## Differences Between the Two Scripts
+## Διαφορές Μεταξύ των Δύο Σεναρίων
 
-### 1. Tape device path
+### 1. Διαδρομή συσκευής ταινίας
 
-The scripts target different tape device nodes:
+Τα σενάρια στοχεύουν σε διαφορετικούς κόμβους συσκευής ταινίας:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Και οι δύο είναι κόμβοι συσκευής χωρίς αυτόματη επαναφορά (πρόθεμα `n`), οπότε η θέση της ταινίας διατηρείται μεταξύ εντολών και τα σενάρια ελέγχουν τη θέση ρητά με `mt rewind` και `mt fsf`.
 
-### 2. Tape loading step
+### 2. Βήμα φόρτωσης ταινίας
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Εκδίδει `mt -f /dev/nsa0 load` κατά την εκκίνηση για μηχανική τοποθέτηση της κασέτας ταινίας πριν από την επαναφορά.
+- **OpenBSD**: Παραλείπει την εντολή `load` επειδή το `mt(1)` του OpenBSD δεν υποστηρίζει υπο-εντολή `load`. Το σενάριο OpenBSD υποθέτει ότι η ταινία βρίσκεται ήδη στη μονάδα και προχωρά απευθείας στην επαναφορά.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Σενάρια Αγωγού Καταγραφής OpenBSD A-προς-B-προς-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Ο κατάλογος `scripts/` παρέχει σενάρια για το σενάριο όπου ο Υπολογιστής B με OpenBSD λαμβάνει καταχωρήσεις rsyslog από τον Υπολογιστή A, τις ομαδοποιεί ημερησίως, τις αποστέλλει σε έναν ή περισσότερους Υπολογιστές C, και ο Υπολογιστής C τις εγγράφει σε ταινία.
 
-| Script | Purpose |
+| Σενάριο | Σκοπός |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Δημιουργεί ωριαία περιστρεφόμενα αρχεία καταγραφής από το ενεργό αρχείο εισόδου rsyslog στον Υπολογιστή B. |
+| `scripts/computer-b-daily-archive.sh` | Συγκεντρώνει μία ημέρα (`YYYYMMDD`) ωριαίων καταγραφών σε αρχείο `.tar.gz` χρονικής εμβέλειας στον Υπολογιστή B, αποκλείοντας την τρέχουσα ώρα για αποφυγή συγκρούσεων ενεργής εγγραφής. |
+| `scripts/computer-b-send-archives.sh` | Αποστέλλει μη αποσταλμένα ημερήσια αρχεία (`.tar.gz` και προαιρετικά `.tar.gz.enc`) από τον Υπολογιστή B σε έναν ή περισσότερους Υπολογιστές C μέσω `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Επικυρώνει εισερχόμενα αρχεία απλού κειμένου και προστίθενται αρχεία απλού/κρυπτογραφημένου κειμένου στην ουρά για ταινία. |
+| `scripts/computer-c-write-to-tape.sh` | Εγγράφει αρχεία απλού ή κρυπτογραφημένου κειμένου σε ταινία, ελέγχει χώρο, προσθέτει με ασφάλεια και τα επισημαίνει ως καταγεγραμμένα. |
+| `scripts/computer-c-inventory-tape.sh` | Εκτυπώνει πίνακα περιεχομένων ταινίας ανά δείκτη αρχείου ώστε οι χειριστές να εντοπίζουν αρχεία γρήγορα. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Σαρώνει θέσεις αρχείου ταινίας για ένα ζητούμενο αρχείο, αποκρυπτογραφεί όταν χρειάζεται και αποθηκεύει τα ανακτηθέντα δεδομένα σε αρχείο. |
+| `scripts/test-computer-a-b-c-integration.sh` | Εκτελεί ντετερμινιστική τοπική δοκιμή ολοκλήρωσης A→B→C (συμπεριλαμβανομένης της επαναφοράς ταινίας) που δεν εξαρτάται από τον πραγματικό χρόνο. |
 
-Typical scheduling:
+Τυπικός προγραμματισμός:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Εκτελέστε `computer-b-hourly-rotate.sh` κάθε ώρα (cron στο B).
+- Εκτελέστε `computer-b-daily-archive.sh` μία φορά την ημέρα (cron στο B).
+- Εκτελέστε `computer-b-send-archives.sh` μετά τη δημιουργία αρχείου (cron στο B).
+- Εκτελέστε `computer-c-receive-archives.sh` περιοδικά στο C.
+- Εκτελέστε `computer-c-write-to-tape.sh` περιοδικά στο C με τη σωστή συσκευή ταινίας.
+- Εκτελέστε `computer-c-inventory-tape.sh` στο C όταν χρειάζεστε πίνακα περιεχομένων ανά δείκτη.
+- Εκτελέστε `computer-c-restore-archive-from-tape.sh` στο C όταν χρειάζεστε να ανακτήσετε ένα συγκεκριμένο αρχείο για επιθεώρηση.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Όλα τα σενάρια αγωγού εκπέμπουν επίσης λειτουργικά μηνύματα στο syslog μέσω `logger` (για παράδειγμα, ορατά μέσω rsyslog/journaling) εκτός από την έξοδο κονσόλας.
 
-### Multi-server send from Computer B
+### Αποστολή πολλαπλών διακομιστών από τον Υπολογιστή B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+Το `computer-b-send-archives.sh` υποστηρίζει και μονό-διακομιστή και πολλαπλούς-διακομιστές λειτουργία:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- Μονός διακομιστής: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Πολλαπλοί διακομιστές: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Επιλογές επιλογής διακομιστή από πλευράς πελάτη:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Παρέχετε έναν διακομιστή στα ορίσματα για σύνδεση με έναν Υπολογιστή C.
+- Παρέχετε πολλαπλούς διακομιστές για εφεδρεία.
+- Ορίστε `PREFERRED_SERVER=user@host` για επιλογή συγκεκριμένου διακομιστή από τη λίστα.
 
-Busy handling options on Computer B:
+Επιλογές χειρισμού κατάστασης "απασχολημένου" στον Υπολογιστή B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (προεπιλογή: `.busy`): αρχείο δείκτη που ελέγχεται στην απομακρυσμένη πλευρά.
+- `BUSY_RETRY_SECONDS` (προεπιλογή: `60`): χρόνος αναμονής μεταξύ επαναλήψεων όσο ο διακομιστής είναι απασχολημένος.
+- `BUSY_MAX_RETRIES` (προεπιλογή: `10`): μέγιστες επαναλήψεις ανά διακομιστή.
 
-### Busy state publication from Computer C
+### Δημοσίευση κατάστασης "απασχολημένου" από τον Υπολογιστή C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+Το `computer-c-write-to-tape.sh` δημιουργεί δείκτη "απασχολημένου" κατά την ενεργό εγγραφή αρχείων σε ταινία και τον αφαιρεί όταν είναι αδρανές.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (προεπιλογή: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Ορίστε το `REMOTE_BUSY_MARKER` στον Υπολογιστή B στη θέση δείκτη που χρησιμοποιεί ο Υπολογιστής C.
 
-### Tape safety and append behavior on Computer C
+### Ασφάλεια ταινίας και συμπεριφορά προσάρτησης στον Υπολογιστή C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Πριν από την εγγραφή κάθε αρχείου, το `computer-c-write-to-tape.sh` ελέγχει τη διαθέσιμη χωρητικότητα ταινίας/συσκευής και απαιτεί τουλάχιστον:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Σχετικές μεταβλητές:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (προεπιλογή: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (παράκαμψη για γνωστό διαθέσιμο χώρο)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (επιτρέπει εγγραφή αν ο χώρος δεν μπορεί να ανιχνευτεί)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Για πραγματικές συσκευές ταινίας, ο εγγραφέας κινείται στο τέλος δεδομένων (`mt eom`/`mt eod`) πριν από την εγγραφή, ώστε πολλαπλά αρχεία να προσαρτώνται αντί να αντικαθιστούν τα προηγούμενα περιεχόμενα της ταινίας.
 
-### Human-readable timestamps in filenames
+### Αναγνώσιμες χρονικές σφραγίδες σε ονόματα αρχείων
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Τα ωριαία αρχεία καταγραφής ονομάζονται ως: `rsyslog-2026-06-01T1600.log`
+- Τα ημερήσια αρχεία ονομάζονται ως: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Τα εύρη ημερήσιων αρχείων βασίζονται στο πρώτο και τελευταίο ωριαίο αρχείο που περιλαμβάνεται στο αρχείο.
+Αυτά τα ονόματα έχουν σχεδιαστεί για να είναι αναγνώσιμα από ανθρώπους που αναζητούν παράθυρα ημερομηνίας/ώρας συμβάντων.
+Η τρέχουσα ώρα εξαιρείται σκοπίμως από τη δημιουργία αρχείων ώστε οι ενεργές εγγραφές να μην μεταδίδονται.
 
-### Optional OpenSSL encryption for daily archives
+### Προαιρετική κρυπτογράφηση OpenSSL για ημερήσια αρχεία
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+Το `computer-b-daily-archive.sh` μπορεί να κρυπτογραφήσει αρχεία με OpenSSL μετά τη δημιουργία του tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` για συμμετρική κρυπτογράφηση (`openssl enc`, προεπιλεγμένος αλγόριθμος `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` για κρυπτογράφηση με πιστοποιητικό παραλήπτη (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` για επιλογή αλγορίθμου OpenSSL και για τους δύο τρόπους (προεπιλογή: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Μόνο μία από αυτές τις επιλογές μπορεί να οριστεί κάθε φορά. Τα κρυπτογραφημένα αρχεία χρησιμοποιούν `.tar.gz.enc`.
+Για ασφάλεια, το σενάριο απορρίπτει αδύναμες ή μη-AEAD επιλογές αλγορίθμου και απαιτεί αλγορίθμους GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Ανάκτηση αρχείου από ταινία στον Υπολογιστή C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Χρησιμοποιήστε `computer-c-restore-archive-from-tape.sh` για εντοπισμό συγκεκριμένου αρχείου αναζητώντας αρχεία ταινίας από την αρχή:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Για ονόματα αρχείων όπως `rsyslog-<start>_to_<end>.tar.gz` (ή `.tar.gz.enc`), το σενάριο εντοπίζει τη σωστή αντιστοίχιση ελέγχοντας ότι τα ωριαία οριακά αρχεία υπάρχουν στο ανακτηθέν περιεχόμενο.
+- Αν η ονομασία αρχείων σας διαφέρει, ορίστε `TARGET_MEMBER_GLOB` σε ένα μοτίβο φλοιού που αντιστοιχεί σε μέλος που πρέπει να υπάρχει στο αρχείο.
+- Αν ένα αρχείο είναι κρυπτογραφημένο, παρέχετε ρυθμίσεις αποκρυπτογράφησης:
+  - `OPENSSL_DECRYPT_KEY_FILE` (συμμετρική λειτουργία `openssl enc`· προεπιλεγμένος αλγόριθμος αποκρυπτογράφησης: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` και `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (λειτουργία S/MIME αποκρυπτογράφησης)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Η ανακτηθείσα έξοδος εγγράφεται ως αρχείο απλού κειμένου `.tar.gz` ώστε να μπορεί να επιθεωρηθεί με εργαλεία όπως `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Απογραφή πίνακα περιεχομένων ταινίας στον Υπολογιστή C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Χρησιμοποιήστε `computer-c-inventory-tape.sh` για εκτύπωση πίνακα περιεχομένων ανά δείκτη:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Οι στήλες εξόδου περιλαμβάνουν:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: θέση δείκτη αρχείου ταινίας με μηδενική βάση
+- `status`: `ok`, `decrypted`, ή `unreadable`
+- `encrypted`: αν χρειάστηκε αποκρυπτογράφηση για επιθεώρηση της καταχώρησης (`yes`/`no`)
+- `archive_hint`: συναγόμενο όνομα τύπου αρχείου όταν τα όρια μπορούν να αναγνωριστούν
+- `first_member` / `last_member`: πρώτο και τελευταίο μέλος tar που εμφανίζεται σε αυτόν τον δείκτη
+- `member_count`: αριθμός μελών tar που βρέθηκαν σε αυτόν τον δείκτη
+- `bytes`: ακατέργαστα bytes που διαβάστηκαν σε αυτόν τον δείκτη
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Αυτό επιτρέπει σε έναν χειριστή να εντοπίσει τον δείκτη για αναζήτηση (`mt fsf <N>`) πριν από τις λειτουργίες επαναφοράς.
 
-### Deterministic A/B/C integration test
+### Ντετερμινιστική δοκιμή ολοκλήρωσης A/B/C
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Χρησιμοποιήστε `scripts/test-computer-a-b-c-integration.sh` για επικύρωση ολοκληρωμένης ολοκλήρωσης Υπολογιστών A, B και C ανεξάρτητα από τον παρελθόντα χρόνο:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Αυτό το σενάριο:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Προσομοιώνει τη γραφή καταγραφών από το A.
+2. Εκτελεί περιστροφή B και δημιουργία ημερήσιου αρχείου.
+3. Προσομοιώνει μεταφορά στα εισερχόμενα του C.
+4. Εκτελεί λήψη C + εγγραφή σε ταινία.
+5. Επαναφέρει το αρχείο από ταινία και επικυρώνει το περιεχόμενο.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Χρησιμοποιεί σταθερή χρονική σφραγίδα ημέρας (`TEST_DAY_STAMP`, προεπιλογή `20260101`) ώστε η συμπεριφορά να είναι επαναλήψιμη και να μην συνδέεται με την τρέχουσα ημερομηνία/ώρα.
 
-### 72-hour retention with safety for unconfirmed data
+### Διατήρηση 72 ωρών με ασφάλεια για μη επιβεβαιωμένα δεδομένα
 
-The scripts now default to a 72-hour retention window:
+Τα σενάρια έχουν πλέον προεπιλεγμένο παράθυρο διατήρησης 72 ωρών:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- Το `computer-b-hourly-rotate.sh` αφαιρεί παλιές ωριαίες καταγραφές μόνο όταν υπάρχει αντίστοιχος τοπικός δείκτης επιβεβαίωσης `.taped`.
+- Το `computer-b-send-archives.sh` αφαιρεί παλιά τοπικά αρχεία μόνο όταν υπάρχουν δείκτες επιβεβαίωσης `.sent` και τοπικός `.taped`.
+- Το `computer-c-write-to-tape.sh` αφαιρεί μόνο παλιά αρχεία που έχουν ήδη δείκτες `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Ως αποτέλεσμα, αρχεία που δεν έχουν ακόμα μεταδοθεί και καταγραφεί επιτυχώς σε ταινία διατηρούνται ακόμα και όταν είναι παλαιότερα από `RETENTION_HOURS` (προεπιλογή `72`).
+Στον Υπολογιστή B, ο τοπικός καθαρισμός απαιτεί τοπικούς δείκτες `.taped` (για παράδειγμα από ένα βήμα επανασυγχρονισμού ή χειροκίνητη διαδικασία επιβεβαίωσης).
+Στον Υπολογιστή C, η ηλικία διατήρησης μετράται από τον χρόνο τροποποίησης του δείκτη `.taped` (κανονικά ορίζεται κατά την επιτυχή εγγραφή σε ταινία).

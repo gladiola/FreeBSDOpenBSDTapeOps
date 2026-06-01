@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (हिन्दी)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+`mt` और `tar` का उपयोग करके सामान्य मैग्नेटिक टेप ऑपरेशनों का मार्गदर्शन करने वाली इंटरैक्टिव शेल स्क्रिप्टें.
 
-## Language Documentation Index
+## भाषा दस्तावेज़ सूचकांक
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## स्क्रिप्टें
 
-| Script | Target OS |
+| स्क्रिप्ट | लक्ष्य OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+दोनों स्क्रिप्टें ऑपरेशनों का एक ही क्रम निष्पादित करती हैं:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. उपयोगकर्ता से पुष्टि करने के लिए कहती हैं कि टेप लोड है.
+2. टेप को रीवाइंड करती हैं.
+3. टेप की स्थिति प्रिंट करती हैं.
+4. `tar t` का उपयोग करके फ़ाइल स्थिति 0, 1, 2, और 3 पर मौजूद आर्काइव्स की सामग्री सूचीबद्ध करती हैं.
+5. टेप को ऑफ़लाइन ले जाती हैं.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+हर चरण रुकता है और आगे बढ़ने से पहले उपयोगकर्ता के **Enter** दबाने की प्रतीक्षा करता है, जिससे ये स्क्रिप्टें इंटरैक्टिव डिमॉन्स्ट्रेशन या निर्देशित वॉकथ्रू के लिए उपयुक्त बनती हैं.
 
-## Differences Between the Two Scripts
+## दोनों स्क्रिप्टों के बीच अंतर
 
-### 1. Tape device path
+### 1. टेप डिवाइस पथ
 
-The scripts target different tape device nodes:
+स्क्रिप्टें अलग-अलग टेप डिवाइस नोड्स को लक्षित करती हैं:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+दोनों बिना-स्वतः-रीवाइंड वाले डिवाइस नोड्स हैं (`n` प्रीफ़िक्स), इसलिए कमांडों के बीच टेप की स्थिति सुरक्षित रहती है और स्क्रिप्टें `mt rewind` तथा `mt fsf` के साथ स्थिति को स्पष्ट रूप से नियंत्रित करती हैं.
 
-### 2. Tape loading step
+### 2. टेप लोडिंग चरण
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: रीवाइंड करने से पहले टेप कार्ट्रिज को ड्राइव में यांत्रिक रूप से लोड करने के लिए स्टार्टअप पर `mt -f /dev/nsa0 load` जारी करता है.
+- **OpenBSD**: `load` कमांड को छोड़ देता है क्योंकि OpenBSD के `mt(1)` में `load` उप-कमांड समर्थित नहीं है. OpenBSD स्क्रिप्ट मानती है कि टेप पहले से ही ड्राइव में मौजूद है और सीधे रीवाइंड पर आगे बढ़ती है.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A-to-B-to-C लॉग पाइपलाइन स्क्रिप्टें
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+`scripts/` डायरेक्टरी उस परिदृश्य के लिए स्क्रिप्टें प्रदान करती है जिसमें OpenBSD Computer B, Computer A से rsyslog प्रविष्टियाँ प्राप्त करता है, उन्हें प्रतिदिन बैच करता है, कई Computer C सर्वरों में से किसी एक को भेजता है, और Computer C उन्हें टेप पर लिखता है.
 
-| Script | Purpose |
+| स्क्रिप्ट | उद्देश्य |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Computer B पर सक्रिय rsyslog इनपुट फ़ाइल से घंटेवार घुमाई गई लॉग फ़ाइल बनाता है. |
+| `scripts/computer-b-daily-archive.sh` | सक्रिय-लेखन टकराव से बचने के लिए वर्तमान घंटे को छोड़ते हुए, Computer B पर एक दिन (`YYYYMMDD`) के घंटेवार लॉग्स को समय-सीमा वाली `.tar.gz` आर्काइव में बंडल करता है. |
+| `scripts/computer-b-send-archives.sh` | Computer B से एक या अधिक Computer C सर्वरों को `scp` के माध्यम से न भेजी गई दैनिक आर्काइव्स (`.tar.gz` और वैकल्पिक `.tar.gz.enc`) भेजता है. |
+| `scripts/computer-c-receive-archives.sh` | आने वाली सादा-पाठ आर्काइव्स का सत्यापन करता है और सादा-पाठ/एन्क्रिप्टेड आर्काइव्स को टेप के लिए कतारबद्ध करता है. |
+| `scripts/computer-c-write-to-tape.sh` | कतारबद्ध सादा-पाठ या एन्क्रिप्टेड आर्काइव्स को टेप पर लिखता है, स्थान जाँचता है, सुरक्षित रूप से सुरक्षित रूप से जोड़ता है, और उन्हें रिकॉर्ड किए गए के रूप में चिह्नित करता है. |
+| `scripts/computer-c-inventory-tape.sh` | फ़ाइल मार्कर के आधार पर टेप की विषय-सूची प्रिंट करता है ताकि ऑपरेटर आर्काइव्स को जल्दी खोज सकें. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | अनुरोधित आर्काइव के लिए टेप फ़ाइल स्थितियों को स्कैन करता है, आवश्यकता होने पर डिक्रिप्ट करता है, और पुनर्प्राप्त डेटा को एक फ़ाइल में सहेजता है. |
+| `scripts/test-computer-a-b-c-integration.sh` | एक निर्धारक स्थानीय A→B→C एकीकरण परीक्षण चलाता है (जिसमें टेप पुनर्स्थापन शामिल है) जो वास्तविक घड़ी-समय पर निर्भर नहीं करता. |
 
-Typical scheduling:
+सामान्य शेड्यूलिंग:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- `computer-b-hourly-rotate.sh` हर घंटे चलाएँ (B पर cron).
+- `computer-b-daily-archive.sh` दिन में एक बार चलाएँ (B पर cron).
+- `computer-b-send-archives.sh` आर्काइव बनने के बाद चलाएँ (B पर cron).
+- `computer-c-receive-archives.sh` को C पर समय-समय पर चलाएँ.
+- `computer-c-write-to-tape.sh` को सही टेप डिवाइस के साथ C पर समय-समय पर चलाएँ.
+- जब मार्कर-दर-मार्कर विषय-सूची की आवश्यकता हो, तब `computer-c-inventory-tape.sh` को C पर चलाएँ.
+- किसी विशिष्ट आर्काइव को निरीक्षण के लिए पुनर्प्राप्त करना हो, तब `computer-c-restore-archive-from-tape.sh` को C पर चलाएँ.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+सभी पाइपलाइन स्क्रिप्टें कंसोल आउटपुट के अतिरिक्त `logger` के माध्यम से syslog में भी परिचालन संदेश भेजती हैं (उदाहरण के लिए, rsyslog/जर्नलिंग के माध्यम से दिखाई देने वाले).
 
-### Multi-server send from Computer B
+### Computer B से बहु-सर्वर प्रेषण
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` एकल-सर्वर मोड और बहु-सर्वर मोड दोनों का समर्थन करता है:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- एकल-सर्वर: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- बहु-सर्वर: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+क्लाइंट-पक्ष सर्वर चयन विकल्प:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- एक Computer C पर स्थिर रहने के लिए आर्ग्युमेंट्स में एक सर्वर दें.
+- वैकल्पिक वापसी की अनुमति देने के लिए कई सर्वर दें.
+- दिए गए सर्वरों की सूची में से एक विशिष्ट सर्वर चुनने के लिए `PREFERRED_SERVER=user@host` सेट करें.
 
-Busy handling options on Computer B:
+Computer B पर व्यस्तता-प्रबंधन विकल्प:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (डिफ़ॉल्ट: `.busy`): रिमोट पक्ष पर जाँची जाने वाली संकेतक फ़ाइल.
+- `BUSY_RETRY_SECONDS` (डिफ़ॉल्ट: `60`): सर्वर व्यस्त होने पर पुनःप्रयासों के बीच प्रतीक्षा समय.
+- `BUSY_MAX_RETRIES` (डिफ़ॉल्ट: `10`): प्रति सर्वर पुनःप्रयासों की अधिकतम संख्या.
 
-### Busy state publication from Computer C
+### Computer C से व्यस्त स्थिति प्रकाशन
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` टेप पर सक्रिय रूप से आर्काइव्स लिखते समय एक व्यस्तता संकेतक बनाता है और निष्क्रिय होने पर उसे हटा देता है.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (डिफ़ॉल्ट: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Computer B पर `REMOTE_BUSY_MARKER` को उस संकेतक स्थान की ओर इंगित करें जिसका उपयोग Computer C करता है.
 
-### Tape safety and append behavior on Computer C
+### Computer C पर टेप सुरक्षा और जोड़ने का व्यवहार
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+प्रत्येक आर्काइव लिखने से पहले, `computer-c-write-to-tape.sh` उपलब्ध टेप/डिवाइस क्षमता की जाँच करता है और कम-से-कम यह आवश्यक करता है:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+संबंधित वेरिएबल्स:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (डिफ़ॉल्ट: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (ज्ञात उपलब्ध स्थान के लिए ओवरराइड)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (यदि स्थान का पता न चल सके तो लिखने की अनुमति देता है)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+वास्तविक टेप डिवाइसेज़ के लिए, लेखन स्क्रिप्ट लिखने से पहले डेटा-अंत (`mt eom`/`mt eod`) तक जाती है, इसलिए कई आर्काइव्स पहले से मौजूद टेप सामग्री को ओवरराइट करने के बजाय जोड़ी जाती हैं.
 
-### Human-readable timestamps in filenames
+### फ़ाइलनामों में मानव-पठनीय समय-मुद्राएँ
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- घंटेवार लॉग्स का नाम इस तरह होता है: `rsyslog-2026-06-01T1600.log`
+- दैनिक आर्काइव्स का नाम इस तरह होता है: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+दैनिक आर्काइव रेंज, आर्काइव में शामिल वास्तविक पहले और अंतिम घंटेवार फ़ाइलों पर आधारित होती हैं.
+ये नाम उन लोगों के लिए पठनीय बनाए गए हैं जो इवेंट दिनांक/समय विंडो खोजते हुए स्कैन करते हैं.
+सक्रिय लिखाइयाँ प्रेषित न हों, इसके लिए वर्तमान घंटे को जानबूझकर आर्काइव निर्माण से बाहर रखा जाता है.
 
-### Optional OpenSSL encryption for daily archives
+### दैनिक आर्काइव्स के लिए वैकल्पिक OpenSSL एन्क्रिप्शन
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` tar आर्काइव बनाने के बाद OpenSSL के साथ आर्काइव्स एन्क्रिप्ट कर सकता है:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` सममित एन्क्रिप्शन के लिए (`openssl enc`, डिफ़ॉल्ट साइफ़र `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` प्राप्तकर्ता-प्रमाणपत्र एन्क्रिप्शन के लिए (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` key-file और certificate दोनों मोडों के लिए OpenSSL साइफ़र चुनने हेतु (डिफ़ॉल्ट: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+एक समय में इन विकल्पों में से केवल एक ही सेट किया जा सकता है. एन्क्रिप्टेड आउटपुट `.tar.gz.enc` का उपयोग करते हैं.
+सुरक्षा के लिए, स्क्रिप्ट कमजोर या गैर-AEAD साइफ़र विकल्पों को अस्वीकार करती है और GCM/poly1305-श्रेणी के साइफ़रों की आवश्यकता रखती है.
 
-### Archive recovery from tape on Computer C
+### Computer C पर टेप से आर्काइव पुनर्प्राप्ति
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+किसी विशिष्ट आर्काइव को खोजने के लिए `computer-c-restore-archive-from-tape.sh` का उपयोग करें; यह शुरुआत से क्रम में टेप फ़ाइलों को खोजता है:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- `rsyslog-<start>_to_<end>.tar.gz` (या `.tar.gz.enc`) जैसे आर्काइव नामों के लिए, स्क्रिप्ट पुनर्प्राप्त डेटा-पेलोड में सीमा-घंटेवार फ़ाइलों की उपस्थिति जाँचकर सही मिलान पहचानती है.
+- यदि आपका आर्काइव नामकरण अलग है, तो `TARGET_MEMBER_GLOB` को उस शेल पैटर्न पर सेट करें जो ऐसे सदस्य से मेल खाता हो जो आर्काइव में अवश्य मौजूद होना चाहिए.
+- यदि कोई आर्काइव एन्क्रिप्टेड है, तो आवश्यकता अनुसार डिक्रिप्शन सेटिंग्स प्रदान करें:
+  - `OPENSSL_DECRYPT_KEY_FILE` (सममित `openssl enc` मोड; डिफ़ॉल्ट डिक्रिप्ट साइफ़र: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` और `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME डिक्रिप्ट मोड)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+पुनर्प्राप्त आउटपुट सादा-पाठ `.tar.gz` फ़ाइल के रूप में लिखा जाता है ताकि इसे `tar -tzf` जैसे टूल्स से जाँचा जा सके.
 
-### Tape table-of-contents inventory on Computer C
+### Computer C पर टेप विषय-सूची सूचीकरण
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+मार्कर-दर-मार्कर विषय-सूची प्रिंट करने के लिए `computer-c-inventory-tape.sh` का उपयोग करें:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+आउटपुट कॉलमों में शामिल हैं:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: शून्य-आधारित टेप फ़ाइल मार्कर स्थिति
+- `status`: `ok`, `decrypted`, या `unreadable`
+- `encrypted`: क्या प्रविष्टि का निरीक्षण करने के लिए डिक्रिप्शन की आवश्यकता थी (`yes`/`no`)
+- `archive_hint`: जब सीमाएँ पहचानी जा सकें, तब अनुमानित आर्काइव-शैली नाम
+- `first_member` / `last_member`: उस मार्कर में दिखाई देने वाले पहले और अंतिम tar सदस्यों
+- `member_count`: उस मार्कर में मिले tar सदस्यों की संख्या
+- `bytes`: उस मार्कर पर पढ़े गए कच्चे बाइट्स
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+इससे ऑपरेटर पुनर्स्थापन क्रियाओं से पहले जाने के लिए मार्कर सूचकांक (`mt fsf <N>`) की पहचान कर सकता है.
 
-### Deterministic A/B/C integration test
+### निर्धारक A/B/C एकीकरण परीक्षण
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+बीते समय की परवाह किए बिना Computers A, B, और C के सिरे-से-सिरे एकीकरण को सत्यापित करने के लिए `scripts/test-computer-a-b-c-integration.sh` का उपयोग करें:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+यह स्क्रिप्ट:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. A द्वारा logs लिखने का अनुकरण करती है.
+2. B rotation और daily archive creation चलाती है.
+3. C आवक में transfer का अनुकरण करती है.
+4. C receive + write-to-tape चलाती है.
+5. tape से archive restore करती है और सामग्री को सत्यापित करती है.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+यह एक स्थिर दिन-मुहर (`TEST_DAY_STAMP`, डिफ़ॉल्ट `20260101`) का उपयोग करती है ताकि व्यवहार पुनरावृत्त रहे और वर्तमान दिनांक/समय से बँधा न हो.
 
-### 72-hour retention with safety for unconfirmed data
+### अपुष्ट डेटा के लिए सुरक्षा सहित 72-घंटे की संग्रहण
 
-The scripts now default to a 72-hour retention window:
+स्क्रिप्टें अब डिफ़ॉल्ट रूप से 72-घंटे की संग्रहण window अपनाती हैं:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` पुराने घंटेवार logs को तभी हटाता है जब मेल खाता स्थानीय `.taped` confirmation marker मौजूद हो.
+- `computer-b-send-archives.sh` पुराने स्थानीय archives को तभी हटाता है जब `.sent` और स्थानीय `.taped` दोनों confirmation markers मौजूद हों.
+- `computer-c-write-to-tape.sh` केवल उन पुराने archives को हटाता है जिन पर पहले से `.taped` markers मौजूद हैं.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+परिणामस्वरूप, जो फ़ाइलें अभी तक सफलतापूर्वक प्रेषित होकर tape पर record नहीं हुई हैं, वे `RETENTION_HOURS` (डिफ़ॉल्ट `72`) से अधिक पुरानी होने पर भी सुरक्षित रहती हैं.
+Computer B पर, स्थानीय सफ़ाई के लिए local `.taped` markers आवश्यक होते हैं (उदाहरण के लिए, सिंक-बैक चरण या मैनुअल पुष्टि प्रक्रिया से).
+Computer C पर, संग्रहण age `.taped` marker के modification time से मापी जाती है (जो सामान्यतः सफल tape write के समय सेट होती है).

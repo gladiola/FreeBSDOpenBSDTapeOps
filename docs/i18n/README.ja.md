@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (日本語)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+`mt` と `tar` を使って一般的な磁気テープ操作を順を追って案内する対話型シェルスクリプトです。
 
-## Language Documentation Index
+## 言語ドキュメント索引
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## スクリプト
 
-| Script | Target OS |
+| スクリプト | 対象 OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+両方のスクリプトは、同じ一連の操作を実行します:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. テープがロードされていることを確認するようユーザーに促します。
+2. テープを巻き戻します。
+3. テープの状態を表示します。
+4. `tar t` を使ってファイル位置 0、1、2、3 にあるアーカイブの内容を一覧表示します。
+5. テープをオフラインにします。
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+各手順は続行前にユーザーが **Enter** を押すまで一時停止するため、対話型デモやガイド付きウォークスルーに適しています。
 
-## Differences Between the Two Scripts
+## 2 つのスクリプトの違い
 
-### 1. Tape device path
+### 1. テープデバイスパス
 
-The scripts target different tape device nodes:
+このスクリプトは異なるテープデバイスノードを対象とします:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+どちらも非巻き戻しデバイスノード（`n` 接頭辞）なので、コマンド間でテープ位置が保持され、スクリプトは `mt rewind` と `mt fsf` で位置を明示的に制御します。
 
-### 2. Tape loading step
+### 2. テープのロード手順
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: 起動時に `mt -f /dev/nsa0 load` を実行し、巻き戻す前にテープカートリッジを機械的にドライブへロードします。
+- **OpenBSD**: OpenBSD の `mt(1)` は `load` サブコマンドをサポートしていないため、`load` コマンドを省略します。OpenBSD 用スクリプトは、テープがすでにドライブに入っているものとして、そのまま巻き戻しに進みます。
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A→B→C ログパイプラインスクリプト
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+`scripts/` ディレクトリには、OpenBSD Computer B が Computer A から rsyslog エントリを受け取り、それらを日次でまとめ、複数ある Computer C サーバーのいずれか 1 台へ送信し、Computer C がそれらをテープに書き込むというシナリオ向けのスクリプトが用意されています。
 
-| Script | Purpose |
+| スクリプト | 用途 |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Computer B のアクティブな rsyslog 入力ファイルから、時間ごとにローテートされたログを作成します。 |
+| `scripts/computer-b-daily-archive.sh` | Computer B 上の 1 日分（`YYYYMMDD`）の時間別ログを、現在の時間を除外して、時間範囲付きの `.tar.gz` アーカイブにまとめます。これはアクティブな書き込み競合を避けるためです。 |
+| `scripts/computer-b-send-archives.sh` | 未送信の日次アーカイブ（`.tar.gz` と任意の `.tar.gz.enc`）を `scp` 経由で Computer B から 1 台以上の Computer C サーバーへ送信します。 |
+| `scripts/computer-c-receive-archives.sh` | 受信した平文アーカイブを検証し、平文/暗号化アーカイブをテープ向けキューに入れます。 |
+| `scripts/computer-c-write-to-tape.sh` | キューに入った平文または暗号化アーカイブをテープに書き込み、空き容量を確認し、安全に追記して、記録済みとしてマークします。 |
+| `scripts/computer-c-inventory-tape.sh` | オペレーターがアーカイブをすばやく見つけられるよう、ファイルマーカー単位のテープ目次を表示します。 |
+| `scripts/computer-c-restore-archive-from-tape.sh` | 要求されたアーカイブを探すためにテープファイル位置を走査し、必要に応じて復号し、復旧したデータをファイルに保存します。 |
+| `scripts/test-computer-a-b-c-integration.sh` | 経過時間に依存しない決定的なローカル A→B→C 統合テスト（テープ復元を含む）を実行します。 |
 
-Typical scheduling:
+一般的なスケジューリング:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- B で `computer-b-hourly-rotate.sh` を毎時実行します（cron）。
+- B で `computer-b-daily-archive.sh` を 1 日 1 回実行します（cron）。
+- アーカイブ作成後に `computer-b-send-archives.sh` を実行します（B の cron）。
+- C で `computer-c-receive-archives.sh` を定期実行します。
+- C で正しいテープデバイスを指定して `computer-c-write-to-tape.sh` を定期実行します。
+- マーカーごとの目次が必要なときは C で `computer-c-inventory-tape.sh` を実行します。
+- 調査のために特定のアーカイブを復元する必要があるときは C で `computer-c-restore-archive-from-tape.sh` を実行します。
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+すべてのパイプラインスクリプトは、コンソール出力に加えて、`logger` を通じて syslog に運用メッセージも送信します（たとえば rsyslog/journaling で確認できます）。
 
-### Multi-server send from Computer B
+### Computer B からの複数サーバー送信
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` は単一サーバーモードと複数サーバーモードの両方をサポートします:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- 単一サーバー: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- 複数サーバー: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+クライアント側のサーバー選択オプション:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- 引数でサーバーを 1 台指定すると、特定の Computer C 1 台に固定できます。
+- 複数のサーバーを指定すると、フォールバックを許可できます。
+- `PREFERRED_SERVER=user@host` を設定すると、指定した一覧の中から特定のサーバー 1 台を選べます。
 
-Busy handling options on Computer B:
+Computer B 側のビジー処理オプション:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER`（デフォルト: `.busy`）: リモート側で確認するマーカーファイルです。
+- `BUSY_RETRY_SECONDS`（デフォルト: `60`）: サーバーがビジーの間に再試行するまでの待機時間です。
+- `BUSY_MAX_RETRIES`（デフォルト: `10`）: サーバーごとの最大再試行回数です。
 
-### Busy state publication from Computer C
+### Computer C からのビジー状態公開
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` は、アーカイブをテープへ積極的に書き込んでいる間はビジーマーカーを作成し、アイドル時にはそれを削除します。
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER`（デフォルト: `<received_dir>/.busy`）
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Computer B の `REMOTE_BUSY_MARKER` を、Computer C が使用するマーカーの場所に合わせてください。
 
-### Tape safety and append behavior on Computer C
+### Computer C におけるテープ安全性と追記動作
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+各アーカイブを書き込む前に、`computer-c-write-to-tape.sh` は利用可能なテープ/デバイス容量を確認し、少なくとも次を必要とします:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+関連する変数:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES`（デフォルト: `10485760`）
+- `TAPE_AVAILABLE_BYTES`（既知の利用可能容量を上書き）
+- `ALLOW_UNKNOWN_TAPE_SPACE=1`（容量を検出できなくても書き込みを許可）
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+実際のテープデバイスでは、ライターは書き込む前にデータ終端（`mt eom`/`mt eod`）へ移動するため、複数のアーカイブは以前のテープ内容を上書きせず追記されます。
 
-### Human-readable timestamps in filenames
+### ファイル名内の人が読みやすいタイムスタンプ
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- 時間ごとのログ名の例: `rsyslog-2026-06-01T1600.log`
+- 日次アーカイブ名の例: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+日次アーカイブの範囲は、アーカイブに実際に含まれる最初と最後の時間別ファイルに基づきます。
+これらの名前は、イベントの日付/時刻範囲を確認する人が読みやすいよう意図されています。
+現在の時間は、書き込み中のデータが送信されないよう、意図的にアーカイブ作成から除外されます。
 
-### Optional OpenSSL encryption for daily archives
+### 日次アーカイブ向けの任意の OpenSSL 暗号化
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` は、tarball 作成後に OpenSSL でアーカイブを暗号化できます:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` は共通鍵暗号化用です（`openssl enc`、デフォルト cipher は `aes-256-gcm`）。
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` は受信者証明書暗号化用です（`openssl smime`）。
+- `OPENSSL_ENCRYPT_CIPHER` は、キーファイル方式と証明書方式の両方で使う OpenSSL cipher を選択します（デフォルト: `aes-256-gcm`）。
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+これらのオプションは同時に 1 つだけ設定できます。暗号化出力には `.tar.gz.enc` を使用します。
+セキュリティのため、このスクリプトは弱い cipher や AEAD ではない cipher の選択を拒否し、GCM/poly1305 系の cipher を必須とします。
 
-### Archive recovery from tape on Computer C
+### Computer C のテープからのアーカイブ復元
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+先頭から順にテープファイルを検索して特定のアーカイブを見つけるには、`computer-c-restore-archive-from-tape.sh` を使用します:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- `rsyslog-<start>_to_<end>.tar.gz`（または `.tar.gz.enc`）のようなアーカイブ名については、復元したペイロードに境界となる時間別ファイルが存在することを確認して、正しい一致を特定します。
+- アーカイブ命名が異なる場合は、`TARGET_MEMBER_GLOB` を、アーカイブ内に必ず存在すべきメンバーに一致する shell パターンに設定してください。
+- アーカイブが暗号化されている場合は、必要に応じて復号設定を指定してください:
+  - `OPENSSL_DECRYPT_KEY_FILE`（共通鍵 `openssl enc` モード、デフォルト復号 cipher: `aes-256-gcm`）
+  - `OPENSSL_DECRYPT_CERT_FILE` と `OPENSSL_DECRYPT_PRIVATE_KEY_FILE`（S/MIME 復号モード）
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+復元された出力は平文の `.tar.gz` ファイルとして書き出されるため、`tar -tzf` のようなツールで確認できます。
 
-### Tape table-of-contents inventory on Computer C
+### Computer C のテープ目次インベントリ
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+`computer-c-inventory-tape.sh` を使って、マーカーごとの目次を表示します:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+出力列には次が含まれます:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: 0 始まりのテープファイルマーカー位置
+- `status`: `ok`、`decrypted`、または `unreadable`
+- `encrypted`: エントリの確認に復号が必要だったかどうか（`yes`/`no`）
+- `archive_hint`: 境界を認識できる場合に推定されるアーカイブ形式の名前
+- `first_member` / `last_member`: そのマーカーで見つかった最初と最後の tar メンバー
+- `member_count`: そのマーカーで見つかった tar メンバー数
+- `bytes`: そのマーカーで読み取った生バイト数
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+これにより、オペレーターは復元操作の前にシークすべきマーカー番号（`mt fsf <N>`）を特定できます。
 
-### Deterministic A/B/C integration test
+### 決定的な A/B/C 統合テスト
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+経過時間に関係なく Computers A、B、C のエンドツーエンド統合を検証するには、`scripts/test-computer-a-b-c-integration.sh` を使用します:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+このスクリプトは:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. A がログを書き込む動作をシミュレートします。
+2. B のローテーションと日次アーカイブ作成を実行します。
+3. C の incoming への転送をシミュレートします。
+4. C の receive + write-to-tape を実行します。
+5. テープからアーカイブを復元し、内容を検証します。
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+固定の日付スタンプ（`TEST_DAY_STAMP`、デフォルト `20260101`）を使用するため、挙動は再現可能であり、現在の日付/時刻に左右されません。
 
-### 72-hour retention with safety for unconfirmed data
+### 未確認データを安全に保つ 72 時間保持
 
-The scripts now default to a 72-hour retention window:
+これらのスクリプトは現在、デフォルトで 72 時間の保持期間を使用します:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` は、一致するローカル `.taped` 確認マーカーが存在する場合にのみ、古い時間別ログを削除します。
+- `computer-b-send-archives.sh` は、`.sent` とローカル `.taped` 確認マーカーの両方が存在する場合にのみ、古いローカルアーカイブを削除します。
+- `computer-c-write-to-tape.sh` は、すでに `.taped` マーカーがある古いアーカイブだけを削除します。
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+その結果、まだ正常に送信されてテープへ記録されていないファイルは、`RETENTION_HOURS`（デフォルト `72`）より古くても保持されます。
+Computer B では、ローカルのクリーンアップにローカル `.taped` マーカーが必要です（たとえば sync-back ステップや手動確認プロセスから得られるもの）。
+Computer C では、保持期間は `.taped` マーカーの更新時刻から測定されます（通常はテープ書き込み成功時刻に設定されます）。
