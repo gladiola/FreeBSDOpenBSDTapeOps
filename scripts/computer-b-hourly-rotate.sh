@@ -21,7 +21,7 @@ fi
 
 INPUT_LOG=$1
 OUTPUT_DIR=$2
-KEEP_HOURS=${3:-168}
+KEEP_HOURS=${3:-72}
 
 if [ ! -f "$INPUT_LOG" ]; then
   printf 'Input log not found: %s\n' "$INPUT_LOG" >&2

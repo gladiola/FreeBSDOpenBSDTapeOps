@@ -21,6 +21,7 @@ fi
 
 INCOMING_DIR=$1
 RECEIVED_DIR=$2
+RETENTION_HOURS=${RETENTION_HOURS:-72}
 
 mkdir -p "$INCOMING_DIR" "$RECEIVED_DIR"
 
@@ -44,3 +45,7 @@ done
 if [ "$found" -eq 0 ]; then
   printf 'No new archives in %s\n' "$INCOMING_DIR"
 fi
+
+find "$INCOMING_DIR" -type f -name '*.tar.gz' -mmin +$((RETENTION_HOURS * 60)) -delete
+find "$RECEIVED_DIR" -type f \( -name '*.tar.gz' -o -name '*.tar.gz.ready' -o -name '*.tar.gz.taped' \) \
+  -mmin +$((RETENTION_HOURS * 60)) -delete
