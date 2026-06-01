@@ -68,7 +68,6 @@ cleanup() {
   rm -rf "$tmpdir"
 }
 trap 'cleanup' EXIT INT TERM HUP
-TAB_CHAR=$(printf '\t')
 
 member_to_token() {
   member=$1
@@ -198,9 +197,9 @@ inventory_entry() {
       printf "%d\t%s\t%s\n", count, first, last
     }
   ')
-  IFS=$TAB_CHAR read -r member_count first_member last_member <<EOF
-$summary
-EOF
+  member_count=$(printf '%s\n' "$summary" | awk -F '\t' 'NR==1 { print $1 }')
+  first_member=$(printf '%s\n' "$summary" | awk -F '\t' 'NR==1 { print $2 }')
+  last_member=$(printf '%s\n' "$summary" | awk -F '\t' 'NR==1 { print $3 }')
 
   archive_hint=unknown
   if inferred=$(infer_archive_hint "$first_member" "$last_member" 2>/dev/null); then
