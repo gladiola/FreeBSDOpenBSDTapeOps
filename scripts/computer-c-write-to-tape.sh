@@ -45,7 +45,10 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
   printf 'Writing %s to tape %s\n' "$archive" "$TAPE_DEVICE"
   if [ -c "$TAPE_DEVICE" ]; then
     if dd if="$archive" of="$TAPE_DEVICE" bs="$TAPE_BLOCK_SIZE" conv=sync; then
-      mt -f "$TAPE_DEVICE" weof 1
+      if ! mt -f "$TAPE_DEVICE" weof 1; then
+        printf 'Failed writing EOF marker to tape %s\n' "$TAPE_DEVICE" >&2
+        exit 5
+      fi
     else
       printf 'Failed writing %s to tape %s\n' "$archive" "$TAPE_DEVICE" >&2
       exit 3

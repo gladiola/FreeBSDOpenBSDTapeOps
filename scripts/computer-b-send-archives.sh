@@ -33,7 +33,6 @@ quote_for_remote_sh() {
 }
 
 REMOTE_DIR_QUOTED=$(quote_for_remote_sh "$REMOTE_DIR")
-REMOTE_TARGET_QUOTED=$(quote_for_remote_sh "$REMOTE_DIR/")
 
 ssh "$REMOTE" "mkdir -p -- $REMOTE_DIR_QUOTED"
 
@@ -47,7 +46,7 @@ for archive in "$ARCHIVE_DIR"/*.tar.gz; do
     continue
   fi
 
-  if scp "$archive" "$REMOTE:$REMOTE_TARGET_QUOTED"; then
+  if scp "$archive" "$REMOTE:$REMOTE_DIR_QUOTED"; then
     touch "$marker"
     printf 'Sent %s\n' "$archive"
   else
