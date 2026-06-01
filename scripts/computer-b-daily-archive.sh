@@ -26,7 +26,7 @@ Usage: computer-b-daily-archive.sh <hourly_log_dir> <archive_dir> <day_stamp>
 Builds one 24-hour tar.gz archive for the specified day (YYYYMMDD).
 Optional encryption:
   OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile   (symmetric, openssl enc)
-  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime AES-256-CBC)
+  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime AES-256-GCM)
 USAGE
 }
 
@@ -58,7 +58,7 @@ DAY_HUMAN=$(printf '%s' "$DAY_STAMP" | sed 's/^\(....\)\(..\)\(..\)$/\1-\2-\3/')
 CURRENT_HOUR_TOKEN=$(date +%Y-%m-%dT%H00)
 OPENSSL_ENCRYPT_KEY_FILE=${OPENSSL_ENCRYPT_KEY_FILE:-}
 OPENSSL_ENCRYPT_CERT_FILE=${OPENSSL_ENCRYPT_CERT_FILE:-}
-OPENSSL_ENCRYPT_CIPHER=${OPENSSL_ENCRYPT_CIPHER:-aes-256-cbc}
+OPENSSL_ENCRYPT_CIPHER=${OPENSSL_ENCRYPT_CIPHER:-aes-256-gcm}
 
 if [ -n "$OPENSSL_ENCRYPT_KEY_FILE" ] && [ -n "$OPENSSL_ENCRYPT_CERT_FILE" ]; then
   log_error 'Set only one of OPENSSL_ENCRYPT_KEY_FILE or OPENSSL_ENCRYPT_CERT_FILE'
@@ -78,6 +78,25 @@ fi
 if [ -n "$OPENSSL_ENCRYPT_KEY_FILE" ] || [ -n "$OPENSSL_ENCRYPT_CERT_FILE" ]; then
   if ! command -v openssl >/dev/null 2>&1; then
     log_error 'OpenSSL is required for archive encryption but was not found in PATH'
+    exit 2
+  fi
+fi
+
+require_strong_encrypt_cipher() {
+  cipher_lower=$(printf '%s' "$OPENSSL_ENCRYPT_CIPHER" | tr '[:upper:]' '[:lower:]')
+  case "$cipher_lower" in
+    *gcm*|*poly1305*)
+      return 0
+      ;;
+    *)
+      log_error "$(printf 'Refusing weak/non-AEAD cipher "%s"; use GCM or better (for example: aes-256-gcm)' "$OPENSSL_ENCRYPT_CIPHER")"
+      return 1
+      ;;
+  esac
+}
+
+if [ -n "$OPENSSL_ENCRYPT_KEY_FILE" ] || [ -n "$OPENSSL_ENCRYPT_CERT_FILE" ]; then
+  if ! require_strong_encrypt_cipher; then
     exit 2
   fi
 fi

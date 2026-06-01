@@ -114,11 +114,12 @@ The current hour is intentionally excluded from archive creation so active write
 
 `computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-cbc`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
 - `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-cbc`).
+- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
 
 Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
+For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
 
 ### Archive recovery from tape on Computer C
 
@@ -131,7 +132,7 @@ scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <ou
 - For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
 - If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
 - If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode)
+  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
   - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
 
 The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
