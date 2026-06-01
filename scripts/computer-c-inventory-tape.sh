@@ -80,6 +80,7 @@ member_to_token() {
           printf '%s\n' "$stamp"
           return 0
           ;;
+        # Legacy compact hourly format: YYYYMMDDHH
         [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
           printf '%s\n' "$stamp" | awk '{printf "%s-%s-%sT%s00\n", substr($0,1,4), substr($0,5,2), substr($0,7,2), substr($0,9,2)}'
           return 0
