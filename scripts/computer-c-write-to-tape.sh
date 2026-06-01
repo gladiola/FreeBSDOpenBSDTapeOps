@@ -42,8 +42,12 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
   fi
 
   printf 'Writing %s to tape %s\n' "$archive" "$TAPE_DEVICE"
-  dd if="$archive" of="$TAPE_DEVICE" bs=64k conv=sync
-  mt -f "$TAPE_DEVICE" weof 1
+  if [ -c "$TAPE_DEVICE" ]; then
+    dd if="$archive" of="$TAPE_DEVICE" bs=64k conv=sync
+    mt -f "$TAPE_DEVICE" weof 1
+  else
+    cat "$archive" >> "$TAPE_DEVICE"
+  fi
   touch "$done_marker"
   rm -f "$ready"
 done
