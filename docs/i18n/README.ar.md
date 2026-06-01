@@ -1,232 +1,232 @@
 # FreeBSDOpenBSDTapeOps (العربية)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+سكربتات شل تفاعلية تستعرض عمليات الشريط المغناطيسي الشائعة باستخدام `mt` و`tar`.
 
-## Language Documentation Index
+## فهرس توثيق اللغات
 
-- [US English](docs/i18n/README.en-US.md)
-- [Deutsch (German)](docs/i18n/README.de.md)
-- [Español (Spanish)](docs/i18n/README.es.md)
-- [Français (French)](docs/i18n/README.fr.md)
-- [Português (Portuguese)](docs/i18n/README.pt.md)
-- [Italiano (Italian)](docs/i18n/README.it.md)
-- [繁體中文 (香港) / Traditional Chinese (Hong Kong)](docs/i18n/README.zh-HK.md)
-- [简体中文 (Simplified Chinese)](docs/i18n/README.zh-CN.md)
-- [한국어 (Korean)](docs/i18n/README.ko.md)
-- [हिन्दी (Hindi)](docs/i18n/README.hi.md)
-- [Русский (Russian)](docs/i18n/README.ru.md)
+- [الإنجليزية الأمريكية](docs/i18n/README.en-US.md)
+- [Deutsch (الألمانية)](docs/i18n/README.de.md)
+- [Español (الإسبانية)](docs/i18n/README.es.md)
+- [Français (الفرنسية)](docs/i18n/README.fr.md)
+- [Português (البرتغالية)](docs/i18n/README.pt.md)
+- [Italiano (الإيطالية)](docs/i18n/README.it.md)
+- [繁體中文 (香港) / الصينية التقليدية (هونغ كونغ)](docs/i18n/README.zh-HK.md)
+- [简体中文 (الصينية المبسطة)](docs/i18n/README.zh-CN.md)
+- [한국어 (الكورية)](docs/i18n/README.ko.md)
+- [हिन्दी (الهندية)](docs/i18n/README.hi.md)
+- [Русский (الروسية)](docs/i18n/README.ru.md)
 - [العربية (Arabic)](docs/i18n/README.ar.md)
-- [Kiswahili (Swahili)](docs/i18n/README.sw.md)
-- [日本語 (Japanese)](docs/i18n/README.ja.md)
-- [Kreyòl Ayisyen (Haitian Creole)](docs/i18n/README.ht.md)
-- [ʻŌlelo Hawaiʻi (Hawaiian)](docs/i18n/README.haw.md)
-- [Gagana Samoa (Samoan)](docs/i18n/README.sm.md)
-- [Te Reo Māori (Maori)](docs/i18n/README.mi.md)
-- [Afrikaans](docs/i18n/README.af.md)
-- [Nederlands (Dutch)](docs/i18n/README.nl.md)
-- [Hausa](docs/i18n/README.ha.md)
-- [አማርኛ (Amharic)](docs/i18n/README.am.md)
-- [Yorùbá (Yoruba)](docs/i18n/README.yo.md)
-- [বাংলা (Bengali)](docs/i18n/README.bn.md)
-- [Gaeilge (Irish)](docs/i18n/README.ga.md)
-- [Eesti (Estonian)](docs/i18n/README.et.md)
-- [Suomi (Finnish)](docs/i18n/README.fi.md)
-- [Svenska (Swedish)](docs/i18n/README.sv.md)
-- [Norsk (Norwegian)](docs/i18n/README.no.md)
-- [Українська (Ukrainian)](docs/i18n/README.uk.md)
-- [ไทย (Thai)](docs/i18n/README.th.md)
-- [Bahasa Indonesia](docs/i18n/README.id.md)
-- [Tagalog](docs/i18n/README.tl.md)
-- [Bahasa Melayu (Malay)](docs/i18n/README.ms.md)
-- [Basa Jawa (Javanese)](docs/i18n/README.jv.md)
-- [Ελληνικά (Greek)](docs/i18n/README.el.md)
-- [Latina (Latin)](docs/i18n/README.la.md)
-- [עברית (Hebrew)](docs/i18n/README.he.md)
+- [Kiswahili (السواحيلية)](docs/i18n/README.sw.md)
+- [日本語 (اليابانية)](docs/i18n/README.ja.md)
+- [Kreyòl Ayisyen (الكريولية الهايتية)](docs/i18n/README.ht.md)
+- [ʻŌlelo Hawaiʻi (الهاوائية)](docs/i18n/README.haw.md)
+- [Gagana Samoa (الساموائية)](docs/i18n/README.sm.md)
+- [Te Reo Māori (الماورية)](docs/i18n/README.mi.md)
+- [Afrikaans (الأفريقانية)](docs/i18n/README.af.md)
+- [Nederlands (الهولندية)](docs/i18n/README.nl.md)
+- [Hausa (الهوسا)](docs/i18n/README.ha.md)
+- [አማርኛ (الأمهرية)](docs/i18n/README.am.md)
+- [Yorùbá (اليوروبا)](docs/i18n/README.yo.md)
+- [বাংলা (البنغالية)](docs/i18n/README.bn.md)
+- [Gaeilge (الإيرلندية)](docs/i18n/README.ga.md)
+- [Eesti (الإستونية)](docs/i18n/README.et.md)
+- [Suomi (الفنلندية)](docs/i18n/README.fi.md)
+- [Svenska (السويدية)](docs/i18n/README.sv.md)
+- [Norsk (النرويجية)](docs/i18n/README.no.md)
+- [Українська (الأوكرانية)](docs/i18n/README.uk.md)
+- [ไทย (التايلاندية)](docs/i18n/README.th.md)
+- [Bahasa Indonesia (الإندونيسية)](docs/i18n/README.id.md)
+- [Tagalog (التاغالوغية)](docs/i18n/README.tl.md)
+- [Bahasa Melayu (الملايوية)](docs/i18n/README.ms.md)
+- [Basa Jawa (الجاوية)](docs/i18n/README.jv.md)
+- [Ελληνικά (اليونانية)](docs/i18n/README.el.md)
+- [Latina (اللاتينية)](docs/i18n/README.la.md)
+- [עברית (العبرية)](docs/i18n/README.he.md)
 
 
-## Scripts
+## السكربتات
 
-| Script | Target OS |
+| السكربت | نظام التشغيل المستهدف |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+يُنفّذ كلا السكربتَين نفس تسلسل العمليات:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. مطالبة المستخدم بتأكيد تحميل الشريط.
+2. إرجاع الشريط إلى البداية.
+3. طباعة حالة الشريط.
+4. إدراج محتويات الأرشيفات عند مواضع الملفات 0 و1 و2 و3 باستخدام `tar t`.
+5. إخراج الشريط من الخط.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+يتوقف كل خطوة وينتظر المستخدم لضغط **Enter** قبل الاستمرار، مما يجعل السكربتَين مناسبَين كعروض توضيحية تفاعلية أو جولات إرشادية موجَّهة.
 
-## Differences Between the Two Scripts
+## الفروق بين السكربتَين
 
-### 1. Tape device path
+### 1. مسار جهاز الشريط
 
-The scripts target different tape device nodes:
+يستهدف السكربتان عقد جهاز شريط مختلفة:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+كلاهما عقدتا جهاز غير مُعِيدَتَين للإرجاع (البادئة `n`)، لذا يُحتفظ بموضع الشريط بين الأوامر ويتحكم السكربتان في تحديد الموضع صراحةً عبر `mt rewind` و`mt fsf`.
 
-### 2. Tape loading step
+### 2. خطوة تحميل الشريط
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: يُصدر `mt -f /dev/nsa0 load` عند بدء التشغيل لتحميل خرطوشة الشريط ميكانيكياً في المحرك قبل الإرجاع.
+- **OpenBSD**: يتخطى أمر `load` لأن `mt(1)` في OpenBSD لا يدعم الأمر الفرعي `load`. يفترض سكربت OpenBSD أن الشريط موجود بالفعل في المحرك وينتقل مباشرةً إلى الإرجاع.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## سكربتات خط أنابيب السجلات من A إلى B إلى C على OpenBSD
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+يوفر مجلد `scripts/` سكربتات للسيناريو الذي يتلقى فيه حاسوب OpenBSD B إدخالات rsyslog من الحاسوب A، ويجمّعها يومياً، ويرسلها إلى أحد خوادم الحاسوب C المتعددة، ويكتبها الحاسوب C على الشريط.
 
-| Script | Purpose |
+| السكربت | الغرض |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | ينشئ سجلاً مُدارَاً بشكل ساعي من ملف إدخال rsyslog النشط على الحاسوب B. |
+| `scripts/computer-b-daily-archive.sh` | يجمع سجلات ساعية ليوم واحد (`YYYYMMDD`) في أرشيف `.tar.gz` بنطاق زمني على الحاسوب B، مع استثناء الساعة الحالية لتجنب تعارضات الكتابة النشطة. |
+| `scripts/computer-b-send-archives.sh` | يرسل الأرشيفات اليومية غير المُرسَلة (`.tar.gz` والاختيارية `.tar.gz.enc`) من الحاسوب B إلى خادم أو أكثر من خوادم الحاسوب C عبر `scp`. |
+| `scripts/computer-c-receive-archives.sh` | يتحقق من صحة الأرشيفات النصية الواردة ويضع الأرشيفات النصية/المشفرة في قائمة انتظار للشريط. |
+| `scripts/computer-c-write-to-tape.sh` | يكتب الأرشيفات النصية أو المشفرة المُنتظِرة على الشريط، ويتحقق من المساحة، ويُلحق البيانات بأمان، ويُعلّمها كمسجَّلة. |
+| `scripts/computer-c-inventory-tape.sh` | يطبع جدول محتويات الشريط حسب علامة الملف لتمكين المشغّلين من تحديد الأرشيفات بسرعة. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | يفحص مواضع ملفات الشريط للعثور على أرشيف مطلوب، ويفك تشفيره عند الحاجة، ويحفظ البيانات المستعادة في ملف. |
+| `scripts/test-computer-a-b-c-integration.sh` | يُشغّل اختبار تكامل محلياً حتمياً من A إلى B إلى C (بما في ذلك استعادة الشريط) لا يعتمد على توقيت الساعة الحقيقية. |
 
-Typical scheduling:
+الجدولة النموذجية:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- تشغيل `computer-b-hourly-rotate.sh` كل ساعة (cron على B).
+- تشغيل `computer-b-daily-archive.sh` مرة واحدة يومياً (cron على B).
+- تشغيل `computer-b-send-archives.sh` بعد إنشاء الأرشيف (cron على B).
+- تشغيل `computer-c-receive-archives.sh` بشكل دوري على C.
+- تشغيل `computer-c-write-to-tape.sh` بشكل دوري على C مع جهاز الشريط الصحيح.
+- تشغيل `computer-c-inventory-tape.sh` على C عند الحاجة إلى جدول محتويات علامة بعلامة.
+- تشغيل `computer-c-restore-archive-from-tape.sh` على C عند الحاجة إلى استعادة أرشيف معين للفحص.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+تُرسل جميع سكربتات خط الأنابيب أيضاً رسائل تشغيلية إلى syslog عبر `logger` (مرئية مثلاً عبر rsyslog/journaling) بالإضافة إلى مخرجات وحدة التحكم.
 
-### Multi-server send from Computer B
+### الإرسال متعدد الخوادم من الحاسوب B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+يدعم `computer-b-send-archives.sh` وضع الخادم الفردي ووضع الخوادم المتعددة:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- خادم فردي: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- خوادم متعددة: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+خيارات اختيار الخادم من جانب العميل:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- توفير خادم واحد في المعاملات للتثبيت على حاسوب C واحد.
+- توفير خوادم متعددة للسماح بالتبديل الاحتياطي.
+- تعيين `PREFERRED_SERVER=user@host` لاختيار خادم معين من القائمة المقدمة.
 
-Busy handling options on Computer B:
+خيارات معالجة الانشغال على الحاسوب B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (الافتراضي: `.busy`): ملف علامة يُفحَص على الجانب البعيد.
+- `BUSY_RETRY_SECONDS` (الافتراضي: `60`): وقت الانتظار بين المحاولات أثناء انشغال الخادم.
+- `BUSY_MAX_RETRIES` (الافتراضي: `10`): الحد الأقصى لمحاولات إعادة المحاولة لكل خادم.
 
-### Busy state publication from Computer C
+### نشر حالة الانشغال من الحاسوب C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+يُنشئ `computer-c-write-to-tape.sh` علامة انشغال أثناء الكتابة الفعلية للأرشيفات على الشريط ويزيلها عند الخمول.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (الافتراضي: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+أشِر `REMOTE_BUSY_MARKER` على الحاسوب B إلى موقع العلامة الذي يستخدمه الحاسوب C.
 
-### Tape safety and append behavior on Computer C
+### أمان الشريط وسلوك الإلحاق على الحاسوب C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+قبل كتابة كل أرشيف، يتحقق `computer-c-write-to-tape.sh` من سعة الشريط/الجهاز المتاحة ويتطلب على الأقل:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+المتغيرات ذات الصلة:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (الافتراضي: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (تجاوز للمساحة المتاحة المعروفة)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (يسمح بالكتابة إذا تعذّر اكتشاف المساحة)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+بالنسبة لأجهزة الشريط الحقيقية، يتجه الكاتب إلى نهاية البيانات (`mt eom`/`mt eod`) قبل الكتابة، بحيث تُلحَق أرشيفات متعددة بدلاً من الكتابة فوق محتويات الشريط السابقة.
 
-### Human-readable timestamps in filenames
+### طوابع زمنية مقروءة بشرياً في أسماء الملفات
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- تُسمَّى السجلات الساعية على النحو التالي: `rsyslog-2026-06-01T1600.log`
+- تُسمَّى الأرشيفات اليومية على النحو التالي: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+تستند نطاقات الأرشيف اليومي إلى أول وآخر ملف ساعي فعلي مُدرَج في الأرشيف.
+صُمِّمت هذه الأسماء لتكون مقروءة من قِبَل الأشخاص الذين يبحثون عن نوافذ تاريخ/وقت الأحداث.
+يُستثنى عمداً الساعة الحالية من إنشاء الأرشيف لضمان عدم إرسال عمليات الكتابة النشطة.
 
-### Optional OpenSSL encryption for daily archives
+### تشفير OpenSSL الاختياري للأرشيفات اليومية
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+يمكن لـ`computer-b-daily-archive.sh` تشفير الأرشيفات باستخدام OpenSSL بعد إنشاء tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` للتشفير المتماثل (`openssl enc`، الخوارزمية الافتراضية `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` لتشفير شهادة المستلم (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` لاختيار خوارزمية OpenSSL لكلا وضعَي ملف المفتاح والشهادة (الافتراضي: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+لا يجوز تعيين سوى أحد هذين الخيارَين في وقت واحد. تستخدم المخرجات المشفرة `.tar.gz.enc`.
+لدواعي الأمان، يرفض السكربت اختيارات الخوارزميات الضعيفة أو غير-AEAD ويشترط خوارزميات من فئة GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### استعادة الأرشيف من الشريط على الحاسوب C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+استخدم `computer-c-restore-archive-from-tape.sh` لتحديد موقع أرشيف معين بالبحث في ملفات الشريط بالترتيب من البداية:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- بالنسبة لأسماء الأرشيفات مثل `rsyslog-<start>_to_<end>.tar.gz` (أو `.tar.gz.enc`)، يحدد السكربت التطابق الصحيح بالتحقق من وجود ملفات ساعية حدودية في الحمولة المستعادة.
+- إذا كانت تسمية أرشيفاتك مختلفة، عيّن `TARGET_MEMBER_GLOB` لنمط shell يطابق عضواً يجب أن يكون موجوداً في الأرشيف.
+- إذا كان أرشيف مشفراً، قدّم إعدادات فك التشفير حسب الحاجة:
+  - `OPENSSL_DECRYPT_KEY_FILE` (وضع `openssl enc` المتماثل؛ خوارزمية فك التشفير الافتراضية: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` و`OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (وضع فك تشفير S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+تُكتب المخرجات المستعادة كملف `.tar.gz` نصي حتى يمكن فحصها بأدوات مثل `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### جرد جدول محتويات الشريط على الحاسوب C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+استخدم `computer-c-inventory-tape.sh` لطباعة جدول محتويات علامة بعلامة:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+تشمل أعمدة المخرجات:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: موضع علامة ملف الشريط (يبدأ من الصفر)
+- `status`: `ok` أو `decrypted` أو `unreadable`
+- `encrypted`: ما إذا كان فك التشفير مطلوباً لفحص الإدخال (`yes`/`no`)
+- `archive_hint`: اسم بأسلوب الأرشيف المُستنتَج عند التمكن من التعرف على الحدود
+- `first_member` / `last_member`: أول وآخر عضو tar مرئي في تلك العلامة
+- `member_count`: عدد أعضاء tar الموجودين في تلك العلامة
+- `bytes`: عدد البايتات الخام المقروءة عند تلك العلامة
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+يتيح ذلك للمشغّل تحديد فهرس العلامة للانتقال إليها (`mt fsf <N>`) قبل عمليات الاستعادة.
 
-### Deterministic A/B/C integration test
+### اختبار التكامل الحتمي A/B/C
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+استخدم `scripts/test-computer-a-b-c-integration.sh` للتحقق من صحة التكامل الشامل للحواسيب A وB وC بصرف النظر عن الوقت المنقضي:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+يقوم هذا السكربت بما يلي:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. محاكاة كتابة A للسجلات.
+2. تشغيل تدوير B وإنشاء الأرشيف اليومي.
+3. محاكاة النقل إلى وارد C.
+4. تشغيل استقبال C والكتابة على الشريط.
+5. استعادة الأرشيف من الشريط والتحقق من المحتوى.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+يستخدم طابع يوم ثابتاً (`TEST_DAY_STAMP`، الافتراضي `20260101`) لجعل السلوك قابلاً للتكرار وغير مرتبط بالتاريخ/الوقت الحالي.
 
-### 72-hour retention with safety for unconfirmed data
+### الاحتفاظ لمدة 72 ساعة مع الأمان للبيانات غير المؤكدة
 
-The scripts now default to a 72-hour retention window:
+تستخدم السكربتات الآن نافذة احتفاظ مدتها 72 ساعة افتراضياً:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- يزيل `computer-b-hourly-rotate.sh` السجلات الساعية القديمة فقط عند وجود علامة تأكيد `.taped` محلية مطابقة.
+- يزيل `computer-b-send-archives.sh` الأرشيفات المحلية القديمة فقط عند وجود علامتَي `.sent` و`.taped` المحليتَين معاً.
+- يزيل `computer-c-write-to-tape.sh` الأرشيفات القديمة التي تمتلك بالفعل علامات `.taped` فقط.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+ونتيجةً لذلك، تُحتفَظ بالملفات التي لم تُنقَل بنجاح ولم تُسجَّل على الشريط حتى عند تجاوزها `RETENTION_HOURS` (الافتراضي `72`).
+على الحاسوب B، يتطلب التنظيف المحلي وجود علامات `.taped` محلية (على سبيل المثال من خطوة مزامنة عكسية أو عملية تأكيد يدوية).
+على الحاسوب C، يُقاس عمر الاحتفاظ من وقت تعديل علامة `.taped` (يُضبَط عادةً عند الكتابة الناجحة على الشريط).

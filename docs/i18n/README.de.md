@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Deutsch)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Interaktive Shell-Skripte, die gängige Magnetband-Operationen mit `mt` und `tar` Schritt für Schritt demonstrieren.
 
-## Language Documentation Index
+## Sprachdokumentationsindex
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Skripte
 
-| Script | Target OS |
+| Skript | Zielbetriebssystem |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Beide Skripte führen dieselbe Abfolge von Operationen aus:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Benutzer auffordern zu bestätigen, dass das Band eingelegt ist.
+2. Band zurückspulen.
+3. Bandstatus ausgeben.
+4. Inhalte der Archive an Dateiposition 0, 1, 2 und 3 mit `tar t` auflisten.
+5. Band offline nehmen.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Jeder Schritt pausiert und wartet auf **Enter**, bevor fortgefahren wird. Dadurch eignen sich die Skripte als interaktive Demonstrationen oder geführte Durchläufe.
 
-## Differences Between the Two Scripts
+## Unterschiede zwischen den beiden Skripten
 
-### 1. Tape device path
+### 1. Pfad des Bandgeräts
 
-The scripts target different tape device nodes:
+Die Skripte verwenden unterschiedliche Bandgeräte-Knoten:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Beide sind nicht zurückspulende Gerätedateien (Präfix `n`), daher bleibt die Bandposition zwischen Befehlen erhalten, und die Skripte steuern die Positionierung explizit mit `mt rewind` und `mt fsf`.
 
-### 2. Tape loading step
+### 2. Schritt zum Laden des Bands
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Führt beim Start `mt -f /dev/nsa0 load` aus, um die Bandkassette mechanisch ins Laufwerk zu laden, bevor zurückgespult wird.
+- **OpenBSD**: Überspringt den `load`-Befehl, weil `mt(1)` unter OpenBSD kein `load`-Unterkommando unterstützt. Das OpenBSD-Skript geht davon aus, dass das Band bereits im Laufwerk ist, und spult direkt zurück.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD-A-zu-B-zu-C-Log-Pipeline-Skripte
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Das Verzeichnis `scripts/` enthält Skripte für das Szenario, in dem OpenBSD-Computer B rsyslog-Einträge von Computer A empfängt, sie täglich bündelt, an einen von mehreren Computer-C-Servern sendet und Computer C sie auf Band schreibt.
 
-| Script | Purpose |
+| Skript | Zweck |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Erstellt auf Computer B eine stündlich rotierte Logdatei aus der aktiven rsyslog-Eingabedatei. |
+| `scripts/computer-b-daily-archive.sh` | Packt auf Computer B einen Tag (`YYYYMMDD`) stündlicher Logs in ein zeitbereichsbasiertes `.tar.gz`-Archiv und schließt die aktuelle Stunde aus, um Konflikte mit aktiven Schreibvorgängen zu vermeiden. |
+| `scripts/computer-b-send-archives.sh` | Sendet ungesendete Tagesarchive (`.tar.gz` und optional `.tar.gz.enc`) von Computer B über `scp` an einen oder mehrere Computer-C-Server. |
+| `scripts/computer-c-receive-archives.sh` | Validiert eingehende unverschlüsselte Archive und stellt unverschlüsselte/verschlüsselte Archive für Band bereit. |
+| `scripts/computer-c-write-to-tape.sh` | Schreibt wartende unverschlüsselte oder verschlüsselte Archive auf Band, prüft freien Platz, hängt sicher an und markiert sie als aufgezeichnet. |
+| `scripts/computer-c-inventory-tape.sh` | Gibt ein Band-Inhaltsverzeichnis nach Dateimarkierung aus, damit Operatoren Archive schnell finden können. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Durchsucht Banddateipositionen nach einem angeforderten Archiv, entschlüsselt bei Bedarf und speichert die wiederhergestellten Daten in einer Datei. |
+| `scripts/test-computer-a-b-c-integration.sh` | Führt einen deterministischen lokalen A→B→C-Integrationstest (einschließlich Bandwiederherstellung) aus, der nicht von Echtzeit abhängt. |
 
-Typical scheduling:
+Typische Planung:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Führen Sie `computer-b-hourly-rotate.sh` stündlich aus (Cron auf B).
+- Führen Sie `computer-b-daily-archive.sh` einmal täglich aus (Cron auf B).
+- Führen Sie `computer-b-send-archives.sh` nach der Archiverstellung aus (Cron auf B).
+- Führen Sie `computer-c-receive-archives.sh` regelmäßig auf C aus.
+- Führen Sie `computer-c-write-to-tape.sh` regelmäßig auf C mit dem korrekten Bandgerät aus.
+- Führen Sie `computer-c-inventory-tape.sh` auf C aus, wenn Sie ein Inhaltsverzeichnis nach Markierungen benötigen.
+- Führen Sie `computer-c-restore-archive-from-tape.sh` auf C aus, wenn Sie ein bestimmtes Archiv zur Prüfung wiederherstellen müssen.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Alle Pipeline-Skripte senden zusätzlich zu Konsolenausgaben auch Betriebsnachrichten über `logger` an Syslog (z. B. sichtbar über rsyslog/Journaling).
 
-### Multi-server send from Computer B
+### Versand an mehrere Server von Computer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` unterstützt sowohl Einzelserver- als auch Mehrservermodus:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- Einzelserver: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Mehrserver: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Optionen zur Serverauswahl auf Client-Seite:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Geben Sie einen Server in den Argumenten an, um auf einen Computer C festzulegen.
+- Geben Sie mehrere Server an, um Fallback zu ermöglichen.
+- Setzen Sie `PREFERRED_SERVER=user@host`, um einen bestimmten Server aus der bereitgestellten Liste auszuwählen.
 
-Busy handling options on Computer B:
+Optionen zur Behandlung von Belegt-Zuständen auf Computer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (Standard: `.busy`): Markerdatei, die auf der Gegenseite geprüft wird.
+- `BUSY_RETRY_SECONDS` (Standard: `60`): Wartezeit zwischen Wiederholungen, solange der Server belegt ist.
+- `BUSY_MAX_RETRIES` (Standard: `10`): Maximale Anzahl Wiederholungsversuche pro Server.
 
-### Busy state publication from Computer C
+### Veröffentlichung des Belegt-Status auf Computer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` erstellt eine Belegt-Markierung, während aktiv Archive auf Band geschrieben werden, und entfernt sie im Leerlauf.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (Standard: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Richten Sie `REMOTE_BUSY_MARKER` auf Computer B auf den Markerpfad aus, den Computer C verwendet.
 
-### Tape safety and append behavior on Computer C
+### Bandsicherheit und Anhängeverhalten auf Computer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Vor dem Schreiben jedes Archivs prüft `computer-c-write-to-tape.sh`, ob genügend Band-/Gerätekapazität verfügbar ist, und erfordert mindestens:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Relevante Variablen:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (Standard: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (Überschreibung für bekannten verfügbaren Platz)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (erlaubt Schreiben, wenn freier Platz nicht ermittelt werden kann)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Bei echten Bandgeräten fährt der Schreiber vor dem Schreiben an das Datenende (`mt eom`/`mt eod`), sodass mehrere Archive angehängt statt vorhandene Bandinhalte überschrieben werden.
 
-### Human-readable timestamps in filenames
+### Lesbare Zeitstempel in Dateinamen
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Stündliche Logs heißen z. B.: `rsyslog-2026-06-01T1600.log`
+- Tagesarchive heißen z. B.: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Die Tagesarchiv-Zeitbereiche basieren auf den tatsächlich ersten und letzten stündlichen Dateien, die in das Archiv aufgenommen wurden.
+Diese Namen sollen für Menschen lesbar sein, die nach Ereignis-Datums-/Zeitfenstern suchen.
+Die aktuelle Stunde wird bei der Archiverstellung absichtlich ausgeschlossen, damit aktive Schreibvorgänge nicht übertragen werden.
 
-### Optional OpenSSL encryption for daily archives
+### Optionale OpenSSL-Verschlüsselung für Tagesarchive
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` kann Archive nach dem Erstellen des Tarballs mit OpenSSL verschlüsseln:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` für symmetrische Verschlüsselung (`openssl enc`, Standard-Chiffre `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` für Verschlüsselung mit Empfängerzertifikat (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` zur Auswahl der OpenSSL-Chiffre für Schlüsseldatei- und Zertifikatsmodus (Standard: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Es darf immer nur eine dieser Optionen gleichzeitig gesetzt sein. Verschlüsselte Ausgaben verwenden `.tar.gz.enc`.
+Aus Sicherheitsgründen lehnt das Skript schwache oder nicht-AEAD-Chiffren ab und verlangt Chiffren der GCM-/poly1305-Klasse.
 
-### Archive recovery from tape on Computer C
+### Archivwiederherstellung von Band auf Computer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Verwenden Sie `computer-c-restore-archive-from-tape.sh`, um ein bestimmtes Archiv zu finden, indem Banddateien vom Anfang an der Reihe nach durchsucht werden:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Bei Archivnamen wie `rsyslog-<start>_to_<end>.tar.gz` (oder `.tar.gz.enc`) identifiziert das Skript den korrekten Treffer, indem geprüft wird, ob die stündlichen Grenzdateien in den wiederhergestellten Nutzdaten vorhanden sind.
+- Wenn Ihr Archivname anders aufgebaut ist, setzen Sie `TARGET_MEMBER_GLOB` auf ein Shell-Muster, das auf ein Mitglied passt, das im Archiv vorhanden sein muss.
+- Wenn ein Archiv verschlüsselt ist, geben Sie bei Bedarf Entschlüsselungseinstellungen an:
+  - `OPENSSL_DECRYPT_KEY_FILE` (symmetrischer `openssl enc`-Modus; Standard-Entschlüsselungschiffre: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` und `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME-Entschlüsselungsmodus)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Die wiederhergestellte Ausgabe wird als unverschlüsselte `.tar.gz`-Datei geschrieben, sodass sie mit Tools wie `tar -tzf` geprüft werden kann.
 
-### Tape table-of-contents inventory on Computer C
+### Band-Inhaltsverzeichnis auf Computer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Verwenden Sie `computer-c-inventory-tape.sh`, um ein Inhaltsverzeichnis Markierung für Markierung auszugeben:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Die Ausgabespalten umfassen:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: nullbasierte Position der Band-Dateimarkierung
+- `status`: `ok`, `decrypted` oder `unreadable`
+- `encrypted`: ob zur Prüfung des Eintrags entschlüsselt werden musste (`yes`/`no`)
+- `archive_hint`: abgeleiteter Archivname-Stil, wenn Grenzen erkannt werden können
+- `first_member` / `last_member`: erstes und letztes Tar-Mitglied in dieser Markierung
+- `member_count`: Anzahl der in dieser Markierung gefundenen Tar-Mitglieder
+- `bytes`: rohe Bytezahl, die an dieser Markierung gelesen wurde
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Dadurch kann ein Operator den Marker-Index bestimmen, zu dem vor Wiederherstellungen gesprungen werden soll (`mt fsf <N>`).
 
-### Deterministic A/B/C integration test
+### Deterministischer A/B/C-Integrationstest
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Verwenden Sie `scripts/test-computer-a-b-c-integration.sh`, um die Ende-zu-Ende-Integration von Computer A, B und C unabhängig von verstrichener Zeit zu validieren:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Dieses Skript:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Simuliert, dass A Logs schreibt.
+2. Führt Rotation und Tagesarchiverstellung auf B aus.
+3. Simuliert die Übertragung in den Eingangsordner von C.
+4. Führt Empfang + Schreiben-auf-Band auf C aus.
+5. Stellt das Archiv vom Band wieder her und validiert den Inhalt.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Es verwendet einen festen Tagesstempel (`TEST_DAY_STAMP`, Standard `20260101`), sodass das Verhalten reproduzierbar ist und nicht an aktuelles Datum/Uhrzeit gebunden ist.
 
-### 72-hour retention with safety for unconfirmed data
+### 72-Stunden-Aufbewahrung mit Sicherheit für unbestätigte Daten
 
-The scripts now default to a 72-hour retention window:
+Die Skripte verwenden jetzt standardmäßig ein 72-Stunden-Aufbewahrungsfenster:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` entfernt alte stündliche Logs nur, wenn ein passender lokaler `.taped`-Bestätigungsmarker existiert.
+- `computer-b-send-archives.sh` entfernt alte lokale Archive nur, wenn sowohl `.sent`- als auch lokaler `.taped`-Bestätigungsmarker existieren.
+- `computer-c-write-to-tape.sh` entfernt nur alte Archive, die bereits `.taped`-Marker haben.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Dadurch bleiben Dateien, die noch nicht erfolgreich übertragen und auf Band aufgezeichnet wurden, erhalten, selbst wenn sie älter als `RETENTION_HOURS` (Standard `72`) sind.
+Auf Computer B erfordert das lokale Aufräumen lokale `.taped`-Marker (zum Beispiel durch einen Rücksynchronisationsschritt oder einen manuellen Bestätigungsprozess).
+Auf Computer C wird das Aufbewahrungsalter anhand der Änderungszeit des `.taped`-Markers gemessen (normalerweise auf den Zeitpunkt des erfolgreichen Schreibens auf Band gesetzt).

@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (বাংলা)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+`mt` এবং `tar` ব্যবহার করে সাধারণ ম্যাগনেটিক টেপ অপারেশনগুলির মধ্য দিয়ে পরিচালিত ইন্টারেক্টিভ শেল স্ক্রিপ্ট।
 
-## Language Documentation Index
+## ভাষা ডকুমেন্টেশন সূচিপত্র
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## স্ক্রিপ্টসমূহ
 
-| Script | Target OS |
+| স্ক্রিপ্ট | লক্ষ্য OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+উভয় স্ক্রিপ্ট একই ক্রমে অপারেশনগুলি সম্পাদন করে:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. ব্যবহারকারীকে টেপ লোড করা নিশ্চিত করতে প্রম্পট করে।
+2. টেপ রিওয়াইন্ড করে।
+3. টেপের অবস্থা প্রিন্ট করে।
+4. `tar t` ব্যবহার করে ফাইল অবস্থান ০, ১, ২ এবং ৩-এ আর্কাইভের বিষয়বস্তু তালিকাভুক্ত করে।
+5. টেপটি অফলাইনে নিয়ে যায়।
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+প্রতিটি ধাপ বিরতি দেয় এবং অব্যাহত রাখার আগে ব্যবহারকারীকে **Enter** চাপতে অপেক্ষা করে, যা স্ক্রিপ্টগুলিকে ইন্টারেক্টিভ ডেমোনস্ট্রেশন বা গাইডেড ওয়াকথ্রু হিসেবে উপযুক্ত করে তোলে।
 
-## Differences Between the Two Scripts
+## দুটি স্ক্রিপ্টের মধ্যে পার্থক্য
 
-### 1. Tape device path
+### ১. টেপ ডিভাইস পাথ
 
-The scripts target different tape device nodes:
+স্ক্রিপ্টগুলি বিভিন্ন টেপ ডিভাইস নোডকে লক্ষ্য করে:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+উভয়ই নন-রিওয়াইন্ডিং ডিভাইস নোড (`n` প্রিফিক্স), তাই কমান্ডগুলির মধ্যে টেপের অবস্থান সংরক্ষিত থাকে এবং স্ক্রিপ্টগুলি `mt rewind` ও `mt fsf` দিয়ে স্পষ্টভাবে অবস্থান নিয়ন্ত্রণ করে।
 
-### 2. Tape loading step
+### ২. টেপ লোডিং ধাপ
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: রিওয়াইন্ড করার আগে টেপ কার্ট্রিজটি ড্রাইভে যান্ত্রিকভাবে লোড করতে স্টার্টআপে `mt -f /dev/nsa0 load` প্রদান করে।
+- **OpenBSD**: `load` কমান্ড এড়িয়ে যায় কারণ OpenBSD-এর `mt(1)` একটি `load` সাবকমান্ড সমর্থন করে না। OpenBSD স্ক্রিপ্ট ধরে নেয় যে টেপ ইতিমধ্যে ড্রাইভে আছে এবং সরাসরি রিওয়াইন্ডে এগিয়ে যায়।
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A-থেকে-B-থেকে-C লগ পাইপলাইন স্ক্রিপ্ট
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+`scripts/` ডিরেক্টরি সেই পরিস্থিতির জন্য স্ক্রিপ্ট সরবরাহ করে যেখানে OpenBSD কম্পিউটার B কম্পিউটার A থেকে rsyslog এন্ট্রি গ্রহণ করে, সেগুলি প্রতিদিন ব্যাচ করে, কয়েকটি কম্পিউটার C সার্ভারের একটিতে পাঠায় এবং কম্পিউটার C সেগুলি টেপে লেখে।
 
-| Script | Purpose |
+| স্ক্রিপ্ট | উদ্দেশ্য |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | কম্পিউটার B-এ সক্রিয় rsyslog ইনপুট ফাইল থেকে একটি ঘণ্টায় রোটেটেড লগ তৈরি করে। |
+| `scripts/computer-b-daily-archive.sh` | কম্পিউটার B-এ এক দিনের (`YYYYMMDD`) ঘণ্টায় লগগুলি একটি সময়-পরিসীমাযুক্ত `.tar.gz` আর্কাইভে বান্ডিল করে, সক্রিয়-লেখার দ্বন্দ্ব এড়াতে বর্তমান ঘণ্টা বাদ দিয়ে। |
+| `scripts/computer-b-send-archives.sh` | কম্পিউটার B থেকে `scp`-এর মাধ্যমে এক বা একাধিক কম্পিউটার C সার্ভারে অপ্রেরিত দৈনিক আর্কাইভ (`.tar.gz` এবং ঐচ্ছিক `.tar.gz.enc`) পাঠায়। |
+| `scripts/computer-c-receive-archives.sh` | আগত প্লেইনটেক্সট আর্কাইভ যাচাই করে এবং প্লেইনটেক্সট/এনক্রিপ্টেড আর্কাইভ টেপের জন্য সারিবদ্ধ করে। |
+| `scripts/computer-c-write-to-tape.sh` | সারিবদ্ধ প্লেইনটেক্সট বা এনক্রিপ্টেড আর্কাইভ টেপে লেখে, স্থান পরীক্ষা করে, নিরাপদে সংযুক্ত করে এবং সেগুলি রেকর্ড হিসেবে চিহ্নিত করে। |
+| `scripts/computer-c-inventory-tape.sh` | ফাইল মার্কার অনুযায়ী একটি টেপ বিষয়বস্তু-সূচিপত্র প্রিন্ট করে যাতে অপারেটররা দ্রুত আর্কাইভ খুঁজে পেতে পারেন। |
+| `scripts/computer-c-restore-archive-from-tape.sh` | অনুরোধকৃত আর্কাইভের জন্য টেপ ফাইল অবস্থান স্ক্যান করে, প্রয়োজনে ডিক্রিপ্ট করে এবং পুনরুদ্ধারকৃত ডেটা একটি ফাইলে সংরক্ষণ করে। |
+| `scripts/test-computer-a-b-c-integration.sh` | একটি নির্ধারিত স্থানীয় A→B→C ইন্টিগ্রেশন পরীক্ষা চালায় (টেপ পুনরুদ্ধার সহ) যা ওয়াল-ক্লক টাইমিংয়ের উপর নির্ভর করে না। |
 
-Typical scheduling:
+সাধারণ সময়সূচি:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- প্রতি ঘণ্টায় `computer-b-hourly-rotate.sh` চালান (B-তে cron)।
+- প্রতিদিন একবার `computer-b-daily-archive.sh` চালান (B-তে cron)।
+- আর্কাইভ তৈরির পর `computer-b-send-archives.sh` চালান (B-তে cron)।
+- C-তে পর্যায়ক্রমে `computer-c-receive-archives.sh` চালান।
+- সঠিক টেপ ডিভাইস দিয়ে C-তে পর্যায়ক্রমে `computer-c-write-to-tape.sh` চালান।
+- মার্কার-বাই-মার্কার বিষয়বস্তু সূচিপত্রের প্রয়োজন হলে C-তে `computer-c-inventory-tape.sh` চালান।
+- নির্দিষ্ট আর্কাইভ পরীক্ষার জন্য পুনরুদ্ধার করতে হলে C-তে `computer-c-restore-archive-from-tape.sh` চালান।
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+সমস্ত পাইপলাইন স্ক্রিপ্ট কনসোল আউটপুটের পাশাপাশি `logger`-এর মাধ্যমে syslog-এ অপারেশনাল বার্তাও প্রেরণ করে (উদাহরণস্বরূপ, rsyslog/জার্নালিংয়ের মাধ্যমে দৃশ্যমান)।
 
-### Multi-server send from Computer B
+### কম্পিউটার B থেকে মাল্টি-সার্ভার প্রেরণ
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` একক-সার্ভার মোড এবং মাল্টি-সার্ভার মোড উভয়ই সমর্থন করে:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- একক-সার্ভার: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- মাল্টি-সার্ভার: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+ক্লায়েন্ট-সাইড সার্ভার নির্বাচনের বিকল্পসমূহ:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- একটি কম্পিউটার C-তে পিন করতে আর্গুমেন্টে একটি সার্ভার প্রদান করুন।
+- ফলব্যাক অনুমতি দিতে একাধিক সার্ভার প্রদান করুন।
+- প্রদত্ত তালিকা থেকে একটি নির্দিষ্ট সার্ভার বেছে নিতে `PREFERRED_SERVER=user@host` সেট করুন।
 
-Busy handling options on Computer B:
+কম্পিউটার B-তে ব্যস্ততা পরিচালনার বিকল্পসমূহ:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (ডিফল্ট: `.busy`): রিমোট সাইডে পরীক্ষা করা মার্কার ফাইল।
+- `BUSY_RETRY_SECONDS` (ডিফল্ট: `60`): সার্ভার ব্যস্ত থাকাকালীন পুনরায় চেষ্টার মধ্যে অপেক্ষার সময়।
+- `BUSY_MAX_RETRIES` (ডিফল্ট: `10`): প্রতি সার্ভারে সর্বাধিক পুনরায় চেষ্টার সংখ্যা।
 
-### Busy state publication from Computer C
+### কম্পিউটার C থেকে ব্যস্ততার অবস্থা প্রকাশ
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` সক্রিয়ভাবে টেপে আর্কাইভ লেখার সময় একটি ব্যস্ততার মার্কার তৈরি করে এবং নিষ্ক্রিয় থাকলে সেটি সরিয়ে দেয়।
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (ডিফল্ট: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+কম্পিউটার C ব্যবহার করে এমন মার্কার অবস্থানে কম্পিউটার B-তে `REMOTE_BUSY_MARKER` নির্দেশ করুন।
 
-### Tape safety and append behavior on Computer C
+### কম্পিউটার C-তে টেপ নিরাপত্তা এবং সংযোজন আচরণ
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+প্রতিটি আর্কাইভ লেখার আগে, `computer-c-write-to-tape.sh` উপলব্ধ টেপ/ডিভাইস ক্ষমতা পরীক্ষা করে এবং কমপক্ষে নিম্নলিখিত প্রয়োজন করে:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+প্রাসঙ্গিক ভেরিয়েবলসমূহ:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (ডিফল্ট: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (পরিচিত উপলব্ধ স্থানের জন্য ওভাররাইড)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (স্থান সনাক্ত না হলেও লেখার অনুমতি দেয়)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+বাস্তব টেপ ডিভাইসের জন্য, লেখক লেখার আগে ডেটার শেষে (`mt eom`/`mt eod`) চলে যায়, তাই একাধিক আর্কাইভ আগের টেপ বিষয়বস্তু ওভাররাইট না করে সংযুক্ত হয়।
 
-### Human-readable timestamps in filenames
+### ফাইলনামে মানব-পাঠযোগ্য টাইমস্ট্যাম্প
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- ঘণ্টায় লগগুলি এভাবে নামকরণ করা হয়: `rsyslog-2026-06-01T1600.log`
+- দৈনিক আর্কাইভগুলি এভাবে নামকরণ করা হয়: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+দৈনিক আর্কাইভ পরিসীমা আর্কাইভে অন্তর্ভুক্ত প্রকৃত প্রথম ও শেষ ঘণ্টার ফাইলের উপর ভিত্তি করে।
+এই নামগুলি ইভেন্টের তারিখ/সময় উইন্ডো খুঁজছেন এমন মানুষদের পড়ার উপযোগী করে তৈরি।
+সক্রিয় লেখা প্রেরণ না হয়, তাই বর্তমান ঘণ্টা ইচ্ছাকৃতভাবে আর্কাইভ তৈরি থেকে বাদ দেওয়া হয়।
 
-### Optional OpenSSL encryption for daily archives
+### দৈনিক আর্কাইভের জন্য ঐচ্ছিক OpenSSL এনক্রিপশন
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` tarball তৈরির পর OpenSSL দিয়ে আর্কাইভ এনক্রিপ্ট করতে পারে:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` সিমেট্রিক এনক্রিপশনের জন্য (`openssl enc`, ডিফল্ট সাইফার `aes-256-gcm`)।
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` প্রাপক-সার্টিফিকেট এনক্রিপশনের জন্য (`openssl smime`)।
+- `OPENSSL_ENCRYPT_CIPHER` কী-ফাইল এবং সার্টিফিকেট উভয় মোডের জন্য OpenSSL সাইফার বেছে নিতে (ডিফল্ট: `aes-256-gcm`)।
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+একসাথে এই বিকল্পগুলির মধ্যে শুধুমাত্র একটি সেট করা যাবে। এনক্রিপ্টেড আউটপুট `.tar.gz.enc` ব্যবহার করে।
+নিরাপত্তার জন্য, স্ক্রিপ্ট দুর্বল বা নন-AEAD সাইফার পছন্দ প্রত্যাখ্যান করে এবং GCM/poly1305-শ্রেণির সাইফার প্রয়োজন করে।
 
-### Archive recovery from tape on Computer C
+### কম্পিউটার C-তে টেপ থেকে আর্কাইভ পুনরুদ্ধার
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+শুরু থেকে ক্রমানুসারে টেপ ফাইলগুলি অনুসন্ধান করে একটি নির্দিষ্ট আর্কাইভ খুঁজে পেতে `computer-c-restore-archive-from-tape.sh` ব্যবহার করুন:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- `rsyslog-<start>_to_<end>.tar.gz` (বা `.tar.gz.enc`) এর মতো আর্কাইভ নামের জন্য, স্ক্রিপ্ট পুনরুদ্ধারকৃত পেলোডে সীমানা ঘণ্টার ফাইল উপস্থিত আছে কিনা পরীক্ষা করে সঠিক মিল চিহ্নিত করে।
+- আপনার আর্কাইভ নামকরণ ভিন্ন হলে, আর্কাইভে অবশ্যই বিদ্যমান এমন একটি সদস্যের সাথে মিলানো শেল প্যাটার্নে `TARGET_MEMBER_GLOB` সেট করুন।
+- যদি একটি আর্কাইভ এনক্রিপ্টেড হয়, প্রয়োজন অনুযায়ী ডিক্রিপশন সেটিংস প্রদান করুন:
+  - `OPENSSL_DECRYPT_KEY_FILE` (সিমেট্রিক `openssl enc` মোড; ডিফল্ট ডিক্রিপ্ট সাইফার: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` এবং `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME ডিক্রিপ্ট মোড)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+পুনরুদ্ধারকৃত আউটপুট একটি প্লেইনটেক্সট `.tar.gz` ফাইল হিসেবে লেখা হয় যাতে এটি `tar -tzf`-এর মতো টুল দিয়ে পরীক্ষা করা যায়।
 
-### Tape table-of-contents inventory on Computer C
+### কম্পিউটার C-তে টেপ বিষয়বস্তু-সূচিপত্র তালিকা
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+মার্কার-বাই-মার্কার বিষয়বস্তু সূচিপত্র প্রিন্ট করতে `computer-c-inventory-tape.sh` ব্যবহার করুন:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+আউটপুট কলামগুলিতে অন্তর্ভুক্ত রয়েছে:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: শূন্য-ভিত্তিক টেপ ফাইল মার্কার অবস্থান
+- `status`: `ok`, `decrypted`, বা `unreadable`
+- `encrypted`: এন্ট্রি পরীক্ষা করতে ডিক্রিপশন প্রয়োজন ছিল কিনা (`yes`/`no`)
+- `archive_hint`: সীমানা চেনা গেলে অনুমানকৃত আর্কাইভ-স্টাইলের নাম
+- `first_member` / `last_member`: সেই মার্কারে দেখা প্রথম এবং শেষ tar সদস্য
+- `member_count`: সেই মার্কারে পাওয়া tar সদস্যের সংখ্যা
+- `bytes`: সেই মার্কারে পড়া কাঁচা বাইট
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+এটি একজন অপারেটরকে পুনরুদ্ধার অপারেশনের আগে সন্ধান করতে (`mt fsf <N>`) মার্কার সূচক চিহ্নিত করতে দেয়।
 
-### Deterministic A/B/C integration test
+### নির্ধারিত A/B/C ইন্টিগ্রেশন পরীক্ষা
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+অতিবাহিত সময় নির্বিশেষে কম্পিউটার A, B এবং C-এর এন্ড-টু-এন্ড ইন্টিগ্রেশন যাচাই করতে `scripts/test-computer-a-b-c-integration.sh` ব্যবহার করুন:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+এই স্ক্রিপ্ট:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. A-কে লগ লেখার অনুকরণ করে।
+2. B রোটেশন এবং দৈনিক আর্কাইভ তৈরি চালায়।
+3. C ইনকামিংয়ে স্থানান্তরের অনুকরণ করে।
+4. C রিসিভ + write-to-tape চালায়।
+5. টেপ থেকে আর্কাইভ পুনরুদ্ধার করে এবং বিষয়বস্তু যাচাই করে।
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+এটি একটি নির্দিষ্ট দিনের স্ট্যাম্প (`TEST_DAY_STAMP`, ডিফল্ট `20260101`) ব্যবহার করে যাতে আচরণ পুনরাবৃত্তিযোগ্য হয় এবং বর্তমান তারিখ/সময়ের সাথে আবদ্ধ না হয়।
 
-### 72-hour retention with safety for unconfirmed data
+### অনিশ্চিত ডেটার জন্য নিরাপত্তা সহ ৭২-ঘণ্টা ধারণ
 
-The scripts now default to a 72-hour retention window:
+স্ক্রিপ্টগুলি এখন ডিফল্টভাবে ৭২-ঘণ্টা ধারণ উইন্ডোতে সেট:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` কেবল তখনই পুরানো ঘণ্টায় লগগুলি সরিয়ে দেয় যখন একটি মিলানো স্থানীয় `.taped` নিশ্চিতকরণ মার্কার বিদ্যমান থাকে।
+- `computer-b-send-archives.sh` কেবল তখনই পুরানো স্থানীয় আর্কাইভ সরিয়ে দেয় যখন উভয় `.sent` এবং স্থানীয় `.taped` নিশ্চিতকরণ মার্কার বিদ্যমান থাকে।
+- `computer-c-write-to-tape.sh` কেবল সেই পুরানো আর্কাইভগুলি সরিয়ে দেয় যেগুলিতে ইতিমধ্যে `.taped` মার্কার আছে।
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+ফলস্বরূপ, যে ফাইলগুলি এখনও সফলভাবে প্রেরিত এবং টেপে রেকর্ড হয়নি সেগুলি `RETENTION_HOURS` (ডিফল্ট `72`) এর চেয়ে পুরানো হলেও ধরে রাখা হয়।
+কম্পিউটার B-তে, স্থানীয় পরিষ্কারের জন্য স্থানীয় `.taped` মার্কার প্রয়োজন (উদাহরণস্বরূপ সিঙ্ক-ব্যাক ধাপ বা ম্যানুয়াল নিশ্চিতকরণ প্রক্রিয়া থেকে)।
+কম্পিউটার C-তে, ধারণ বয়স `.taped` মার্কার পরিবর্তনের সময় থেকে পরিমাপ করা হয় (সাধারণত সফল টেপ লেখার সময়ে সেট করা হয়)।

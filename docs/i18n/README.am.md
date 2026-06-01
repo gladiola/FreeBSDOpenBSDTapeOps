@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (አማርኛ)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+በ`mt` እና `tar` ተጠቅሞ የተለመዱ የማግኔቲክ ቴፕ ስራዎችን ደረጃ በደረጃ የሚያሳዩ በይነተገናኝ shell ስክሪፖች።
 
-## Language Documentation Index
+## የቋንቋ ሰነዶች ማውጫ
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## ስክሪፖች
 
-| Script | Target OS |
+| ስክሪፕ | ዒላማ ስርዓተ ክወና |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+ሁለቱም ስክሪፖች ተመሳሳይ ተከታታይ ስራዎችን ያከናውናሉ፦
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. ቴፕ መጫኑን ለተጠቃሚው ያረጋግጣሉ።
+2. ቴፕን ይጠቀልላሉ።
+3. የቴፕ ሁኔታ ያትማሉ።
+4. `tar t` ተጠቅሞ በፋይል ቦታዎች 0፣ 1፣ 2 እና 3 ያሉ ማህደሮች ይዘት ይዘረዝራሉ።
+5. ቴፕን ከስራ ውጭ ያደርጋሉ።
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+እያንዳንዱ ደረጃ ቆምና ተጠቃሚው **Enter** እስኪጫን ይጠብቃሉ፤ ስለዚህ ስክሪፖቹ እንደ በይነተገናኝ ማሳያዎች ወይም ሚመራ ጉዞዎች ተስማሚ ናቸው።
 
-## Differences Between the Two Scripts
+## በሁለቱ ስክሪፖች መካከል ያሉ ልዩነቶች
 
-### 1. Tape device path
+### 1. የቴፕ መሳሪያ መስመር
 
-The scripts target different tape device nodes:
+ስክሪፖቹ የተለያዩ የቴፕ መሳሪያ ኖዶችን ዒላማ ያደርጋሉ፦
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+ሁለቱም ቀጥተኛ ያልሆነ ሪዋይንድ ኖዶች ናቸው (`n` ቅድመ ቅጥያ)፣ ስለዚህ በትዕዛዞች መካከል የቴፕ ቦታ ይቆያል፤ ስክሪፖቹ ደግሞ ቦታ ቁጥጥርን በ`mt rewind` እና `mt fsf` ይቆጣጠራሉ።
 
-### 2. Tape loading step
+### 2. የቴፕ መጫን ደረጃ
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: ቴፕ ካሴቱን ወደ ድራይቭ ሜካኒካዊ ሁኔታ ለመጫን ከሪዋይንድ በፊት በጀምሪያ `mt -f /dev/nsa0 load` ይሰጣሉ።
+- **OpenBSD**: OpenBSD ​`mt(1)` `load` ንዑስ ትዕዛዝ ስለማይደግፍ የ`load` ትዕዛዝ ይዘለላሉ። የ OpenBSD ስክሪፕ ቴፕ አስቀድሞ በድራይቩ ውስጥ እንዳለ ይቆጥርና ቀጥታ ወደ ሪዋይንድ ይሄዳሉ።
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A-ሀ-B-ወደ-C የምዝግብ ማስታወሻ የቧንቧ መስመር ስክሪፖች
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+`scripts/` ማውጫ OpenBSD ኮምፒዩተር B ከኮምፒዩተር A rsyslog ግቤቶች ሲቀበል፣ በቀን ሲጠቅልለው፣ ወደ አንዱ ከበርካታ ኮምፒዩተር C ሰርቨሮች ሲልከው፣ እና ኮምፒዩተር C ወደ ቴፕ ሲጽፈው ለሚሆነው ሁኔታ ስክሪፖችን ያቀርባሉ።
 
-| Script | Purpose |
+| ስክሪፕ | ዓላማ |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | በኮምፒዩተር B ላይ ካለው ንቁ rsyslog ግቤት ፋይል በሰዓት የሚሽከረከር ምዝግብ ማስታወሻ ይፈጥራሉ። |
+| `scripts/computer-b-daily-archive.sh` | አንድ ቀን (`YYYYMMDD`) የሰዓታዊ ምዝግብ ማስታወሻዎችን ወደ ጊዜ ልዩነት ያለው `.tar.gz` ማህደር ወደ ኮምፒዩተር B ያጠቃልሉ፤ ንቁ የጽሁፍ ቅሬታን ለማስቀረት ወቅታዊ ሰዓቱን ይዘለላሉ። |
+| `scripts/computer-b-send-archives.sh` | ያልተላኩ ዕለታዊ ማህደሮች (`.tar.gz` እና አማራጭ `.tar.gz.enc`) ከኮምፒዩተር B ወደ አንድ ወይም ብዙ ኮምፒዩተር C ሰርቨሮች በ`scp` ይልካሉ። |
+| `scripts/computer-c-receive-archives.sh` | የሚመጡ ጽሁፍ ማህደሮችን ያረጋግጣሉ፤ ጽሁፍ/ምስጢር ማህደሮችን ለቴፕ ይሰለፋሉ። |
+| `scripts/computer-c-write-to-tape.sh` | የሰለፉ ጽሁፍ ወይም ምስጢር ማህደሮችን ወደ ቴፕ ይጽፋሉ፤ ቦታ ይፈትሻሉ፤ ደህና ሁኔታ ላይ ያያይዛሉ፤ ተቀዳ ብለው ያስምሩባቸዋሉ። |
+| `scripts/computer-c-inventory-tape.sh` | ኦፕሬተሮች ማህደሮችን በፍጥነት እንዲያገኙ የቴፕ ማውጫ ሠንጠረዥ በፋይል ምልክቶች ያትማሉ። |
+| `scripts/computer-c-restore-archive-from-tape.sh` | ለተጠየቀ ማህደር የቴፕ ፋይል ቦታዎችን ይቃኛሉ፤ አስፈላጊ ሲሆን ምስጢር ይፈቱ፤ ተመለሱ ዳታ ወደ ፋይል ይቀምሩ። |
+| `scripts/test-computer-a-b-c-integration.sh` | ሰዓት ቆጣሪ ወቅት ሳያስፈልግ ወሳኝ ሃቀኛ ሃቅ A→B→C ውህደት ፈተና (ቴፕ ወደ ቦታ መልስ ጨምሮ) ያካሂዱ። |
 
-Typical scheduling:
+የተለመደ ጊዜ ቅደም ተከተል፦
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- `computer-b-hourly-rotate.sh` በሰዓት ያካሂዱ (B ላይ cron)።
+- `computer-b-daily-archive.sh` በቀን አንድ ጊዜ ያካሂዱ (B ላይ cron)።
+- `computer-b-send-archives.sh` ማህደር ከተፈጠረ በኋላ ያካሂዱ (B ላይ cron)።
+- `computer-c-receive-archives.sh` ወቅቱን በጠብቆ C ላይ ያካሂዱ።
+- `computer-c-write-to-tape.sh` ትክክለኛ ቴፕ መሳሪያ ይዘው ወቅቱን በጠብቆ C ላይ ያካሂዱ።
+- `computer-c-inventory-tape.sh` ምልክት-በምልክት ማውጫ ሠንጠረዥ ሲያስፈልጋችሁ C ላይ ያካሂዱ።
+- `computer-c-restore-archive-from-tape.sh` ለምርመራ የተወሰነ ማህደር ሲፈልጉ C ላይ ያካሂዱ።
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+ሁሉም የቧንቧ መስመር ስክሪፖች በተጨማሪም ሥራ ነክ መልዕክቶችን ወደ syslog በ`logger` ይልካሉ (ለምሳሌ፣ rsyslog/journaling በኩል ይታዩ)፤ ይህ ከኮንሶል ውጤት በተጨማሪ ነው።
 
-### Multi-server send from Computer B
+### ከኮምፒዩተር B ወደ ብዙ ሰርቨሮች ልኬት
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` ለአንድ ሰርቨር ሁናቴ እና ለብዙ ሰርቨሮች ሁናቴ ደጋፊ ነው፦
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- አንድ ሰርቨር፦ `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- ብዙ ሰርቨሮች፦ `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+ከደንበኛ ወገን የሰርቨር ምርጫ አማራጮች፦
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- ወደ አንድ ኮምፒዩተር C ለመቆለፍ አንድ ሰርቨር ይስጡ።
+- ወደ ኋላ ለመውደቅ ብዙ ሰርቨሮች ይስጡ።
+- ከተሰጡ ዝርዝሮች ውስጥ አንድ ሰርቨር ለመምረጥ `PREFERRED_SERVER=user@host` ያዘጋጁ።
 
-Busy handling options on Computer B:
+በኮምፒዩተር B ላይ ሥራ ብዛት አቆጣጠር አማራጮች፦
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (ነባሪ፦ `.busy`)፦ ከርቀት ወገን የሚፈተሽ ምልክት ፋይል።
+- `BUSY_RETRY_SECONDS` (ነባሪ፦ `60`)፦ ሰርቨሩ ሲጠመድ በሙከራዎች መካከል የመጠበቅ ጊዜ።
+- `BUSY_MAX_RETRIES` (ነባሪ፦ `10`)፦ በሰርቨር ከፍተኛ የሙከራ ሙከራ ቁጥር።
 
-### Busy state publication from Computer C
+### ከኮምፒዩተር C የሥራ ብዛት ሁኔታ ማሳወቅ
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` ማህደሮችን ወደ ቴፕ በንቃት ሲጽፍ የሥራ ብዛት ምልክት ይፈጥራሉ፤ ሲቀዘቅዙ ያስወግዱታሉ።
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (ነባሪ፦ `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+ኮምፒዩተር C የሚጠቀምበትን ምልክት ቦታ ወደ `REMOTE_BUSY_MARKER` ኮምፒዩተር B ላይ ያቅናሉ።
 
-### Tape safety and append behavior on Computer C
+### በኮምፒዩተር C ላይ የቴፕ ደህንነት እና ማያያዝ ባህሪ
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+እያንዳንዱን ማህደር ከመጻፉ በፊት፣ `computer-c-write-to-tape.sh` የሚገኝ የቴፕ/መሳሪያ አቅም ፈትሾ ቢያንስ የሚከተለው ሊኖር ይጠይቃሉ፦
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+ተዛማጅ ተለዋዋጮች፦
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (ነባሪ፦ `10485760`)
+- `TAPE_AVAILABLE_BYTES` (ለሚታወቅ ነፃ ቦታ ሥልጣን)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (ቦታ ሊታወቅ ካልቻለ ጽሁፍ ይፍቀዱ)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+ለእውነተኛ ቴፕ መሳሪያዎች ጸሐፊው ከመጻፉ በፊት ወደ ዳታ ፍጻሜ (`mt eom`/`mt eod`) ይፈልጉ ስለዚህ ብዙ ማህደሮች ከቀዳሚ ቴፕ ይዘቶች ፋንታ ተጨምሮ ይቀመጣሉ።
 
-### Human-readable timestamps in filenames
+### በፋይል ስሞች ውስጥ ሰው-ሊያነበው የሚችል ጊዜ ምልክቶች
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- ሰዓታዊ ምዝግብ ማስታወሻዎች እንደሚከተለው ይሰየሙ፦ `rsyslog-2026-06-01T1600.log`
+- ዕለታዊ ማህደሮች እንደሚከተለው ይሰየሙ፦ `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+ዕለታዊ ማህደር ወሰኖች በማህደሩ ውስጥ ከተካተቱ ትክክለኛ የመጀመሪያ እና የመጨረሻ ሰዓታዊ ፋይሎች ላይ ተመርኩዘዋሉ።
+እነዚህ ስሞች ለክስተት ቀን/ጊዜ መስኮቶች ሲፈልጉ ሰዎች ቀላሉ ንባብ እንዲሆናቸው ታቅዶ ተሰሯል።
+ወቅታዊ ሰዓቱ ሆን ብሎ ከማህደር ፈጠራ ሲዘለል ንቁ ጽሁፍ አይተላለፍም።
 
-### Optional OpenSSL encryption for daily archives
+### ለዕለታዊ ማህደሮች አማራጭ OpenSSL ምስጢር
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` ታርቦሉን ከፈጠረ በኋላ ማህደሮችን ምስጢር ማድረግ ይችላሉ፦
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` ለተምሳሌታዊ ምስጢር (`openssl enc`፤ ነባሪ ምስጠራ `aes-256-gcm`)።
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` ለተቀባይ-ምስክርወረቀት ምስጢር (`openssl smime`)።
+- `OPENSSL_ENCRYPT_CIPHER` ለቁልፍ-ፋይል እና ምስክርወረቀት ሁናቴዎች OpenSSL ምስጠራ ለመምረጥ (ነባሪ፦ `aes-256-gcm`)።
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+ከእነዚህ አማራጮች ውስጥ አንዱ ብቻ በአንድ ጊዜ ሊዘጋጅ ይችላሉ። ምስጢር ውጤቶች `.tar.gz.enc` ይጠቀማሉ።
+ደህንነት ሲባል ስክሪፕቱ ደካማ ወይም AEAD-ያልሆኑ ምስጠራ ምርጫዎችን ይቃወምና GCM/poly1305-ክፍል ምስጠራዎችን ይጠይቃሉ።
 
-### Archive recovery from tape on Computer C
+### ከቴፕ ላይ ማህደር ማዳን በኮምፒዩተር C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+`computer-c-restore-archive-from-tape.sh` ተጠቅሞ ከጀምሪያ ቴፕ ፋይሎችን ቅደም ተከተል ፈትሾ የተወሰነ ማህደር ያግኙ፦
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- `rsyslog-<start>_to_<end>.tar.gz` (ወይም `.tar.gz.enc`) ያሉ ማህደር ስሞች ሲሆን፣ ስክሪፕቱ የተዳነ ጭነት ውስጥ ወሰናዊ ሰዓታዊ ፋይሎች እንዳሉ ፈትሾ ትክክለኛ ዛሙ ይለያሉ።
+- ማህደር ስምዎ የተለዩ ከሆነ፣ ማህደሩ ውስጥ ሊኖር የሚገባ አባልን የሚዛሙ shell ቅርጸ ምልክት `TARGET_MEMBER_GLOB` ያዘጋጁ።
+- ማህደሩ ምስጢር ከሆነ ምስጢር የመፍቻ ቅንብሮቹን አስፈላጊ ሁኖ ይስጡ፦
+  - `OPENSSL_DECRYPT_KEY_FILE` (ተምሳሌታዊ `openssl enc` ሁናቴ፤ ነባሪ ምስጢር ፍቻ ምስጠራ፦ `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` እና `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME ምስጢር ፍቻ ሁናቴ)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+ተዳነ ውጤቱ ጽሁፍ `.tar.gz` ፋይል ሆኖ ይቀምራሉ ስለዚህ `tar -tzf` ያሉ መሳሪያዎች ሊፈትሹት ይችላሉ።
 
-### Tape table-of-contents inventory on Computer C
+### በኮምፒዩተር C ላይ የቴፕ ማውጫ ሠንጠረዥ ቆጠራ
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+`computer-c-inventory-tape.sh` ተጠቅሞ ምልክት-በምልክት ማውጫ ሠንጠረዥ ያትሙ፦
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+ውጤቱ ዓምዶቹ የሚከተሉትን ያካትታሉ፦
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`፦ ዜሮ ከሚጀምር ቴፕ ፋይል ምልክት ቦታ
+- `status`፦ `ok`፣ `decrypted`፣ ወይም `unreadable`
+- `encrypted`፦ ግቤቱ ለመፈተሽ ምስጢር ፍቻ ያስፈለገ ወይም አይደለ (`yes`/`no`)
+- `archive_hint`፦ ወሰኖቹ ሲታወቁ የተቀነሰ ማህደር-ዓይነት ስም
+- `first_member` / `last_member`፦ ያ ምልክት ውስጥ ታዩ የመጀመሪያ እና የመጨረሻ tar አባሎች
+- `member_count`፦ ያ ምልክት ውስጥ ተገኙ tar አባሎች ቁጥር
+- `bytes`፦ ያ ምልክት ላይ ተነበቡ ጥሬ ባይቶች
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+ይህ ኦፕሬተሩ ከማስተላለፍ ስራ በፊት ሊፈልጉት የሚፈልጉትን ምልክት ጠቋሚ (`mt fsf <N>`) እንዲለዩ ያስችላሉ።
 
-### Deterministic A/B/C integration test
+### ወሳኝ A/B/C ውህደት ፈተና
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+`scripts/test-computer-a-b-c-integration.sh` ተጠቅሞ ያለፈ ጊዜ ሳይጠቀሙ የኮምፒዩተሮች A፣ B እና C ጫፍ-ወደ-ጫፍ ውህደት ያረጋግጡ፦
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+ይህ ስክሪፕ፦
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. A ምዝግብ ማስታወሻ ሲጽፍ ይምስላሉ።
+2. B ሽክርክሪት እና ዕለታዊ ማህደር ፈጠራ ያካሂዳሉ።
+3. C ወደሚቀበለው ዝውውር ይምስላሉ።
+4. C ቀበላ + ወደ ቴፕ ጽሁፍ ያካሂዳሉ።
+5. ማህደሩን ከቴፕ ይመልሱና ይዘቱን ያረጋግጣሉ።
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+ባህሪ ሊደገም የሚችል እና ወቅታዊ ቀን/ጊዜ ሳይገደብ ቋሚ ቀን ምልክት ይጠቀማሉ (`TEST_DAY_STAMP`፤ ነባሪ `20260101`)።
 
-### 72-hour retention with safety for unconfirmed data
+### ያልተረጋገጡ ዳታዎች ደህንነቱ የተጠበቀ ከ72-ሰዓት ማቆያ
 
-The scripts now default to a 72-hour retention window:
+ስክሪፖቹ አሁን ነባሪ 72-ሰዓት ማቆያ ወቅት ይጠቀማሉ፦
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` አሮጌ ሰዓታዊ ምዝግብ ማስታወሻዎችን ሲያስወግዱ ተዛማጅ ሃቅ `.taped` ማረጋገጫ ምልክት ሲኖር ብቻ ነው።
+- `computer-b-send-archives.sh` አሮጌ ሃቅ ማህደሮችን ሲያስወግዱ `.sent` እና ሃቅ `.taped` ማረጋገጫ ምልክቶች ሲኖሩ ብቻ ነው።
+- `computer-c-write-to-tape.sh` አሮጌ ማህደሮችን ሲያስወግዱ `.taped` ምልክቶች ቀደም ሲሉ ሲኖሯቸው ብቻ ነው።
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+ስለዚህ ወደ ቴፕ ተላልፎ ተቀዳ ስኬት ያልተረጋገጡ ፋይሎች ከ`RETENTION_HOURS` (ነባሪ `72`) ሲበልጡ ሳይቀም ይቆያሉ።
+ኮምፒዩተር B ላይ ሃቅ ጽዳት ሃቅ `.taped` ምልክቶች ይጠይቃሉ (ለምሳሌ ተመልሶ-ማስተላለፍ ደረጃ ወይም ዕጅ-ማረጋገጫ ሂደት)።
+ኮምፒዩተር C ላይ ማቆያ እድሜ ከ`.taped` ምልክት ማሻሻያ ጊዜ ይለካሉ (ብዙውን ጊዜ ስኬታማ ቴፕ ጽሁፍ ጊዜ ይዘጋጃሉ)።

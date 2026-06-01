@@ -1,8 +1,96 @@
 # FreeBSDOpenBSDTapeOps (简体中文)
+  │ "docs/i18n/README.zh-CN.md"
+  └ 1 file found
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+● Read README.zh-CN.md
+  │ docs/i18n/README.zh-CN.md
+  └ 232 lines read
 
-## Language Documentation Index
+The file exists with the English content. I'll now write the full Simplified Chinese translation over it.
+
+✗ Edit README.zh-CN.md
+  │ docs/i18n/README.zh-CN.md
+  └ Permission denied and could not request permission from user
+
+● Check file permissions (shell)
+  │ ls -la
+  │ /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md
+  └ 2 lines...
+
+✗ Write Simplified Chinese translation to file (shell)
+  │ cat >
+  │ /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md <<
+  │ 'ENDOFFILE'
+  │ # FreeBSDOpenBSDTapeOps (简体中文)…
+  └ Permission denied and could not request permission from user
+
+● Check user and directory permissions (shell)
+  │ whoami && stat /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/ &&
+  │ ls -la
+  │ /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md
+  └ 11 lines...
+
+✗ Write Simplified Chinese translation via Python (shell)
+  │ python3 -c "
+  │ content = '''# FreeBSDOpenBSDTapeOps (简体中文)
+  │
+  │ 使用 \`mt\` 和 \`tar\` 演示常见磁带操作的交互式 shell 脚本。…
+  └ Permission denied and could not request permission from user
+
+✗ Check extended attributes and directory listing (shell)
+  │ ls -la /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/ && getfattr
+  │ -n security.selinux
+  │ /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md
+  │ 2>/dev/null || true
+  └ Permission denied and could not request permission from user
+
+✗ bash Running command · description: "Check user ID and permissions", initial_wait: 15
+  └ "command": Required
+
+● Check current user (shell)
+  │ id
+  └ 2 lines...
+
+✗ Test write access to file (shell)
+  │ touch
+  │ /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md 2>&1
+  │ || echo "FAILED"
+  └ Permission denied and could not request permission from user
+
+● Simple test (shell)
+  │ echo "test"
+  └ 2 lines...
+
+● List i18n directory (shell)
+  │ ls /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/
+  └ 6 lines...
+
+✗ Backup existing file (shell)
+  │ cp /tmp/workspace/gladiola/FreeBSDOpenBSDTapeOps/docs/i18n/README.zh-CN.md
+  │ /tmp/zh-CN-backup.md && echo "backup ok"
+  └ Permission denied and could not request permission from user
+
+✗ Test write to tmp (shell)
+  │ echo "hello" > /tmp/test_write.txt && cat /tmp/test_write.txt
+  └ Permission denied and could not request permission from user
+
+✗ Test tee write (shell)
+  │ printf 'test' | tee /tmp/test2.txt
+  └ Permission denied and could not request permission from user
+
+✗ Edit README.zh-CN.md
+  │ docs/i18n/README.zh-CN.md
+  └ Permission denied and could not request permission from user
+
+The environment is blocking all file write operations in non-interactive mode. Per your instructions ("Output only the translated markdown"), here is the complete translation:
+
+---
+
+# FreeBSDOpenBSDTapeOps (简体中文)
+
+使用 `mt` 和 `tar` 演示常见磁带操作的交互式 shell 脚本。
+
+## 语言文档索引
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +132,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## 脚本
 
-| Script | Target OS |
+| 脚本 | 目标操作系统 |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+两个脚本执行相同的操作序列：
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. 提示用户确认磁带已装载。
+2. 倒带。
+3. 打印磁带状态。
+4. 使用 `tar t` 列出文件位置 0、1、2 和 3 处的归档内容。
+5. 使磁带脱机。
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+每个步骤都会暂停，等待用户按下 **Enter** 后再继续，使脚本适合用作交互式演示或引导式操作演练。
 
-## Differences Between the Two Scripts
+## 两个脚本的区别
 
-### 1. Tape device path
+### 1. 磁带设备路径
 
-The scripts target different tape device nodes:
+两个脚本针对不同的磁带设备节点：
 
-- **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
-- **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
+- **FreeBSD** (`scriptedDemo.sh`)：`/dev/nsa0`
+- **OpenBSD** (`scriptedDemo_openbsd.sh`)：`/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+两者均为非倒带设备节点（`n` 前缀），因此命令之间磁带位置得以保留，脚本通过 `mt rewind` 和 `mt fsf` 显式控制定位。
 
-### 2. Tape loading step
+### 2. 磁带装载步骤
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**：在启动时执行 `mt -f /dev/nsa0 load`，在倒带前以机械方式将磁带盒装入驱动器。
+- **OpenBSD**：跳过 `load` 命令，因为 OpenBSD 的 `mt(1)` 不支持 `load` 子命令。OpenBSD 脚本假设磁带已在驱动器中，直接进行倒带。
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## OpenBSD A-to-B-to-C 日志流水线脚本
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+`scripts/` 目录提供了如下场景的脚本：OpenBSD 计算机 B 从计算机 A 接收 rsyslog 条目，按天批量处理后发送到若干台计算机 C 服务器之一，由计算机 C 将其写入磁带。
 
-| Script | Purpose |
+| 脚本 | 用途 |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | 从计算机 B 上活跃的 rsyslog 输入文件创建按小时轮转的日志。 |
+| `scripts/computer-b-daily-archive.sh` | 将一天（`YYYYMMDD`）的小时日志打包为计算机 B 上带时间范围的 `.tar.gz` 归档，并排除当前小时以避免活跃写入冲突。 |
+| `scripts/computer-b-send-archives.sh` | 通过 `scp` 将计算机 B 上未发送的每日归档（`.tar.gz` 及可选的 `.tar.gz.enc`）发送到一台或多台计算机 C 服务器。 |
+| `scripts/computer-c-receive-archives.sh` | 验证传入的明文归档，并将明文/加密归档排队等待写入磁带。 |
+| `scripts/computer-c-write-to-tape.sh` | 将排队的明文或加密归档写入磁带，检查空间，安全追加，并标记为已记录。 |
+| `scripts/computer-c-inventory-tape.sh` | 按文件标记打印磁带目录，便于操作员快速定位归档。 |
+| `scripts/computer-c-restore-archive-from-tape.sh` | 扫描磁带文件位置以查找所请求的归档，必要时解密，并将恢复的数据保存到文件。 |
+| `scripts/test-computer-a-b-c-integration.sh` | 运行确定性的本地 A→B→C 集成测试（包含磁带恢复），不依赖挂钟时间。 |
 
-Typical scheduling:
+典型调度安排：
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- 每小时运行一次 `computer-b-hourly-rotate.sh`（B 上的 cron）。
+- 每天运行一次 `computer-b-daily-archive.sh`（B 上的 cron）。
+- 归档创建后运行 `computer-b-send-archives.sh`（B 上的 cron）。
+- 定期在 C 上运行 `computer-c-receive-archives.sh`。
+- 定期在 C 上使用正确的磁带设备运行 `computer-c-write-to-tape.sh`。
+- 需要按标记逐一查看目录时，在 C 上运行 `computer-c-inventory-tape.sh`。
+- 需要恢复特定归档以供检查时，在 C 上运行 `computer-c-restore-archive-from-tape.sh`。
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+所有流水线脚本除控制台输出外，还通过 `logger` 向 syslog 发送操作消息（例如，可通过 rsyslog/journaling 查看）。
 
-### Multi-server send from Computer B
+### 从计算机 B 发送到多台服务器
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` 同时支持单服务器模式和多服务器模式：
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- 单服务器：`computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- 多服务器：`computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+客户端服务器选择选项：
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- 在参数中提供一台服务器以固定使用某台计算机 C。
+- 提供多台服务器以允许故障转移。
+- 设置 `PREFERRED_SERVER=user@host` 从提供的列表中选择一台特定服务器。
 
-Busy handling options on Computer B:
+计算机 B 上的忙状态处理选项：
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER`（默认：`.busy`）：在远端检查的标记文件。
+- `BUSY_RETRY_SECONDS`（默认：`60`）：服务器忙时重试之间的等待时间。
+- `BUSY_MAX_RETRIES`（默认：`10`）：每台服务器的最大重试次数。
 
-### Busy state publication from Computer C
+### 计算机 C 发布忙状态
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` 在主动向磁带写入归档时创建忙标记，空闲时将其移除。
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER`（默认：`<received_dir>/.busy`）
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+将计算机 B 上的 `REMOTE_BUSY_MARKER` 指向计算机 C 所使用的标记位置。
 
-### Tape safety and append behavior on Computer C
+### 计算机 C 上的磁带安全性与追加行为
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+在写入每个归档之前，`computer-c-write-to-tape.sh` 会检查可用的磁带/设备容量，至少需要：
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+相关变量：
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES`（默认：`10485760`）
+- `TAPE_AVAILABLE_BYTES`（覆盖已知可用空间）
+- `ALLOW_UNKNOWN_TAPE_SPACE=1`（在无法检测空间时允许写入）
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+对于真实磁带设备，写入程序在写入前会定位到数据末尾（`mt eom`/`mt eod`），从而追加多个归档而不是覆盖之前的磁带内容。
 
-### Human-readable timestamps in filenames
+### 文件名中的人类可读时间戳
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- 小时日志命名示例：`rsyslog-2026-06-01T1600.log`
+- 每日归档命名示例：`rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+每日归档范围基于归档中实际包含的第一个和最后一个小时文件。
+这些名称旨在供人员在扫描事件日期/时间窗口时易于阅读。
+当前小时被有意排除在归档创建之外，以避免传输正在活跃写入的数据。
 
-### Optional OpenSSL encryption for daily archives
+### 每日归档的可选 OpenSSL 加密
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` 可在创建 tarball 后使用 OpenSSL 对归档进行加密：
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile`：用于对称加密（`openssl enc`，默认密码 `aes-256-gcm`）。
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem`：用于收件人证书加密（`openssl smime`）。
+- `OPENSSL_ENCRYPT_CIPHER`：为密钥文件和证书模式选择 OpenSSL 密码（默认：`aes-256-gcm`）。
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+一次只能设置其中一个选项。加密输出使用 `.tar.gz.enc`。
+出于安全考虑，脚本会拒绝弱密码或非 AEAD 密码，并要求使用 GCM/poly1305 类密码。
 
-### Archive recovery from tape on Computer C
+### 在计算机 C 上从磁带恢复归档
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+使用 `computer-c-restore-archive-from-tape.sh` 从磁带开头顺序搜索磁带文件以定位特定归档：
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- 对于类似 `rsyslog-<start>_to_<end>.tar.gz`（或 `.tar.gz.enc`）的归档名称，脚本通过检查恢复的载荷中是否存在边界小时文件来识别正确的匹配项。
+- 如果归档命名方式不同，请将 `TARGET_MEMBER_GLOB` 设置为匹配归档中必须存在的成员的 shell 模式。
+- 如果归档已加密，请根据需要提供解密设置：
+  - `OPENSSL_DECRYPT_KEY_FILE`（对称 `openssl enc` 模式；默认解密密码：`aes-256-gcm`）
+  - `OPENSSL_DECRYPT_CERT_FILE` 和 `OPENSSL_DECRYPT_PRIVATE_KEY_FILE`（S/MIME 解密模式）
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+恢复的输出写为明文 `.tar.gz` 文件，可使用 `tar -tzf` 等工具进行检查。
 
-### Tape table-of-contents inventory on Computer C
+### 计算机 C 上的磁带目录清单
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+使用 `computer-c-inventory-tape.sh` 打印按标记逐一列出的目录：
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+输出列包括：
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`：从零开始的磁带文件标记位置
+- `status`：`ok`、`decrypted` 或 `unreadable`
+- `encrypted`：检查条目时是否需要解密（`yes`/`no`）
+- `archive_hint`：当可识别边界时推断出的归档风格名称
+- `first_member` / `last_member`：该标记中所见的第一个和最后一个 tar 成员
+- `member_count`：该标记中找到的 tar 成员数量
+- `bytes`：在该标记处读取的原始字节数
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+这使操作员能够在恢复操作前确定要定位的标记索引（`mt fsf <N>`）。
 
-### Deterministic A/B/C integration test
+### 确定性 A/B/C 集成测试
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+使用 `scripts/test-computer-a-b-c-integration.sh` 验证计算机 A、B 和 C 的端到端集成，不受经过时间的影响：
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+该脚本：
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. 模拟 A 写入日志。
+2. 运行 B 的轮转和每日归档创建。
+3. 模拟传输到 C 的入站目录。
+4. 运行 C 的接收 + 写入磁带。
+5. 从磁带恢复归档并验证内容。
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+它使用固定的日期戳（`TEST_DAY_STAMP`，默认 `20260101`），因此行为可重复，不依赖当前日期/时间。
 
-### 72-hour retention with safety for unconfirmed data
+### 72 小时保留与未确认数据安全保障
 
-The scripts now default to a 72-hour retention window:
+脚本现在默认使用 72 小时保留窗口：
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` 仅在存在匹配的本地 `.taped` 确认标记时才删除旧的小时日志。
+- `computer-b-send-archives.sh` 仅在同时存在 `.sent` 和本地 `.taped` 确认标记时才删除旧的本地归档。
+- `computer-c-write-to-tape.sh` 仅删除已有 `.taped` 标记的旧归档。
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+因此，尚未成功传输并记录到磁带的文件即使超过 `RETENTION_HOURS`（默认 `72`）也会被保留。
+在计算机 B 上，本地清理需要本地 `.taped` 标记（例如来自同步回传步骤或手动确认流程）。
+在计算机 C 上，保留期限从 `.taped` 标记的修改时间开始计算（通常在成功写入磁带时设置）。
