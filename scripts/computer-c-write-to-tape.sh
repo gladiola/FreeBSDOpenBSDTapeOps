@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+SCRIPT_NAME=$(basename "$0")
+
+log_info() {
+  msg=$1
+  printf '%s\n' "$msg"
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.notice "$msg" || true
+  fi
+}
+
+log_error() {
+  msg=$1
+  printf '%s\n' "$msg" >&2
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.err "$msg" || true
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: computer-c-write-to-tape.sh <received_dir> <tape_device>
@@ -29,7 +47,7 @@ BUSY_MARKER=${BUSY_MARKER:-$RECEIVED_DIR/.busy}
 ALLOW_UNKNOWN_TAPE_SPACE=${ALLOW_UNKNOWN_TAPE_SPACE:-0}
 
 if [ ! -d "$RECEIVED_DIR" ]; then
-  printf 'Received directory not found: %s\n' "$RECEIVED_DIR" >&2
+  log_error "$(printf 'Received directory not found: %s' "$RECEIVED_DIR")"
   exit 2
 fi
 
@@ -104,14 +122,14 @@ ensure_can_write_archive() {
   archive_size=$(wc -c < "$archive" | tr -d ' ')
 
   if ! available=$(space_available_bytes "$TAPE_DEVICE"); then
-    printf 'Could not determine available tape space for %s\n' "$TAPE_DEVICE" >&2
+    log_error "$(printf 'Could not determine available tape space for %s' "$TAPE_DEVICE")"
     return 1
   fi
 
   required=$((archive_size + TAPE_SAFETY_MARGIN_BYTES))
   if [ "$available" -lt "$required" ]; then
-    printf 'Insufficient tape space for %s: need %s bytes incl. margin, have %s\n' \
-      "$archive" "$required" "$available" >&2
+    log_error "$(printf 'Insufficient tape space for %s: need %s bytes incl. margin, have %s' \
+      "$archive" "$required" "$available")"
     return 1
   fi
 
@@ -135,12 +153,12 @@ seek_end_of_data() {
   if mt -f "$TAPE_DEVICE" eod >/dev/null 2>&1; then
     return 0
   fi
-  printf 'Failed to seek end-of-data on tape %s\n' "$TAPE_DEVICE" >&2
+  log_error "$(printf 'Failed to seek end-of-data on tape %s' "$TAPE_DEVICE")"
   return 1
 }
 
 found=0
-for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
+for ready in "$RECEIVED_DIR"/*.tar.gz.ready "$RECEIVED_DIR"/*.tar.gz.enc.ready; do
   [ -e "$ready" ] || continue
   found=1
 
@@ -149,7 +167,7 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
   [ -f "$done_marker" ] && continue
 
   if [ ! -s "$archive" ]; then
-    printf 'Skipping empty archive %s\n' "$archive" >&2
+    log_error "$(printf 'Skipping empty archive %s' "$archive")"
     continue
   fi
 
@@ -158,7 +176,7 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
   fi
 
   set_busy
-  printf 'Writing %s to tape %s\n' "$archive" "$TAPE_DEVICE"
+  log_info "$(printf 'Writing %s to tape %s' "$archive" "$TAPE_DEVICE")"
   if [ -c "$TAPE_DEVICE" ]; then
     if ! seek_end_of_data; then
       exit 5
@@ -166,16 +184,16 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
 
     if dd if="$archive" of="$TAPE_DEVICE" bs="$TAPE_BLOCK_SIZE" conv=sync; then
       if ! mt -f "$TAPE_DEVICE" weof 1; then
-        printf 'Failed writing EOF marker to tape %s\n' "$TAPE_DEVICE" >&2
+        log_error "$(printf 'Failed writing EOF marker to tape %s' "$TAPE_DEVICE")"
         exit 5
       fi
     else
-      printf 'Failed writing %s to tape %s\n' "$archive" "$TAPE_DEVICE" >&2
+      log_error "$(printf 'Failed writing %s to tape %s' "$archive" "$TAPE_DEVICE")"
       exit 3
     fi
   else
     if ! cat "$archive" >> "$TAPE_DEVICE"; then
-      printf 'Failed appending %s to %s\n' "$archive" "$TAPE_DEVICE" >&2
+      log_error "$(printf 'Failed appending %s to %s' "$archive" "$TAPE_DEVICE")"
       exit 4
     fi
   fi
@@ -183,14 +201,16 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
   touch "$done_marker"
   rm -f "$ready"
   clear_busy
+  log_info "$(printf 'Recorded archive to tape and marked done: %s' "$archive")"
 done
 
 if [ "$found" -eq 0 ]; then
-  printf 'No queued archives in %s\n' "$RECEIVED_DIR"
+  log_info "$(printf 'No queued archives in %s' "$RECEIVED_DIR")"
 fi
 
-find "$RECEIVED_DIR" -type f -name '*.tar.gz.taped' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
+find "$RECEIVED_DIR" -type f \( -name '*.tar.gz.taped' -o -name '*.tar.gz.enc.taped' \) -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
   # Uses .taped marker mtime as the age proxy for retention.
   archive=${taped_marker%.taped}
   rm -f "$archive" "$taped_marker"
+  log_info "$(printf 'Removed retained taped archive and marker: %s' "$archive")"
 done

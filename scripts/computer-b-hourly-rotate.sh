@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+SCRIPT_NAME=$(basename "$0")
+
+log_info() {
+  msg=$1
+  printf '%s\n' "$msg"
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.notice "$msg" || true
+  fi
+}
+
+log_error() {
+  msg=$1
+  printf '%s\n' "$msg" >&2
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.err "$msg" || true
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: computer-b-hourly-rotate.sh <rsyslog_input_file> <hourly_output_dir> [keep_hours]
@@ -24,7 +42,7 @@ OUTPUT_DIR=$2
 KEEP_HOURS=${3:-72}
 
 if [ ! -f "$INPUT_LOG" ]; then
-  printf 'Input log not found: %s\n' "$INPUT_LOG" >&2
+  log_error "$(printf 'Input log not found: %s' "$INPUT_LOG")"
   exit 2
 fi
 
@@ -48,6 +66,7 @@ find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mmin +$((KEEP_HOURS * 60)) | w
   # Only remove logs that have an explicit local tape-confirmation marker.
   [ -f "$old_log.taped" ] || continue
   rm -f "$old_log" "$old_log.taped"
+  log_info "$(printf 'Removed retained hourly log and marker: %s' "$old_log")"
 done
 
-printf 'Created hourly log %s and rotated %s\n' "$OUT_FILE" "$INPUT_LOG"
+log_info "$(printf 'Created hourly log %s and rotated %s' "$OUT_FILE" "$INPUT_LOG")"

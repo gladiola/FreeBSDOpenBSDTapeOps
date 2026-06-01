@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+SCRIPT_NAME=$(basename "$0")
+
+log_info() {
+  msg=$1
+  printf '%s\n' "$msg"
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.notice "$msg" || true
+  fi
+}
+
+log_error() {
+  msg=$1
+  printf '%s\n' "$msg" >&2
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.err "$msg" || true
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage:
@@ -40,12 +58,12 @@ fi
 SERVERS=$*
 
 if [ -z "$SERVERS" ]; then
-  printf 'No servers provided\n' >&2
+  log_error 'No servers provided'
   exit 2
 fi
 
 if [ ! -d "$ARCHIVE_DIR" ]; then
-  printf 'Archive directory not found: %s\n' "$ARCHIVE_DIR" >&2
+  log_error "$(printf 'Archive directory not found: %s' "$ARCHIVE_DIR")"
   exit 2
 fi
 
@@ -67,7 +85,7 @@ selected_servers() {
         return 0
       fi
     done
-    printf 'Preferred server not in provided server list: %s\n' "$PREFERRED_SERVER" >&2
+    log_error "$(printf 'Preferred server not in provided server list: %s' "$PREFERRED_SERVER")"
     return 1
   fi
 
@@ -96,12 +114,12 @@ wait_until_ready() {
   while remote_is_busy "$remote"; do
     retries=$((retries + 1))
     if [ "$retries" -gt "$BUSY_MAX_RETRIES" ]; then
-      printf 'Server %s remained busy too long (marker %s)\n' "$remote" "$BUSY_MARKER_PATH" >&2
+      log_error "$(printf 'Server %s remained busy too long (marker %s)' "$remote" "$BUSY_MARKER_PATH")"
       return 1
     fi
 
-    printf 'Server %s is busy; retrying in %s seconds (%s/%s)\n' \
-      "$remote" "$BUSY_RETRY_SECONDS" "$retries" "$BUSY_MAX_RETRIES"
+    log_info "$(printf 'Server %s is busy; retrying in %s seconds (%s/%s)' \
+      "$remote" "$BUSY_RETRY_SECONDS" "$retries" "$BUSY_MAX_RETRIES")"
     sleep "$BUSY_RETRY_SECONDS"
   done
 
@@ -109,7 +127,7 @@ wait_until_ready() {
 }
 
 found=0
-for archive in "$ARCHIVE_DIR"/*.tar.gz; do
+for archive in "$ARCHIVE_DIR"/*.tar.gz "$ARCHIVE_DIR"/*.tar.gz.enc; do
   [ -e "$archive" ] || continue
   found=1
 
@@ -121,7 +139,7 @@ for archive in "$ARCHIVE_DIR"/*.tar.gz; do
   sent=0
   for remote in $(selected_servers); do
     if ! ensure_remote_dir "$remote"; then
-      printf 'Could not prepare remote directory on %s\n' "$remote" >&2
+      log_error "$(printf 'Could not prepare remote directory on %s' "$remote")"
       continue
     fi
 
@@ -131,29 +149,30 @@ for archive in "$ARCHIVE_DIR"/*.tar.gz; do
 
     if scp "$archive" "$remote:$REMOTE_DIR_QUOTED"; then
       touch "$marker"
-      printf 'Sent %s via %s\n' "$archive" "$remote"
+      log_info "$(printf 'Sent %s via %s' "$archive" "$remote")"
       sent=1
       break
     fi
 
-    printf 'Failed to send %s via %s\n' "$archive" "$remote" >&2
+    log_error "$(printf 'Failed to send %s via %s' "$archive" "$remote")"
   done
 
   if [ "$sent" -ne 1 ]; then
-    printf 'Failed to send %s to all candidate servers\n' "$archive" >&2
+    log_error "$(printf 'Failed to send %s to all candidate servers' "$archive")"
     exit 3
   fi
 done
 
 if [ "$found" -eq 0 ]; then
-  printf 'No archives found in %s\n' "$ARCHIVE_DIR"
+  log_info "$(printf 'No archives found in %s' "$ARCHIVE_DIR")"
 fi
 
-find "$ARCHIVE_DIR" -type f -name '*.tar.gz.taped' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
+find "$ARCHIVE_DIR" -type f \( -name '*.tar.gz.taped' -o -name '*.tar.gz.enc.taped' \) -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
   archive=${taped_marker%.taped}
   sent_marker="$archive.sent"
 
   # Keep data unless local send and tape confirmations both exist.
   [ -f "$sent_marker" ] || continue
   rm -f "$archive" "$sent_marker" "$taped_marker"
+  log_info "$(printf 'Removed retained archive and markers: %s' "$archive")"
 done

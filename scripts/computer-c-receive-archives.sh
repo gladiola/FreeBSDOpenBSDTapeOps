@@ -1,6 +1,24 @@
 #!/bin/sh
 set -eu
 
+SCRIPT_NAME=$(basename "$0")
+
+log_info() {
+  msg=$1
+  printf '%s\n' "$msg"
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.notice "$msg" || true
+  fi
+}
+
+log_error() {
+  msg=$1
+  printf '%s\n' "$msg" >&2
+  if command -v logger >/dev/null 2>&1; then
+    logger -t "$SCRIPT_NAME" -p user.err "$msg" || true
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: computer-c-receive-archives.sh <incoming_dir> <received_dir>
@@ -25,22 +43,36 @@ RECEIVED_DIR=$2
 mkdir -p "$INCOMING_DIR" "$RECEIVED_DIR"
 
 found=0
-for archive in "$INCOMING_DIR"/*.tar.gz; do
+for archive in "$INCOMING_DIR"/*.tar.gz "$INCOMING_DIR"/*.tar.gz.enc; do
   [ -e "$archive" ] || continue
   found=1
 
-  if ! tar -tzf "$archive" >/dev/null 2>&1; then
-    printf 'Invalid archive (left in incoming): %s\n' "$archive" >&2
-    continue
-  fi
+  case "$archive" in
+    *.tar.gz)
+      if ! tar -tzf "$archive" >/dev/null 2>&1; then
+        log_error "$(printf 'Invalid archive (left in incoming): %s' "$archive")"
+        continue
+      fi
+      ;;
+    *.tar.gz.enc)
+      if [ ! -s "$archive" ]; then
+        log_error "$(printf 'Invalid encrypted archive (left in incoming): %s' "$archive")"
+        continue
+      fi
+      ;;
+  esac
 
   base=$(basename "$archive")
   target="$RECEIVED_DIR/$base"
   mv "$archive" "$target"
   : > "$target.ready"
-  printf 'Queued %s for tape\n' "$target"
+  if [ "${archive##*.}" = "enc" ]; then
+    log_info "$(printf 'Queued encrypted archive %s for tape' "$target")"
+  else
+    log_info "$(printf 'Queued %s for tape' "$target")"
+  fi
 done
 
 if [ "$found" -eq 0 ]; then
-  printf 'No new archives in %s\n' "$INCOMING_DIR"
+  log_info "$(printf 'No new archives in %s' "$INCOMING_DIR")"
 fi

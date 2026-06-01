@@ -42,10 +42,10 @@ The `scripts/` directory provides scripts for the scenario where OpenBSD Compute
 | Script | Purpose |
 |---|---|
 | `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming archives on Computer C and queues them for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued archives to tape on Computer C, checks space, appends safely, and marks them recorded. |
+| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
+| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
+| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
 
 Typical scheduling:
 
@@ -54,6 +54,8 @@ Typical scheduling:
 - Run `computer-b-send-archives.sh` after archive creation (cron on B).
 - Run `computer-c-receive-archives.sh` periodically on C.
 - Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
+
+All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
 
 ### Multi-server send from Computer B
 
@@ -103,6 +105,16 @@ For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) befor
 
 Daily archive ranges are based on the actual first and last hourly files included in the archive.
 These names are intended to be readable by people scanning for event date/time windows.
+The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+
+### Optional OpenSSL encryption for daily archives
+
+`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-cbc`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
+
+Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
 
 ### 72-hour retention with safety for unconfirmed data
 
