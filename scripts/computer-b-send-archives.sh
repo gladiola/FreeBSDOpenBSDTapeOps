@@ -50,6 +50,8 @@ if [ ! -d "$ARCHIVE_DIR" ]; then
 fi
 
 quote_for_remote_sh() {
+  # Escape single quotes as '\'' and wrap the whole string in single quotes
+  # so it can be safely embedded in remote shell commands.
   printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
 }
 

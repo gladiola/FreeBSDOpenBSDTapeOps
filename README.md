@@ -57,9 +57,9 @@ Typical scheduling:
 
 ### Multi-server send from Computer B
 
-`computer-b-send-archives.sh` supports both legacy single-server mode and new multi-server mode:
+`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
 
-- Legacy: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
 Client-side server selection options:
