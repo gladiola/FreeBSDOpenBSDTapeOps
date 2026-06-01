@@ -155,7 +155,6 @@ print_row() {
   member_count=$7
   bytes=$8
 
-  # Columns: file_marker status encrypted archive_hint first_member last_member member_count bytes
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$marker" "$status" "$encrypted" "$archive_hint" "$first_member" "$last_member" "$member_count" "$bytes"
 }
@@ -190,7 +189,7 @@ inventory_entry() {
       last = "unknown"
     }
     NF {
-      # Skip blank lines from tar listing output.
+      # Process non-blank lines from tar listing output.
       count += 1
       if (first == "unknown") first = $0
       last = $0
