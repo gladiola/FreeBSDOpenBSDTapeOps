@@ -112,6 +112,8 @@ if [ ! -s "$TAPE_FILE" ]; then
 fi
 
 "$REPO_ROOT/scripts/computer-c-inventory-tape.sh" "$TAPE_FILE" > "$TOC_FILE"
+# Validate marker 0 row includes expected inventory summary fields:
+# file_marker=0, status=ok, encrypted=no, archive_hint starts with rsyslog-.
 if ! awk -F '	' 'NR > 1 && $1 == "0" && $2 == "ok" && $3 == "no" && $4 ~ /^rsyslog-/ { found = 1 } END { exit !found }' "$TOC_FILE"; then
   log_error 'Tape inventory output missing expected marker/summary row'
   exit 8
