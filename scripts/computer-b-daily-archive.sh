@@ -38,6 +38,7 @@ mkdir -p "$ARCHIVE_DIR"
 hour_token_from_file() {
   base=$1
   case "$base" in
+    # Legacy hourly format: rsyslog-YYYYMMDDHH.log (10 digits after prefix)
     rsyslog-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].log)
       y=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\1/p')
       m=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\2/p')
@@ -45,6 +46,7 @@ hour_token_from_file() {
       h=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\4/p')
       printf '%s-%s-%sT%s00\n' "$y" "$m" "$d" "$h"
       ;;
+    # Current hourly format: rsyslog-YYYY-MM-DDTHH00.log
     rsyslog-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]00.log)
       printf '%s\n' "${base#rsyslog-}" | sed 's/\.log$//'
       ;;
