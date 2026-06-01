@@ -46,6 +46,7 @@ The `scripts/` directory provides scripts for the scenario where OpenBSD Compute
 | `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
 | `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
 | `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
+| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
 | `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
 | `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
 
@@ -56,6 +57,7 @@ Typical scheduling:
 - Run `computer-b-send-archives.sh` after archive creation (cron on B).
 - Run `computer-c-receive-archives.sh` periodically on C.
 - Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
+- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
 - Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
 
 All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
@@ -136,6 +138,24 @@ scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <ou
   - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
 
 The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+
+### Tape table-of-contents inventory on Computer C
+
+Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+
+```sh
+scripts/computer-c-inventory-tape.sh <tape_device>
+```
+
+The output columns include:
+
+- `file_marker`: zero-based tape file marker position
+- `status`: `ok`, `decrypted`, or `unreadable`
+- `encrypted`: whether decryption was needed to inspect the entry
+- `archive_hint`: inferred archive-style name when boundaries can be recognized
+- `first_member` / `last_member`: first and last tar members seen in that marker
+
+This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
 
 ### Deterministic A/B/C integration test
 
