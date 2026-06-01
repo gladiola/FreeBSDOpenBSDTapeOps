@@ -189,5 +189,7 @@ if [ "$found" -eq 0 ]; then
   printf 'No queued archives in %s\n' "$RECEIVED_DIR"
 fi
 
-find "$RECEIVED_DIR" -type f \( -name '*.tar.gz' -o -name '*.tar.gz.ready' -o -name '*.tar.gz.taped' \) \
-  -mmin +$((RETENTION_HOURS * 60)) -delete
+find "$RECEIVED_DIR" -type f -name '*.tar.gz.taped' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
+  archive=${taped_marker%.taped}
+  rm -f "$archive" "$taped_marker"
+done

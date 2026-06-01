@@ -30,7 +30,7 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 
-STAMP=$(date +%Y%m%d%H)
+STAMP=$(date +%Y-%m-%dT%H00)
 OUT_FILE="$OUTPUT_DIR/rsyslog-$STAMP.log"
 
 if command -v rcctl >/dev/null 2>&1; then
@@ -43,6 +43,10 @@ else
   : > "$INPUT_LOG"
 fi
 
-find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mmin +$((KEEP_HOURS * 60)) -delete
+find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mmin +$((KEEP_HOURS * 60)) | while IFS= read -r old_log; do
+  # Only remove logs that have an explicit local tape-confirmation marker.
+  [ -f "$old_log.taped" ] || continue
+  rm -f "$old_log" "$old_log.taped"
+done
 
 printf 'Created hourly log %s and rotated %s\n' "$OUT_FILE" "$INPUT_LOG"

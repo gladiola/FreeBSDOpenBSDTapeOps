@@ -42,7 +42,7 @@ The `scripts/` directory provides scripts for the scenario where OpenBSD Compute
 | Script | Purpose |
 |---|---|
 | `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a `.tar.gz` archive on Computer B. |
+| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B. |
 | `scripts/computer-b-send-archives.sh` | Sends unsent daily archives from Computer B to one or more Computer C servers over `scp`. |
 | `scripts/computer-c-receive-archives.sh` | Validates incoming archives on Computer C and queues them for tape. |
 | `scripts/computer-c-write-to-tape.sh` | Writes queued archives to tape on Computer C, checks space, appends safely, and marks them recorded. |
@@ -96,11 +96,19 @@ Relevant variables:
 
 For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
 
-### 72-hour retention
+### Human-readable timestamps in filenames
+
+- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
+- Daily archives are named like: `rsyslog-2026-06-01T00-00_to_2026-06-01T23-59.tar.gz`
+
+These names are intended to be readable by people scanning for event date/time windows.
+
+### 72-hour retention with safety for unconfirmed data
 
 The scripts now default to a 72-hour retention window:
 
-- `computer-b-hourly-rotate.sh` keeps 72 hours by default (`keep_hours` default is `72`).
-- `computer-b-send-archives.sh` deletes local archives/markers older than `RETENTION_HOURS` (default `72`).
-- `computer-c-receive-archives.sh` deletes old incoming and queued/taped files older than `RETENTION_HOURS` (default `72`).
-- `computer-c-write-to-tape.sh` deletes old queued/taped files older than `RETENTION_HOURS` (default `72`).
+- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
+- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
+- `computer-c-receive-archives.sh` and `computer-c-write-to-tape.sh` only remove old archives that already have `.taped` markers.
+
+As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).

@@ -149,5 +149,11 @@ if [ "$found" -eq 0 ]; then
   printf 'No archives found in %s\n' "$ARCHIVE_DIR"
 fi
 
-find "$ARCHIVE_DIR" -type f \( -name '*.tar.gz' -o -name '*.tar.gz.sent' \) \
-  -mmin +$((RETENTION_HOURS * 60)) -delete
+find "$ARCHIVE_DIR" -type f -name '*.tar.gz.sent' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r sent_marker; do
+  archive=${sent_marker%.sent}
+  taped_marker="$archive.taped"
+
+  # Keep data unless local tape confirmation exists.
+  [ -f "$taped_marker" ] || continue
+  rm -f "$archive" "$sent_marker" "$taped_marker"
+done

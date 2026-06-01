@@ -31,11 +31,16 @@ case "$DAY_STAMP" in
     ;;
 esac
 
+DAY_HUMAN=$(printf '%s' "$DAY_STAMP" | sed 's/^\(....\)\(..\)\(..\)$/\1-\2-\3/')
+
 mkdir -p "$ARCHIVE_DIR"
 
 set --
 for hour_pattern in 0[0-9] 1[0-9] 2[0-3]; do
-  for candidate in "$HOURLY_DIR"/rsyslog-"$DAY_STAMP"$hour_pattern.log; do
+  for candidate in \
+    "$HOURLY_DIR"/rsyslog-"$DAY_STAMP"$hour_pattern.log \
+    "$HOURLY_DIR"/rsyslog-"$DAY_HUMAN"T$hour_pattern"00.log"
+  do
     [ -e "$candidate" ] || continue
     set -- "$@" "$(basename "$candidate")"
   done
@@ -46,7 +51,7 @@ if [ "$#" -eq 0 ]; then
   exit 3
 fi
 
-ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-$DAY_STAMP.tar.gz"
+ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-${DAY_HUMAN}T00-00_to_${DAY_HUMAN}T23-59.tar.gz"
 
 tar -C "$HOURLY_DIR" -czf "$ARCHIVE_FILE" "$@"
 
