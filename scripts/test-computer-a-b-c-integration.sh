@@ -112,7 +112,7 @@ if [ ! -s "$TAPE_FILE" ]; then
 fi
 
 "$REPO_ROOT/scripts/computer-c-inventory-tape.sh" "$TAPE_FILE" > "$TOC_FILE"
-if ! grep -q '^0[[:space:]]\+ok[[:space:]]\+no[[:space:]]\+rsyslog-' "$TOC_FILE"; then
+if ! awk -F '	' 'NR > 1 && $1 == "0" && $2 == "ok" && $3 == "no" && $4 ~ /^rsyslog-/ { found = 1 } END { exit !found }' "$TOC_FILE"; then
   log_error 'Tape inventory output missing expected marker/summary row'
   exit 8
 fi

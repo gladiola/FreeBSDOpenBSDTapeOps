@@ -147,7 +147,7 @@ print_header() {
 print_row() {
   marker=$1
   status=$2
-  encrypted_status=$3
+  encrypted=$3
   archive_hint=$4
   first_member=$5
   last_member=$6
@@ -156,7 +156,7 @@ print_row() {
 
   # Columns: file_marker status encrypted archive_hint first_member last_member member_count bytes
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
-    "$marker" "$status" "$encrypted_status" "$archive_hint" "$first_member" "$last_member" "$member_count" "$bytes"
+    "$marker" "$status" "$encrypted" "$archive_hint" "$first_member" "$last_member" "$member_count" "$bytes"
 }
 
 inventory_entry() {
