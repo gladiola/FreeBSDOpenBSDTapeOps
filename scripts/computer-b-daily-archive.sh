@@ -26,7 +26,7 @@ Usage: computer-b-daily-archive.sh <hourly_log_dir> <archive_dir> <day_stamp>
 Builds one 24-hour tar.gz archive for the specified day (YYYYMMDD).
 Optional encryption:
   OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile   (symmetric, openssl enc)
-  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime)
+  OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem (recipient cert, openssl smime AES-256-CBC)
 USAGE
 }
 
@@ -53,6 +53,8 @@ case "$DAY_STAMP" in
 esac
 
 DAY_HUMAN=$(printf '%s' "$DAY_STAMP" | sed 's/^\(....\)\(..\)\(..\)$/\1-\2-\3/')
+# Hourly files are stamped with local time in computer-b-hourly-rotate.sh,
+# so current-hour exclusion uses the same local-time basis.
 CURRENT_HOUR_TOKEN=$(date +%Y-%m-%dT%H00)
 OPENSSL_ENCRYPT_KEY_FILE=${OPENSSL_ENCRYPT_KEY_FILE:-}
 OPENSSL_ENCRYPT_CERT_FILE=${OPENSSL_ENCRYPT_CERT_FILE:-}
@@ -113,13 +115,13 @@ for hour_pattern in 0[0-9] 1[0-9] 2[0-3]; do
   do
     [ -e "$candidate" ] || continue
     base=$(basename "$candidate")
-    set -- "$@" "$base"
 
     token=$(hour_token_from_file "$base") || continue
     if [ "$token" = "$CURRENT_HOUR_TOKEN" ]; then
       log_info "$(printf 'Skipping current-hour log to avoid conflicts: %s' "$base")"
       continue
     fi
+    set -- "$@" "$base"
     if [ -z "$FIRST_HOUR" ]; then
       FIRST_HOUR=$token
     fi
@@ -153,7 +155,9 @@ if [ -n "$OPENSSL_ENCRYPT_KEY_FILE" ]; then
   fi
 elif [ -n "$OPENSSL_ENCRYPT_CERT_FILE" ]; then
   ENCRYPTED_ARCHIVE="$ARCHIVE_FILE.enc"
-  if openssl smime -encrypt -binary -aes-256-cbc -in "$ARCHIVE_FILE" -out "$ENCRYPTED_ARCHIVE" -outform DER "$OPENSSL_ENCRYPT_CERT_FILE"; then
+  # -outform DER sets the S/MIME envelope serialization to binary DER
+  # (no PEM headers), while -$OPENSSL_ENCRYPT_CIPHER selects the content cipher.
+  if openssl smime -encrypt -binary "-$OPENSSL_ENCRYPT_CIPHER" -in "$ARCHIVE_FILE" -out "$ENCRYPTED_ARCHIVE" -outform DER "$OPENSSL_ENCRYPT_CERT_FILE"; then
     rm -f "$ARCHIVE_FILE"
     ARCHIVE_FILE=$ENCRYPTED_ARCHIVE
     log_info "$(printf 'Encrypted archive with certificate: %s' "$ARCHIVE_FILE")"

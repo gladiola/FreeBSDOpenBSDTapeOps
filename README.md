@@ -113,6 +113,7 @@ The current hour is intentionally excluded from archive creation so active write
 
 - `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-cbc`).
 - `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-cbc`).
 
 Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
 

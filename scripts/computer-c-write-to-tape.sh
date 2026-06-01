@@ -105,7 +105,7 @@ space_available_bytes() {
     fi
 
     if [ "$ALLOW_UNKNOWN_TAPE_SPACE" = "1" ]; then
-      # Max signed 64-bit value used as an effectively-unbounded fallback.
+      # Max signed 64-bit value (2^63 - 1) used as an effectively-unbounded fallback.
       printf '9223372036854775807\n'
       return 0
     fi
