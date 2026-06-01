@@ -32,7 +32,10 @@ quote_for_remote_sh() {
   printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
 }
 
-ssh "$REMOTE" "mkdir -p -- $(quote_for_remote_sh "$REMOTE_DIR")"
+REMOTE_DIR_QUOTED=$(quote_for_remote_sh "$REMOTE_DIR")
+REMOTE_TARGET_QUOTED=$(quote_for_remote_sh "$REMOTE_DIR/")
+
+ssh "$REMOTE" "mkdir -p -- $REMOTE_DIR_QUOTED"
 
 found=0
 for archive in "$ARCHIVE_DIR"/*.tar.gz; do
@@ -44,7 +47,7 @@ for archive in "$ARCHIVE_DIR"/*.tar.gz; do
     continue
   fi
 
-  if scp "$archive" "$REMOTE:$REMOTE_DIR/"; then
+  if scp "$archive" "$REMOTE:$REMOTE_TARGET_QUOTED"; then
     touch "$marker"
     printf 'Sent %s\n' "$archive"
   else
