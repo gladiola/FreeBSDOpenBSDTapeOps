@@ -34,7 +34,7 @@ Both are non-rewinding device nodes (the `n` prefix), so the tape position is pr
 
 - **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
 - **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
-## OpenBSD A→B→C Log Pipeline Scripts
+## OpenBSD A-to-B-to-C Log Pipeline Scripts
 
 The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to Computer C, and Computer C writes them to tape.
 
