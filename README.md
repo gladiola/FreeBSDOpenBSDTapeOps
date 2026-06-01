@@ -99,8 +99,9 @@ For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) befor
 ### Human-readable timestamps in filenames
 
 - Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T00-00_to_2026-06-01T23-59.tar.gz`
+- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
+Daily archive ranges are based on the actual first and last hourly files included in the archive.
 These names are intended to be readable by people scanning for event date/time windows.
 
 ### 72-hour retention with safety for unconfirmed data

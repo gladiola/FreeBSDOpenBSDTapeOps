@@ -35,14 +35,42 @@ DAY_HUMAN=$(printf '%s' "$DAY_STAMP" | sed 's/^\(....\)\(..\)\(..\)$/\1-\2-\3/')
 
 mkdir -p "$ARCHIVE_DIR"
 
+hour_token_from_file() {
+  base=$1
+  case "$base" in
+    rsyslog-[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].log)
+      y=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\1/p')
+      m=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\2/p')
+      d=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\3/p')
+      h=$(printf '%s' "$base" | sed -n 's/^rsyslog-\([0-9]\{4\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\([0-9]\{2\}\)\.log$/\4/p')
+      printf '%s-%s-%sT%s00\n' "$y" "$m" "$d" "$h"
+      ;;
+    rsyslog-[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]00.log)
+      printf '%s\n' "${base#rsyslog-}" | sed 's/\.log$//'
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
 set --
+FIRST_HOUR=
+LAST_HOUR=
 for hour_pattern in 0[0-9] 1[0-9] 2[0-3]; do
   for candidate in \
     "$HOURLY_DIR"/rsyslog-"$DAY_STAMP"$hour_pattern.log \
     "$HOURLY_DIR"/rsyslog-"$DAY_HUMAN"T$hour_pattern"00.log"
   do
     [ -e "$candidate" ] || continue
-    set -- "$@" "$(basename "$candidate")"
+    base=$(basename "$candidate")
+    set -- "$@" "$base"
+
+    token=$(hour_token_from_file "$base") || continue
+    if [ -z "$FIRST_HOUR" ]; then
+      FIRST_HOUR=$token
+    fi
+    LAST_HOUR=$token
   done
 done
 
@@ -51,7 +79,7 @@ if [ "$#" -eq 0 ]; then
   exit 3
 fi
 
-ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-${DAY_HUMAN}T00-00_to_${DAY_HUMAN}T23-59.tar.gz"
+ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-${FIRST_HOUR}_to_${LAST_HOUR}.tar.gz"
 
 tar -C "$HOURLY_DIR" -czf "$ARCHIVE_FILE" "$@"
 
