@@ -33,9 +33,16 @@ mkdir -p "$OUTPUT_DIR"
 STAMP=$(date +%Y%m%d%H)
 OUT_FILE="$OUTPUT_DIR/rsyslog-$STAMP.log"
 
-cp "$INPUT_LOG" "$OUT_FILE"
-: > "$INPUT_LOG"
+if command -v rcctl >/dev/null 2>&1; then
+  rcctl stop rsyslogd
+  cp "$INPUT_LOG" "$OUT_FILE"
+  : > "$INPUT_LOG"
+  rcctl start rsyslogd
+else
+  cp "$INPUT_LOG" "$OUT_FILE"
+  : > "$INPUT_LOG"
+fi
 
-find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mtime +$((KEEP_HOURS / 24)) -delete
+find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mmin +$((KEEP_HOURS * 60)) -delete
 
-printf 'Created hourly log %s and truncated %s\n' "$OUT_FILE" "$INPUT_LOG"
+printf 'Created hourly log %s and rotated %s\n' "$OUT_FILE" "$INPUT_LOG"

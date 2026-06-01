@@ -21,6 +21,7 @@ fi
 
 RECEIVED_DIR=$1
 TAPE_DEVICE=$2
+TAPE_BLOCK_SIZE=${TAPE_BLOCK_SIZE:-64k}
 
 if [ ! -d "$RECEIVED_DIR" ]; then
   printf 'Received directory not found: %s\n' "$RECEIVED_DIR" >&2
@@ -43,10 +44,17 @@ for ready in "$RECEIVED_DIR"/*.tar.gz.ready; do
 
   printf 'Writing %s to tape %s\n' "$archive" "$TAPE_DEVICE"
   if [ -c "$TAPE_DEVICE" ]; then
-    dd if="$archive" of="$TAPE_DEVICE" bs=64k conv=sync
-    mt -f "$TAPE_DEVICE" weof 1
+    if dd if="$archive" of="$TAPE_DEVICE" bs="$TAPE_BLOCK_SIZE" conv=sync; then
+      mt -f "$TAPE_DEVICE" weof 1
+    else
+      printf 'Failed writing %s to tape %s\n' "$archive" "$TAPE_DEVICE" >&2
+      exit 3
+    fi
   else
-    cat "$archive" >> "$TAPE_DEVICE"
+    if ! cat "$archive" >> "$TAPE_DEVICE"; then
+      printf 'Failed appending %s to %s\n' "$archive" "$TAPE_DEVICE" >&2
+      exit 4
+    fi
   fi
   touch "$done_marker"
   rm -f "$ready"

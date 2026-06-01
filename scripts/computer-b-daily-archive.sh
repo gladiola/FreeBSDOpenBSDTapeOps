@@ -33,20 +33,21 @@ esac
 
 mkdir -p "$ARCHIVE_DIR"
 
-FILES=
-for candidate in "$HOURLY_DIR"/rsyslog-"$DAY_STAMP"[0-2][0-9].log; do
-  [ -e "$candidate" ] || continue
-  FILES="$FILES $(basename "$candidate")"
+set --
+for hour_pattern in 0[0-9] 1[0-9] 2[0-3]; do
+  for candidate in "$HOURLY_DIR"/rsyslog-"$DAY_STAMP"$hour_pattern.log; do
+    [ -e "$candidate" ] || continue
+    set -- "$@" "$(basename "$candidate")"
+  done
 done
 
-if [ -z "$FILES" ]; then
+if [ "$#" -eq 0 ]; then
   printf 'No hourly logs found for day %s in %s\n' "$DAY_STAMP" "$HOURLY_DIR" >&2
   exit 3
 fi
 
 ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-$DAY_STAMP.tar.gz"
 
-set -- $FILES
 tar -C "$HOURLY_DIR" -czf "$ARCHIVE_FILE" "$@"
 
 printf 'Created daily archive %s\n' "$ARCHIVE_FILE"

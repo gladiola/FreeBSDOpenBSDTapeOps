@@ -28,7 +28,11 @@ if [ ! -d "$ARCHIVE_DIR" ]; then
   exit 2
 fi
 
-ssh "$REMOTE" "mkdir -p '$REMOTE_DIR'"
+quote_for_remote_sh() {
+  printf "%s" "$1" | sed "s/'/'\\\\''/g;1s/^/'/;\$s/\$/'/"
+}
+
+ssh "$REMOTE" "mkdir -p -- $(quote_for_remote_sh "$REMOTE_DIR")"
 
 found=0
 for archive in "$ARCHIVE_DIR"/*.tar.gz; do
@@ -40,9 +44,13 @@ for archive in "$ARCHIVE_DIR"/*.tar.gz; do
     continue
   fi
 
-  scp "$archive" "$REMOTE:$REMOTE_DIR/"
-  touch "$marker"
-  printf 'Sent %s\n' "$archive"
+  if scp "$archive" "$REMOTE:$REMOTE_DIR/"; then
+    touch "$marker"
+    printf 'Sent %s\n' "$archive"
+  else
+    printf 'Failed to send %s\n' "$archive" >&2
+    exit 3
+  fi
 done
 
 if [ "$found" -eq 0 ]; then
