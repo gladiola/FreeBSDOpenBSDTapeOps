@@ -106,7 +106,7 @@ cp "$ARCHIVE_TO_SEND" "$C_DIR/incoming/$(basename "$ARCHIVE_TO_SEND")"
 "$REPO_ROOT/scripts/computer-c-write-to-tape.sh" "$C_DIR/received" "$TAPE_FILE"
 
 if [ ! -s "$TAPE_FILE" ]; then
-  log_error 'computer-c-write-to-tape.sh did not write data to simulated tape file'
+  log_error "$(printf 'computer-c-write-to-tape.sh did not write data to simulated tape file: %s' "$TAPE_FILE")"
   exit 5
 fi
 
@@ -124,4 +124,3 @@ if ! tar -tzf "$RESTORED_ARCHIVE" | grep -q "^rsyslog-${DAY_HUMAN}T0000.log\$"; 
 fi
 
 log_info "$(printf 'Integration test succeeded. Working directory: %s' "$WORK_DIR")"
-

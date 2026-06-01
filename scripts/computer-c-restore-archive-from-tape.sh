@@ -243,4 +243,3 @@ if [ "$found" -ne 1 ]; then
   log_error "$(printf 'Requested archive %s not found on tape input %s' "$ARCHIVE_NAME" "$TAPE_DEVICE")"
   exit 6
 fi
-
