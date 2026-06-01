@@ -89,7 +89,7 @@ require_strong_encrypt_cipher() {
       return 0
       ;;
     *)
-      log_error "$(printf 'Refusing cipher "%s"; use an AEAD cipher (aes-128-gcm, aes-192-gcm, aes-256-gcm, chacha20-poly1305). AEAD adds integrity protection to detect tampering.' "$OPENSSL_ENCRYPT_CIPHER")"
+      log_error "$(printf 'Refusing cipher "%s"; use an AEAD cipher (aes-128-gcm, aes-192-gcm, aes-256-gcm, chacha20-poly1305) for integrity protection.' "$OPENSSL_ENCRYPT_CIPHER")"
       return 1
       ;;
   esac
