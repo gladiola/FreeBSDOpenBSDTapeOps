@@ -81,6 +81,11 @@ if [ "$#" -eq 0 ]; then
   exit 3
 fi
 
+if [ -z "$FIRST_HOUR" ] || [ -z "$LAST_HOUR" ]; then
+  printf 'Could not determine first/last hour for archive naming on day %s\n' "$DAY_STAMP" >&2
+  exit 4
+fi
+
 ARCHIVE_FILE="$ARCHIVE_DIR/rsyslog-${FIRST_HOUR}_to_${LAST_HOUR}.tar.gz"
 
 tar -C "$HOURLY_DIR" -czf "$ARCHIVE_FILE" "$@"

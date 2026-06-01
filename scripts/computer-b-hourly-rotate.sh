@@ -44,6 +44,7 @@ else
 fi
 
 find "$OUTPUT_DIR" -type f -name 'rsyslog-*.log' -mmin +$((KEEP_HOURS * 60)) | while IFS= read -r old_log; do
+  # Uses mtime as the age proxy for retention.
   # Only remove logs that have an explicit local tape-confirmation marker.
   [ -f "$old_log.taped" ] || continue
   rm -f "$old_log" "$old_log.taped"

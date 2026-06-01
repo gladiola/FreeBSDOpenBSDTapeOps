@@ -190,6 +190,7 @@ if [ "$found" -eq 0 ]; then
 fi
 
 find "$RECEIVED_DIR" -type f -name '*.tar.gz.taped' -mmin +$((RETENTION_HOURS * 60)) | while IFS= read -r taped_marker; do
+  # Uses .taped marker mtime as the age proxy for retention.
   archive=${taped_marker%.taped}
   rm -f "$archive" "$taped_marker"
 done
