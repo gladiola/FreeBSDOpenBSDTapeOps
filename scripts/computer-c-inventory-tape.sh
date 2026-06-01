@@ -68,6 +68,7 @@ cleanup() {
   rm -rf "$tmpdir"
 }
 trap 'cleanup' EXIT INT TERM HUP
+TAB_CHAR=$(printf '\t')
 
 member_to_token() {
   member=$1
@@ -81,7 +82,7 @@ member_to_token() {
           return 0
           ;;
         [0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9])
-          printf '%s\n' "$stamp" | sed 's/^\(....\)\(..\)\(..\)\(..\)$/\1-\2-\3T\400/'
+          printf '%s\n' "$stamp" | awk '{printf "%s-%s-%sT%s00\n", substr($0,1,4), substr($0,5,2), substr($0,7,2), substr($0,9,2)}'
           return 0
           ;;
       esac
@@ -154,6 +155,7 @@ print_row() {
   member_count=$7
   bytes=$8
 
+  # Columns: file_marker status encrypted archive_hint first_member last_member member_count bytes
   printf '%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
     "$marker" "$status" "$encrypted" "$archive_hint" "$first_member" "$last_member" "$member_count" "$bytes"
 }
@@ -182,16 +184,21 @@ inventory_entry() {
   fi
 
   summary=$(tar -tzf "$candidate" 2>/dev/null | awk '
+    BEGIN {
+      count = 0
+      first = "unknown"
+      last = "unknown"
+    }
     NF {
       count += 1
-      if (first == "") first = $0
+      if (first == "unknown") first = $0
       last = $0
     }
     END {
       printf "%d\t%s\t%s\n", count, first, last
     }
   ')
-  IFS='	' read -r member_count first_member last_member <<EOF
+  IFS=$TAB_CHAR read -r member_count first_member last_member <<EOF
 $summary
 EOF
 

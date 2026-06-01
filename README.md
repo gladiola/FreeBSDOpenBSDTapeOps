@@ -151,9 +151,11 @@ The output columns include:
 
 - `file_marker`: zero-based tape file marker position
 - `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry
+- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
 - `archive_hint`: inferred archive-style name when boundaries can be recognized
 - `first_member` / `last_member`: first and last tar members seen in that marker
+- `member_count`: number of tar members found in that marker
+- `bytes`: raw bytes read at that marker
 
 This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
 
