@@ -2,6 +2,48 @@
 
 Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
 
+## Language Documentation Index
+
+- [US English](docs/i18n/README.en-US.md)
+- [Deutsch (German)](docs/i18n/README.de.md)
+- [Español (Spanish)](docs/i18n/README.es.md)
+- [Français (French)](docs/i18n/README.fr.md)
+- [Português (Portuguese)](docs/i18n/README.pt.md)
+- [Italiano (Italian)](docs/i18n/README.it.md)
+- [繁體中文（香港） / Hong Kong Chinese](docs/i18n/README.zh-HK.md)
+- [한국어 (Korean)](docs/i18n/README.ko.md)
+- [हिन्दी (Hindi)](docs/i18n/README.hi.md)
+- [Русский (Russian)](docs/i18n/README.ru.md)
+- [العربية (Arabic)](docs/i18n/README.ar.md)
+- [Kiswahili (Swahili)](docs/i18n/README.sw.md)
+- [日本語 (Japanese)](docs/i18n/README.ja.md)
+- [Kreyòl Ayisyen (Haitian Creole)](docs/i18n/README.ht.md)
+- [ʻŌlelo Hawaiʻi (Hawaiian)](docs/i18n/README.haw.md)
+- [Gagana Samoa (Samoan)](docs/i18n/README.sm.md)
+- [Te Reo Māori (Maori)](docs/i18n/README.mi.md)
+- [Afrikaans](docs/i18n/README.af.md)
+- [Nederlands (Dutch)](docs/i18n/README.nl.md)
+- [Hausa](docs/i18n/README.ha.md)
+- [አማርኛ (Amharic)](docs/i18n/README.am.md)
+- [Yorùbá (Yoruba)](docs/i18n/README.yo.md)
+- [বাংলা (Bengali)](docs/i18n/README.bn.md)
+- [简体中文 (Mandarin Chinese)](docs/i18n/README.zh-CN.md)
+- [Gaeilge (Irish)](docs/i18n/README.ga.md)
+- [Eesti (Estonian)](docs/i18n/README.et.md)
+- [Suomi (Finnish)](docs/i18n/README.fi.md)
+- [Svenska (Swedish)](docs/i18n/README.sv.md)
+- [Norsk (Norwegian)](docs/i18n/README.no.md)
+- [Українська (Ukrainian)](docs/i18n/README.uk.md)
+- [ไทย (Thai)](docs/i18n/README.th.md)
+- [Bahasa Indonesia](docs/i18n/README.id.md)
+- [Tagalog](docs/i18n/README.tl.md)
+- [Bahasa Melayu (Malay)](docs/i18n/README.ms.md)
+- [Basa Jawa (Javanese)](docs/i18n/README.jv.md)
+- [Ελληνικά (Greek)](docs/i18n/README.el.md)
+- [Latina (Latin)](docs/i18n/README.la.md)
+- [עברית (Hebrew)](docs/i18n/README.he.md)
+
+
 ## Scripts
 
 | Script | Target OS |
