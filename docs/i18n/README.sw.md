@@ -230,3 +230,7 @@ Skripti sasa hutumia kwa chaguo-msingi dirisha la uhifadhi la saa 72:
 Kwa hiyo, faili ambazo bado hazijatumwa na kurekodiwa kwa mafanikio kwenye tepu huhifadhiwa hata zikiwa za zamani kuliko `RETENTION_HOURS` (chaguo-msingi `72`).
 Kwenye Kompyuta B, usafishaji wa ndani unahitaji alama za ndani za `.taped` (kwa mfano kutoka hatua ya kusawazisha kurudi au mchakato wa kuthibitisha kwa mkono).
 Kwenye Kompyuta C, umri wa uhifadhi hupimwa kutoka muda wa marekebisho wa alama ya `.taped` (kwa kawaida huwekwa wakati wa kuandika tepu kwa mafanikio).
+
+## Michoro ya Mlolongo
+
+- [Michoro ya Mermaid ya mfuatano na hali ya A/B/C](pipeline-diagrams/README.sw.md)

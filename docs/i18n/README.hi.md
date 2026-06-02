@@ -230,3 +230,7 @@ scripts/test-computer-a-b-c-integration.sh
 परिणामस्वरूप, जो फ़ाइलें अभी तक सफलतापूर्वक प्रेषित होकर tape पर record नहीं हुई हैं, वे `RETENTION_HOURS` (डिफ़ॉल्ट `72`) से अधिक पुरानी होने पर भी सुरक्षित रहती हैं.
 Computer B पर, स्थानीय सफ़ाई के लिए local `.taped` markers आवश्यक होते हैं (उदाहरण के लिए, सिंक-बैक चरण या मैनुअल पुष्टि प्रक्रिया से).
 Computer C पर, संग्रहण age `.taped` marker के modification time से मापी जाती है (जो सामान्यतः सफल tape write के समय सेट होती है).
+
+## पाइपलाइन आरेख
+
+- [A/B/C Mermaid सीक्वेंस और स्टेट आरेख](pipeline-diagrams/README.hi.md)

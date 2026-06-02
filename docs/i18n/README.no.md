@@ -230,3 +230,7 @@ Skriptene bruker nå som standard et oppbevaringsvindu på 72 timer:
 Som følge av dette beholdes filer som ennå ikke er vellykket overført og registrert på bånd, selv når de er eldre enn `RETENTION_HOURS` (standard `72`).
 På Computer B krever lokal opprydding lokale `.taped`-markører (for eksempel fra et sync-back-trinn eller en manuell bekreftelsesprosess).
 På Computer C måles oppbevaringsalderen fra endringstiden til `.taped`-markøren (normalt satt ved vellykket skriving til bånd).
+
+## Pipeline-diagrammer
+
+- [A/B/C Mermaid-sekvens- og tilstandsdiagrammer](pipeline-diagrams/README.no.md)

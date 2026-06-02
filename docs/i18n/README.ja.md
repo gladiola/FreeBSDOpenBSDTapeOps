@@ -230,3 +230,7 @@ scripts/test-computer-a-b-c-integration.sh
 その結果、まだ正常に送信されてテープへ記録されていないファイルは、`RETENTION_HOURS`（デフォルト `72`）より古くても保持されます。
 Computer B では、ローカルのクリーンアップにローカル `.taped` マーカーが必要です（たとえば sync-back ステップや手動確認プロセスから得られるもの）。
 Computer C では、保持期間は `.taped` マーカーの更新時刻から測定されます（通常はテープ書き込み成功時刻に設定されます）。
+
+## パイプライン図
+
+- [A/B/C Mermaid シーケンス図と状態図](pipeline-diagrams/README.ja.md)

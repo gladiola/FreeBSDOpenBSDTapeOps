@@ -231,3 +231,6 @@ Como resultado, los archivos que aún no se han transmitido y grabado correctame
 En el Computador B, la limpieza local requiere marcadores `.taped` locales (por ejemplo, de un paso de sincronización de vuelta o un proceso de confirmación manual).
 En el Computador C, la antigüedad de retención se mide desde el tiempo de modificación del marcador `.taped` (normalmente establecido en el momento de la escritura exitosa en cinta).
 
+## Diagramas de la canalización
+
+- [Diagramas Mermaid de secuencia y estados A/B/C](pipeline-diagrams/README.es.md)

@@ -230,3 +230,7 @@ Die Skripte verwenden jetzt standardmäßig ein 72-Stunden-Aufbewahrungsfenster:
 Dadurch bleiben Dateien, die noch nicht erfolgreich übertragen und auf Band aufgezeichnet wurden, erhalten, selbst wenn sie älter als `RETENTION_HOURS` (Standard `72`) sind.
 Auf Computer B erfordert das lokale Aufräumen lokale `.taped`-Marker (zum Beispiel durch einen Rücksynchronisationsschritt oder einen manuellen Bestätigungsprozess).
 Auf Computer C wird das Aufbewahrungsalter anhand der Änderungszeit des `.taped`-Markers gemessen (normalerweise auf den Zeitpunkt des erfolgreichen Schreibens auf Band gesetzt).
+
+## Pipeline-Diagramme
+
+- [A/B/C-Mermaid-Sequenz- und Zustandsdiagramme](pipeline-diagrams/README.de.md)

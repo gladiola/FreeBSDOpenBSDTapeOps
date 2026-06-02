@@ -230,3 +230,7 @@ Ua avea nei ma default i script se faamalama taofia e 72 itula:
 O lona uiga, o faila e leʻi auina atu ma faamauina ma le manuia i le lipine o loo taofia pea tusa pe ua matua atu nai lo `RETENTION_HOURS` (default `72`).
 I le Komepiuta B, e manaʻomia e le faamamāina faalotoifale ni marker `.taped` faalotoifale (mo se faataitaiga mai se laasaga sync-back po o se faagasologa faʻamaoniga tusi lesona).
 I le Komepiuta C, e fuaina le matua o le taofia mai le taimi o suiga o le marker `.taped` (e masani ona seti i le taimi e manuia ai le tusi i le lipine).
+
+## Ata o le paipa
+
+- [Ata Mermaid o le faasologa ma tulaga mo A/B/C](pipeline-diagrams/README.sm.md)

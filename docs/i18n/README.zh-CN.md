@@ -230,3 +230,7 @@ scripts/test-computer-a-b-c-integration.sh
 因此，尚未成功传输并记录到磁带的文件，即使早于 `RETENTION_HOURS`（默认值 `72`），也会被保留。
 在计算机 B 上，本地清理需要本地 `.taped` 标记（例如来自同步回传步骤或手动确认流程）。
 在计算机 C 上，保留年龄从 `.taped` 标记的修改时间开始计算（通常设置为成功写入磁带的时间）。
+
+## 流水线图
+
+- [A/B/C Mermaid 时序图与状态图](pipeline-diagrams/README.zh-CN.md)

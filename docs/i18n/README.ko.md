@@ -230,3 +230,7 @@ scripts/test-computer-a-b-c-integration.sh
 그 결과 아직 성공적으로 전송되어 테이프에 기록되지 않은 파일은 `RETENTION_HOURS`(기본값 `72`)보다 오래되었더라도 유지됩니다.
 Computer B에서는 로컬 정리에 로컬 `.taped` 마커가 필요합니다(예: sync-back 단계나 수동 확인 절차에서 생성).
 Computer C에서는 보존 기간이 `.taped` 마커 수정 시각부터 계산됩니다(보통 성공적으로 테이프에 쓴 시각으로 설정됨).
+
+## 파이프라인 다이어그램
+
+- [A/B/C Mermaid 시퀀스 및 상태 다이어그램](pipeline-diagrams/README.ko.md)

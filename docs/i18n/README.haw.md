@@ -230,3 +230,7 @@ Paʻamau kēia manawa nā script i kahi puka mālama 72 hola:
 Ma muli o kēia, mālama ʻia nā faila i hoʻouna ʻole ʻia a hoʻopaʻa ʻole ʻia i ka lipine me ka kūleʻa inā ʻoi aku ko lākou kahiko ma mua o `RETENTION_HOURS` (paʻamau `72`).
 Ma Kamepiula B, koi ka hoʻomaʻemaʻe kūloko i nā hōʻailona `.taped` kūloko (no ka laʻana mai kahi ʻanuʻu sync-back a i ʻole kahi kaʻina hōʻoia lima).
 Ma Kamepiula C, ana ʻia ka makahiki mālama mai ka manawa hoʻoponopono o ka hōʻailona `.taped` (maʻamau hoʻonohonoho ʻia i ka manawa kākau lipine kūleʻa).
+
+## Nā kiʻikuhi paipu
+
+- [Nā kiʻikuhi Mermaid no ke kaʻina a me ke kūlana no A/B/C](pipeline-diagrams/README.haw.md)

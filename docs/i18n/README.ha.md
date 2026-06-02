@@ -230,3 +230,7 @@ Rubutun yanzu suna amfani da taga riƙewa na awanni 72 a matsayin tsoho:
 Sakamakon haka, ana riƙe fayilolin da ba a aika su cikin nasara kuma ba a rubuta su zuwa kaset ba ko da sun wuce `RETENTION_HOURS` (na tsoho `72`).
 A Kwamfuta B, tsaftacewar gida tana buƙatar alamomin `.taped` na gida (misali daga matakin sync-back ko tsarin tabbatarwa da hannu).
 A Kwamfuta C, ana auna shekarun riƙewa daga lokacin gyaran alamar `.taped` (yawanci ana saita shi a lokacin nasarar rubutu zuwa kaset).
+
+## Zanen Bututun Aiki
+
+- [Zanen Mermaid na jere da yanayi na A/B/C](pipeline-diagrams/README.ha.md)

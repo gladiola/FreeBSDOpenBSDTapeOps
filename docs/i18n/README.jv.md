@@ -230,3 +230,7 @@ Skrip saiki default menyang jendhela retensi 72 jam:
 Akibate, file sing durung kasil ditransmisikake lan direkam menyang pita tetep disimpen sanajan luwih lawas tinimbang `RETENTION_HOURS` (default `72`).
 Ing Komputer B, pembersihan lokal mbutuhake marker `.taped` lokal (umpamane saka langkah sync-back utawa proses konfirmasi manual).
 Ing Komputer C, umur retensi diukur saka wektu modifikasi marker `.taped` (biasane disetel nalika tape write sukses).
+
+## Diagram Pipeline
+
+- [Diagram urutan lan status Mermaid A/B/C](pipeline-diagrams/README.jv.md)
