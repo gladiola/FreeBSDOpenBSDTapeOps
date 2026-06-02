@@ -230,3 +230,7 @@ Skriptit käyttävät nyt oletuksena 72 tunnin säilytysikkunaa:
 Tämän seurauksena tiedostot, joita ei ole vielä onnistuneesti siirretty ja tallennettu nauhalle, säilytetään silloinkin, kun ne ovat vanhempia kuin `RETENTION_HOURS` (oletus `72`).
 Computer B:llä paikallinen siivous edellyttää paikallisia `.taped`-merkintöjä (esimerkiksi sync-back-vaiheesta tai manuaalisesta vahvistusprosessista).
 Computer C:llä säilytyksen ikä mitataan `.taped`-merkinnän muutosajasta (yleensä asetettu onnistuneen nauhakirjoituksen aikaan).
+
+## Putkistokaaviot
+
+- [A/B/C Mermaid-sekvenssi- ja tilakaaviot](pipeline-diagrams/README.fi.md)

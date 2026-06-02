@@ -230,3 +230,7 @@ Kua noho ngā hōtuhi ki tētahi matapihi pupuri 72-hāora hei taunoa:
 Nā reira, ka puritia tonu ngā kōnae kāore anō kia tuku tika, kia tuhia hoki ki te rīpene ahakoa kua tawhito ake i `RETENTION_HOURS` (taunoa `72`).
 I te Rorohiko B, me whai ngā mahi horoi ā-rohe i ngā marker `.taped` ā-rohe (hei tauira nō tētahi hipanga sync-back, nō tētahi tukanga whakaū ā-ringa rānei).
 I te Rorohiko C, ka inea te pakeke pupuri mai i te wā whakarerekē o te marker `.taped` (ko te tikanga ka tautuhia i te wā e angitu ai te tuhi ki te rīpene).
+
+## Ngā hoahoa paipa
+
+- [Ngā hoahoa Mermaid mō te raupapa me ngā āhua o A/B/C](pipeline-diagrams/README.mi.md)

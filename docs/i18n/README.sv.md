@@ -230,3 +230,7 @@ Skripten använder nu som standard ett retentionsfönster på 72 timmar:
 Som resultat behålls filer som ännu inte har överförts och registrerats på band med lyckat resultat, även när de är äldre än `RETENTION_HOURS` (standard `72`).
 På Computer B kräver lokal städning lokala `.taped`-markörer (till exempel från ett sync-back-steg eller en manuell bekräftelseprocess).
 På Computer C mäts retentionens ålder från ändringstiden för `.taped`-markören (normalt satt vid lyckad skrivning till band).
+
+## Pipeline-diagram
+
+- [A/B/C Mermaid-sekvens- och tillståndsdiagram](pipeline-diagrams/README.sv.md)

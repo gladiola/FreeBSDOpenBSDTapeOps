@@ -230,3 +230,7 @@ Kounye a, script yo itilize yon fenèt konsèvasyon 72 èdtan pa default:
 Kòm rezilta, fichye ki poko transmèt ak anrejistre avèk siksè sou kasèt la rete konsève menm lè yo pi ansyen pase `RETENTION_HOURS` (default `72`).
 Sou Odinatè B, netwayaj lokal la mande makè `.taped` lokal yo (pa egzanp soti nan yon etap sync-back oswa yon pwosesis konfimasyon manyèl).
 Sou Odinatè C, laj konsèvasyon an mezire apati tan modifikasyon makè `.taped` la (anjeneral yo mete li lè ekriti kasèt la reyisi).
+
+## Dyagram Pipeline
+
+- [Dyagram Mermaid sekans ak eta A/B/C](pipeline-diagrams/README.ht.md)

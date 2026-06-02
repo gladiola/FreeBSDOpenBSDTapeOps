@@ -230,3 +230,7 @@ Déanann an script seo:
 Mar thoradh air sin, coinnítear comhaid nár tarchuireadh agus nár taifeadadh ar théip go rathúil fós fiú nuair atá siad níos sine ná `RETENTION_HOURS` (réamhshocrú `72`).
 Ar Computer B, éilíonn glantachán áitiúil marcóirí `.taped` áitiúla (mar shampla ó chéim sync-back nó ó phróiseas deimhnithe láimhe).
 Ar Computer C, tomhaistear aois na coinneála ó am modhnaithe an mharcóra `.taped` (socraithe de ghnáth ag am rathúil scríofa ar théip).
+
+## Léaráidí píblíne
+
+- [Léaráidí seichimh agus staid Mermaid A/B/C](pipeline-diagrams/README.ga.md)

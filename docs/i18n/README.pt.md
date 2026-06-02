@@ -230,3 +230,7 @@ Os scripts agora usam por padrão uma janela de retenção de 72 horas:
 Como resultado, arquivos que ainda não foram transmitidos com sucesso e gravados em fita são retidos mesmo quando mais antigos que `RETENTION_HOURS` (padrão `72`).
 No Computador B, a limpeza local exige marcadores `.taped` locais (por exemplo, de uma etapa de sincronização de retorno ou processo de confirmação manual).
 No Computador C, a idade de retenção é medida a partir do horário de modificação do marcador `.taped` (normalmente definido no momento da gravação bem-sucedida na fita).
+
+## Diagramas do pipeline
+
+- [Diagramas Mermaid de sequência e estado A/B/C](pipeline-diagrams/README.pt.md)

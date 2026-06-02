@@ -230,3 +230,7 @@ Skrip kini lalai kepada tetingkap pengekalan 72 jam:
 Akibatnya, fail yang belum berjaya dihantar dan direkodkan ke pita akan dikekalkan walaupun lebih lama daripada `RETENTION_HOURS` (lalai `72`).
 Pada Komputer B, pembersihan tempatan memerlukan penanda `.taped` tempatan (contohnya daripada langkah sync-back atau proses pengesahan manual).
 Pada Komputer C, umur pengekalan diukur daripada masa ubah suai penanda `.taped` (biasanya ditetapkan pada masa penulisan pita berjaya).
+
+## Rajah Pipeline
+
+- [Rajah urutan dan keadaan Mermaid A/B/C](pipeline-diagrams/README.ms.md)

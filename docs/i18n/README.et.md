@@ -230,3 +230,7 @@ Skriptid kasutavad nüüd vaikimisi 72-tunnist säilitusakent:
 Selle tulemusena säilitatakse faile, mida pole veel edukalt edastatud ja lindile talletatud, isegi siis, kui need on vanemad kui `RETENTION_HOURS` (vaikimisi `72`).
 Computer B-s nõuab kohalik puhastus kohalikke `.taped` markereid (näiteks sync-back sammust või käsitsi kinnitamise protsessist).
 Computer C-s mõõdetakse säilituse vanust `.taped` markeri muutmisajast (tavaliselt määratud eduka lindikirjutuse ajal).
+
+## Torujuhtme diagrammid
+
+- [A/B/C Mermaid järjestus- ja olekudiagrammid](pipeline-diagrams/README.et.md)

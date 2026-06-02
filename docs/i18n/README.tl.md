@@ -230,3 +230,7 @@ Default na ngayon ang scripts sa 72-hour retention window:
 Bilang resulta, pinananatili ang files na hindi pa matagumpay na naipapadala at naitatala sa tape kahit mas luma pa sa `RETENTION_HOURS` (default `72`).
 Sa Computer B, ang lokal na cleanup ay nangangailangan ng lokal na `.taped` markers (halimbawa mula sa sync-back step o manual confirmation process).
 Sa Computer C, ang retention age ay sinusukat mula sa `.taped` marker modification time (karaniwang itinatakda sa oras ng matagumpay na tape write).
+
+## Mga Diyagram ng Pipeline
+
+- [Mga Mermaid sequence at state diagram ng A/B/C](pipeline-diagrams/README.tl.md)

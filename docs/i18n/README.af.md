@@ -230,3 +230,7 @@ Die skuldskrifte gebruik nou standaard 'n 72-uur behoudsvenster:
 As gevolg hiervan word lêers wat nog nie suksesvol na band gestuur en opgeneem is nie, behou selfs wanneer ouer as `RETENTION_HOURS` (verstek `72`).
 Op Rekenaar B vereis plaaslike skoonmaak plaaslike `.taped`-merkeerders (byvoorbeeld van 'n terug-sinkronisasiestap of handmatige bevestigingsproses).
 Op Rekenaar C word behoudsouderdom gemeet vanaf `.taped`-merkeerder-wysigingstyd (normaalweg ingestel by suksesvolle bandskryftyd).
+
+## Pyplyn Diagramme
+
+- [A/B/C Mermaid-volgorde- en toestanddiagramme](pipeline-diagrams/README.af.md)

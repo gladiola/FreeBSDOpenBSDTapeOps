@@ -230,3 +230,7 @@ Gli script ora usano per impostazione predefinita una finestra di conservazione 
 Di conseguenza, i file non ancora trasmessi con successo e registrati su nastro vengono mantenuti anche se più vecchi di `RETENTION_HOURS` (predefinito `72`).
 Sul Computer B, la pulizia locale richiede marcatori `.taped` locali (ad esempio da una fase di sincronizzazione di ritorno o un processo manuale di conferma).
 Sul Computer C, l’età di conservazione viene misurata dall’orario di modifica del marcatore `.taped` (normalmente impostato all’ora di scrittura su nastro riuscita).
+
+## Diagrammi della pipeline
+
+- [Diagrammi Mermaid di sequenza e stato A/B/C](pipeline-diagrams/README.it.md)

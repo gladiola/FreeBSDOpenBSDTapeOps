@@ -230,3 +230,7 @@ De scripts gebruiken nu standaard een retentievenster van 72 uur:
 Daardoor worden bestanden die nog niet succesvol zijn verzonden en op tape zijn vastgelegd behouden, zelfs wanneer ze ouder zijn dan `RETENTION_HOURS` (standaard `72`).
 Op Computer B vereist lokale opschoning lokale `.taped`-markers (bijvoorbeeld vanuit een sync-back-stap of een handmatig bevestigingsproces).
 Op Computer C wordt de retentieouderdom gemeten vanaf de wijzigingstijd van de `.taped`-marker (normaal ingesteld op het moment van succesvol schrijven naar tape).
+
+## Pijplijndiagrammen
+
+- [A/B/C Mermaid-sequentie- en statusdiagrammen](pipeline-diagrams/README.nl.md)

@@ -230,3 +230,7 @@ Báyìí, àìyẹ́padà àwọn skripti ni ferese ìdádúró wákàtí 72:
 Nítorí náà, àwọn fáìlì tí a kò tíì fi ránṣẹ́ dáadáa tí a sì kò tíì gbasilẹ sórí teepu máa ń wà níbẹ̀ bó tilẹ̀ jẹ́ pé wọ́n ti dàgbà ju `RETENTION_HOURS` (àìyẹ́padà `72`) lọ.
 Lórí Kọ̀ǹpútà B, ìmúkúrò àgbègbè nílò àwọn marker `.taped` àgbègbè (fún àpẹẹrẹ láti inú ìgbésẹ̀ sync-back tàbí ìlànà ìjẹ́risi pẹ̀lú ọwọ́).
 Lórí Kọ̀ǹpútà C, ọjọ́-ori ìdádúró ni a ń wọn láti àkókò àtúnṣe marker `.taped` (ní ìgbà gbogbo a máa ń ṣètò rẹ̀ ní àsìkò tí a ṣàṣeyọrí nínú kikọ sí teepu).
+
+## Àwòrán Ilana
+
+- [Àwòrán Mermaid àtẹ̀lé àti ìpò fún A/B/C](pipeline-diagrams/README.yo.md)

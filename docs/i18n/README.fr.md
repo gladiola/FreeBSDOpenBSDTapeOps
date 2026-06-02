@@ -230,3 +230,7 @@ Les scripts utilisent désormais par défaut une fenêtre de rétention de 72 he
 Ainsi, les fichiers qui n’ont pas encore été transmis avec succès et enregistrés sur bande sont conservés même s’ils sont plus anciens que `RETENTION_HOURS` (par défaut `72`).
 Sur l’ordinateur B, le nettoyage local exige des marqueurs `.taped` locaux (par exemple via une étape de synchronisation retour ou un processus de confirmation manuel).
 Sur l’ordinateur C, l’âge de rétention est mesuré à partir de l’heure de modification du marqueur `.taped` (normalement définie au moment de l’écriture réussie sur bande).
+
+## Diagrammes du pipeline
+
+- [Diagrammes Mermaid de séquence et d’état A/B/C](pipeline-diagrams/README.fr.md)

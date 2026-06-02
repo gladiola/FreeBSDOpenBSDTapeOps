@@ -230,3 +230,7 @@ Skrip kini default ke jendela retensi 72 jam:
 Akibatnya, berkas yang belum berhasil ditransmisikan dan direkam ke pita tetap dipertahankan walau lebih tua dari `RETENTION_HOURS` (default `72`).
 Di Komputer B, pembersihan lokal memerlukan penanda `.taped` lokal (misalnya dari langkah sinkronisasi balik atau proses konfirmasi manual).
 Di Komputer C, umur retensi diukur dari waktu modifikasi penanda `.taped` (biasanya disetel pada saat penulisan pita berhasil).
+
+## Diagram Pipeline
+
+- [Diagram urutan dan status Mermaid A/B/C](pipeline-diagrams/README.id.md)

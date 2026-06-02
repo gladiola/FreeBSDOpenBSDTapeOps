@@ -230,3 +230,7 @@ Scripta nunc ad fenestram retentionis 72 horarum per defaltum redeunt:
 Quam ob rem files quae nondum feliciter translata et in taenia scripta sunt servantur etiam si vetustiores sunt quam `RETENTION_HOURS` (defaltum `72`).
 In Computer B, purgatio localis markers locales `.taped` requirit (exempli causa ex gradu sync-back vel processu confirmationis manualis).
 In Computer C, aetas retentionis ex tempore modificationis marker `.taped` metitur (plerumque tempore scripturae in taeniam feliciter peractae statuitur).
+
+## Diagrammata cursus
+
+- [Diagrammata ordinis et status Mermaid pro A/B/C](pipeline-diagrams/README.la.md)
