@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Bahasa Indonesia)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Skrip shell interaktif yang memandu operasi pita magnetik umum menggunakan `mt` dan `tar`.
 
-## Language Documentation Index
+## Indeks Dokumentasi Bahasa
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Skrip
 
-| Script | Target OS |
+| Skrip | OS Target |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Kedua skrip menjalankan urutan operasi yang sama:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Meminta pengguna mengonfirmasi pita sudah dimuat.
+2. Memundurkan pita ke awal.
+3. Menampilkan status pita.
+4. Menampilkan isi arsip pada posisi berkas 0, 1, 2, dan 3 dengan `tar t`.
+5. Menjadikan pita offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Setiap langkah berhenti dan menunggu pengguna menekan **Enter** sebelum lanjut, sehingga skrip cocok untuk demo interaktif atau panduan langkah demi langkah.
 
-## Differences Between the Two Scripts
+## Perbedaan Antara Dua Skrip
 
-### 1. Tape device path
+### 1. Jalur perangkat pita
 
-The scripts target different tape device nodes:
+Skrip menargetkan node perangkat pita yang berbeda:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Keduanya adalah node perangkat non-rewinding (awalan `n`), sehingga posisi pita dipertahankan antarperintah dan skrip mengatur posisi secara eksplisit dengan `mt rewind` dan `mt fsf`.
 
-### 2. Tape loading step
+### 2. Langkah memuat pita
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Menjalankan `mt -f /dev/nsa0 load` saat startup untuk memuat kartrid pita ke drive secara mekanis sebelum rewind.
+- **OpenBSD**: Melewati perintah `load` karena `mt(1)` OpenBSD tidak mendukung subperintah `load`. Skrip OpenBSD mengasumsikan pita sudah ada di drive dan langsung melakukan rewind.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Skrip Pipeline Log OpenBSD A-ke-B-ke-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Direktori `scripts/` menyediakan skrip untuk skenario ketika Komputer B OpenBSD menerima entri rsyslog dari Komputer A, membundelnya harian, mengirimkannya ke salah satu dari beberapa server Komputer C, lalu Komputer C menuliskannya ke pita.
 
-| Script | Purpose |
+| Skrip | Tujuan |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Membuat log rotasi per jam dari berkas input rsyslog aktif di Komputer B. |
+| `scripts/computer-b-daily-archive.sh` | Membundel log per jam satu hari (`YYYYMMDD`) menjadi arsip `.tar.gz` dengan rentang waktu di Komputer B, tidak termasuk jam saat ini agar tidak konflik dengan penulisan aktif. |
+| `scripts/computer-b-send-archives.sh` | Mengirim arsip harian yang belum terkirim (`.tar.gz` dan opsional `.tar.gz.enc`) dari Komputer B ke satu atau lebih server Komputer C melalui `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Memvalidasi arsip plaintext yang masuk dan mengantrikan arsip plaintext/terenkripsi untuk pita. |
+| `scripts/computer-c-write-to-tape.sh` | Menulis arsip plaintext atau terenkripsi yang diantrikan ke pita, mengecek ruang, menambahkan dengan aman, dan menandainya telah direkam. |
+| `scripts/computer-c-inventory-tape.sh` | Mencetak daftar isi pita berdasarkan marker berkas agar operator cepat menemukan arsip. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Memindai posisi berkas pita untuk arsip yang diminta, mendekripsi bila perlu, dan menyimpan data pemulihan ke berkas. |
+| `scripts/test-computer-a-b-c-integration.sh` | Menjalankan uji integrasi lokal A→B→C yang deterministik (termasuk pemulihan pita) dan tidak bergantung pada waktu dinding. |
 
-Typical scheduling:
+Penjadwalan umum:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Jalankan `computer-b-hourly-rotate.sh` setiap jam (cron di B).
+- Jalankan `computer-b-daily-archive.sh` sekali per hari (cron di B).
+- Jalankan `computer-b-send-archives.sh` setelah pembuatan arsip (cron di B).
+- Jalankan `computer-c-receive-archives.sh` secara berkala di C.
+- Jalankan `computer-c-write-to-tape.sh` secara berkala di C dengan perangkat pita yang benar.
+- Jalankan `computer-c-inventory-tape.sh` di C saat Anda memerlukan daftar isi per marker.
+- Jalankan `computer-c-restore-archive-from-tape.sh` di C saat Anda perlu memulihkan arsip tertentu untuk inspeksi.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Semua skrip pipeline juga mengirim pesan operasional ke syslog melalui `logger` (misalnya terlihat via rsyslog/journaling) selain output konsol.
 
-### Multi-server send from Computer B
+### Pengiriman multi-server dari Komputer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` mendukung mode server tunggal maupun multi-server:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Server tunggal: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Opsi pemilihan server di sisi klien:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Berikan satu server pada argumen untuk mengunci ke satu Komputer C.
+- Berikan beberapa server untuk memungkinkan fallback.
+- Setel `PREFERRED_SERVER=user@host` untuk memilih satu server tertentu dari daftar yang diberikan.
 
-Busy handling options on Computer B:
+Opsi penanganan status sibuk di Komputer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (default: `.busy`): berkas penanda yang dicek di sisi remote.
+- `BUSY_RETRY_SECONDS` (default: `60`): waktu tunggu antar percobaan saat server sibuk.
+- `BUSY_MAX_RETRIES` (default: `10`): jumlah maksimum percobaan ulang per server.
 
-### Busy state publication from Computer C
+### Publikasi status sibuk dari Komputer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` membuat penanda sibuk saat aktif menulis arsip ke pita dan menghapusnya saat idle.
 
 - `BUSY_MARKER` (default: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Arahkan `REMOTE_BUSY_MARKER` di Komputer B ke lokasi penanda yang digunakan Komputer C.
 
-### Tape safety and append behavior on Computer C
+### Keamanan pita dan perilaku append di Komputer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Sebelum menulis tiap arsip, `computer-c-write-to-tape.sh` mengecek kapasitas pita/perangkat yang tersedia dan memerlukan setidaknya:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Variabel terkait:
 
 - `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_AVAILABLE_BYTES` (override untuk ruang tersedia yang sudah diketahui)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (mengizinkan penulisan jika ruang tidak dapat dideteksi)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Untuk perangkat pita nyata, penulis akan mencari ke akhir data (`mt eom`/`mt eod`) sebelum menulis, sehingga beberapa arsip ditambahkan (append) alih-alih menimpa isi pita sebelumnya.
 
-### Human-readable timestamps in filenames
+### Timestamp yang mudah dibaca manusia pada nama file
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Log per jam dinamai seperti: `rsyslog-2026-06-01T1600.log`
+- Arsip harian dinamai seperti: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Rentang arsip harian didasarkan pada berkas per jam pertama dan terakhir yang benar-benar ikut dalam arsip.
+Nama-nama ini dimaksudkan agar mudah dibaca manusia saat menelusuri rentang tanggal/waktu kejadian.
+Jam saat ini sengaja dikecualikan dari pembuatan arsip agar penulisan aktif tidak ikut terkirim.
 
-### Optional OpenSSL encryption for daily archives
+### Enkripsi OpenSSL opsional untuk arsip harian
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` dapat mengenkripsi arsip dengan OpenSSL setelah membuat tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` untuk enkripsi simetris (`openssl enc`, cipher default `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` untuk enkripsi sertifikat penerima (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` untuk memilih cipher OpenSSL pada mode key-file dan sertifikat (default: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Hanya satu dari opsi ini yang boleh disetel pada saat yang sama. Output terenkripsi menggunakan `.tar.gz.enc`.
+Demi keamanan, skrip menolak pilihan cipher lemah atau non-AEAD dan mewajibkan cipher kelas GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### Pemulihan arsip dari pita di Komputer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Gunakan `computer-c-restore-archive-from-tape.sh` untuk menemukan arsip tertentu dengan mencari berkas pita berurutan dari awal:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Untuk nama arsip seperti `rsyslog-<start>_to_<end>.tar.gz` (atau `.tar.gz.enc`), skrip mengidentifikasi kecocokan yang benar dengan memeriksa bahwa berkas batas per jam ada di payload hasil pemulihan.
+- Jika penamaan arsip Anda berbeda, setel `TARGET_MEMBER_GLOB` ke pola shell yang cocok dengan anggota yang wajib ada di arsip.
+- Jika arsip terenkripsi, berikan pengaturan dekripsi sesuai kebutuhan:
+  - `OPENSSL_DECRYPT_KEY_FILE` (mode simetris `openssl enc`; cipher dekripsi default: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` dan `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (mode dekripsi S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Output yang dipulihkan ditulis sebagai berkas `.tar.gz` plaintext agar dapat diperiksa dengan alat seperti `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Inventaris daftar isi pita di Komputer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Gunakan `computer-c-inventory-tape.sh` untuk mencetak daftar isi per marker:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Kolom output mencakup:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: posisi marker berkas pita berbasis nol
+- `status`: `ok`, `decrypted`, atau `unreadable`
+- `encrypted`: apakah dekripsi diperlukan untuk memeriksa entri (`yes`/`no`)
+- `archive_hint`: nama bergaya arsip yang diinferensikan saat batas dapat dikenali
+- `first_member` / `last_member`: anggota tar pertama dan terakhir yang terlihat pada marker tersebut
+- `member_count`: jumlah anggota tar yang ditemukan pada marker tersebut
+- `bytes`: byte mentah yang dibaca pada marker tersebut
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Ini memungkinkan operator menentukan indeks marker untuk dicari (`mt fsf <N>`) sebelum operasi pemulihan.
 
-### Deterministic A/B/C integration test
+### Uji integrasi A/B/C yang deterministik
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Gunakan `scripts/test-computer-a-b-c-integration.sh` untuk memvalidasi integrasi end-to-end Komputer A, B, dan C terlepas dari waktu yang berlalu:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Skrip ini:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Mensimulasikan A menulis log.
+2. Menjalankan rotasi dan pembuatan arsip harian di B.
+3. Mensimulasikan transfer ke incoming C.
+4. Menjalankan penerimaan C + write-to-tape.
+5. Memulihkan arsip dari pita dan memvalidasi konten.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Skrip ini menggunakan cap hari tetap (`TEST_DAY_STAMP`, default `20260101`) sehingga perilaku dapat diulang dan tidak terikat pada tanggal/waktu saat ini.
 
-### 72-hour retention with safety for unconfirmed data
+### Retensi 72 jam dengan keamanan untuk data yang belum terkonfirmasi
 
-The scripts now default to a 72-hour retention window:
+Skrip kini default ke jendela retensi 72 jam:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` hanya menghapus log per jam lama saat ada penanda konfirmasi `.taped` lokal yang cocok.
+- `computer-b-send-archives.sh` hanya menghapus arsip lokal lama saat penanda `.sent` dan penanda konfirmasi `.taped` lokal keduanya ada.
+- `computer-c-write-to-tape.sh` hanya menghapus arsip lama yang sudah memiliki penanda `.taped`.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Akibatnya, berkas yang belum berhasil ditransmisikan dan direkam ke pita tetap dipertahankan walau lebih tua dari `RETENTION_HOURS` (default `72`).
+Di Komputer B, pembersihan lokal memerlukan penanda `.taped` lokal (misalnya dari langkah sinkronisasi balik atau proses konfirmasi manual).
+Di Komputer C, umur retensi diukur dari waktu modifikasi penanda `.taped` (biasanya disetel pada saat penulisan pita berhasil).

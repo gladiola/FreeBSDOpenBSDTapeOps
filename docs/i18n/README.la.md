@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Latina)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Scripta shell interactiva quae operationes communes taeniae magneticae per `mt` et `tar` demonstrant.
 
-## Language Documentation Index
+## Index Documentorum Linguarum
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Scripta
 
-| Script | Target OS |
+| Scriptum | Systema destinatum |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Utrumque scriptum eandem seriem operationum peragit:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Usorem rogare ut confirmet taeniam insertam esse.
+2. Taeniam ad initium revolvere.
+3. Statum taeniae ostendere.
+4. Contenta archivorum in positionibus 0, 1, 2, et 3 per `tar t` enumerare.
+5. Taeniam in statum offline ponere.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Singuli gradus sistunt et exspectant dum usor **Enter** premit antequam pergatur; ita scripta apta sunt demonstrationibus interactivis vel ductis per gradus.
 
-## Differences Between the Two Scripts
+## Differentiae Inter Duo Scripta
 
-### 1. Tape device path
+### 1. Via machinae taeniae
 
-The scripts target different tape device nodes:
+Scripta ad diversos nodos machinae taeniae spectant:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Uterque est nodus non-rewinding (praefixum `n`), ideo positio taeniae inter mandata servatur et scripta positionem explicite moderantur per `mt rewind` et `mt fsf`.
 
-### 2. Tape loading step
+### 2. Gradus ad taeniam onerandam
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: In initio mandat `mt -f /dev/nsa0 load` ut cassetta taeniae mechanice in drive imponatur ante rewind.
+- **OpenBSD**: Mandatum `load` omittit quia `mt(1)` in OpenBSD submandatum `load` non sustinet. Scriptum OpenBSD praesumit taeniam iam in drive esse et statim rewind facit.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## Scripta Pipeline Log OpenBSD A-ad-B-ad-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Directorium `scripts/` continet scripta ad casum in quo Computer B OpenBSD inscriptiones rsyslog a Computatro A accipit, eas cotidie colligit, ad unum ex pluribus servitoribus Computer C mittit, et Computer C eas in taenia scribit.
 
-| Script | Purpose |
+| Scriptum | Propositum |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Logum singulis horis rotatum ex activo archivo input rsyslog in Computer B creat. |
+| `scripts/computer-b-daily-archive.sh` | Loga unius diei (`YYYYMMDD`) in archivum `.tar.gz` temporis intervallo definitum in Computer B conligat, hora currenti exclusa ad conflictus scripturae activae vitandos. |
+| `scripts/computer-b-send-archives.sh` | Archiva cotidiana nondum missa (`.tar.gz` et optionale `.tar.gz.enc`) ex Computer B ad unum vel plures servitores Computer C per `scp` mittit. |
+| `scripts/computer-c-receive-archives.sh` | Archiva plaintext incoming validat et archiva plaintext/encrypta in ordinem pro taenia ponit. |
+| `scripts/computer-c-write-to-tape.sh` | Archiva plaintext vel encrypta in ordine ad taeniam scribit, spatium examinat, secure appendit, et ea scripta notat. |
+| `scripts/computer-c-inventory-tape.sh` | Indicem contentorum taeniae per file marker imprimit ut operatores archiva celeriter inveniant. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Positiones file in taenia scrutatur pro archivo petito, si opus est decriptat, et data recuperata in archivum servat. |
+| `scripts/test-computer-a-b-c-integration.sh` | Testem integrationis localem A→B→C deterministicam (cum recuperatione ex taenia) currit, quae a tempore horologii non pendet. |
 
-Typical scheduling:
+Ordinatio usitata:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Curre `computer-b-hourly-rotate.sh` omni hora (cron in B).
+- Curre `computer-b-daily-archive.sh` semel in die (cron in B).
+- Curre `computer-b-send-archives.sh` post creationem archivi (cron in B).
+- Curre `computer-c-receive-archives.sh` periodicē in C.
+- Curre `computer-c-write-to-tape.sh` periodicē in C cum recto apparatu taeniae.
+- Curre `computer-c-inventory-tape.sh` in C cum indice marker-by-marker opus est.
+- Curre `computer-c-restore-archive-from-tape.sh` in C cum archivum certum ad inspectionem recuperare debes.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Omnia scripta pipeline etiam nuntios operationales ad syslog per `logger` mittunt (exempli gratia visibiles in rsyslog/journaling) praeter output in console.
 
-### Multi-server send from Computer B
+### Missio multi-servitoris ex Computer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` modum unius servitoris et modum multi-servitoris sustinet:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- Unus servitor: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- Multi-servitor: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Optiones selectionis servitoris in parte clientis:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Da unum servitorem in argumentis ut ad unum Computer C figatur.
+- Da plures servitores ut fallback permittatur.
+- Pone `PREFERRED_SERVER=user@host` ut unum servitorem certum ex indice dato eligas.
 
-Busy handling options on Computer B:
+Optiones tractationis status occupati in Computer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (defaltum: `.busy`): marker file in parte remota inspectus.
+- `BUSY_RETRY_SECONDS` (defaltum: `60`): tempus expectationis inter retries dum servitor occupatus est.
+- `BUSY_MAX_RETRIES` (defaltum: `10`): numerus maximus retry pro singulo servitore.
 
-### Busy state publication from Computer C
+### Publicatio status occupati ex Computer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` marker occupati creat dum archiva ad taeniam active scribit et eum removet cum otiosum est.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (defaltum: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Dirige `REMOTE_BUSY_MARKER` in Computer B ad locum marker quem Computer C adhibet.
 
-### Tape safety and append behavior on Computer C
+### Securitas taeniae et ratio appendendi in Computer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Antequam singulum archivum scribatur, `computer-c-write-to-tape.sh` capacitatem taeniae/apparatus examinat et minimum requirit:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Variabiles pertinentes:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (defaltum: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (override pro spatio noto disponibili)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (scripturam permittit si spatium deprehendi non potest)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Pro veris apparatibus taeniae, scriptum ad finem datorum (`mt eom`/`mt eod`) quaerit ante scripturam, ita plura archiva appenduntur potius quam vetera contenta supercribantur.
 
-### Human-readable timestamps in filenames
+### Notae temporis hominibus faciles in nominibus file
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Loga horaria sic nominantur: `rsyslog-2026-06-01T1600.log`
+- Archiva cotidiana sic nominantur: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Intervalla archivi cotidiani ex primis et ultimis file horariis revera inclusis determinantur.
+Haec nomina ad lectionem humanam destinata sunt dum fenestras temporis eventuum scrutaris.
+Hora currentis consulto ex creatione archivi excluditur ne scriptura activa transmittatur.
 
-### Optional OpenSSL encryption for daily archives
+### Encryptio OpenSSL optionalis pro archivis cotidianis
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` archiva OpenSSL post creationem tarball encryptare potest:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` pro encryptione symmetrica (`openssl enc`, cipher defaltum `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` pro encryptione per certificatum recipientis (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` ad cipher OpenSSL eligendum in modis key-file et certificati (defaltum: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Una tantum ex his optionibus simul poni potest. Output encrypta `.tar.gz.enc` utuntur.
+Propter securitatem scriptum ciphra debilia aut non-AEAD respuit et ciphra classis GCM/poly1305 requirit.
 
-### Archive recovery from tape on Computer C
+### Recuperatio archivi ex taenia in Computer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Utere `computer-c-restore-archive-from-tape.sh` ut archivum certum invenias per ordinem file taeniae ab initio perscrutando:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- Pro nominibus archivi ut `rsyslog-<start>_to_<end>.tar.gz` (aut `.tar.gz.enc`), scriptum rectam concordantiam agnoscit comprobando files horarias limites in payload recuperato adesse.
+- Si ratio nominandi diversa est, pone `TARGET_MEMBER_GLOB` ad pattern shell quod membro necessario in archivo respondet.
+- Si archivum encryptum est, da settinges decryptionis prout opus est:
+  - `OPENSSL_DECRYPT_KEY_FILE` (modus symmetricae `openssl enc`; default decrypt cipher: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` et `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (modus decryptionis S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Output recuperata scribitur ut file `.tar.gz` plaintext ut instrumentis sicut `tar -tzf` inspici possit.
 
-### Tape table-of-contents inventory on Computer C
+### Inventarium indicis contentorum taeniae in Computer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Utere `computer-c-inventory-tape.sh` ut indicem contentorum marker-by-marker imprimas:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Columnae output includunt:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: positio file marker taeniae a zero numerata
+- `status`: `ok`, `decrypted`, aut `unreadable`
+- `encrypted`: utrum decryptio ad inspectionem entry necessaria fuerit (`yes`/`no`)
+- `archive_hint`: nomen generis archivi inferum cum limites agnosci possunt
+- `first_member` / `last_member`: primi et ultimi membra tar in illo marker visa
+- `member_count`: numerus membrorum tar in illo marker repertorum
+- `bytes`: bytes crudi in illo marker lecti
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Hoc operatorem iuvat ad indicem marker quaerendum (`mt fsf <N>`) ante operationes recuperationis determinandum.
 
-### Deterministic A/B/C integration test
+### Testis integrationis A/B/C deterministica
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Utere `scripts/test-computer-a-b-c-integration.sh` ad integrationem end-to-end Computatrorum A, B, et C validandam quacumque mora temporis:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Hoc scriptum:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Simulat A loga scribere.
+2. Rotationem B et creationem archivi quotidiani currit.
+3. Translationem in incoming C simulat.
+4. Receptionem C et write-to-tape currit.
+5. Archivum ex taenia recuperat et contentum validat.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Utitur signo diei fixo (`TEST_DAY_STAMP`, defaltum `20260101`) ut mores repetibiles sint neque ad diem/horam praesentem alligentur.
 
-### 72-hour retention with safety for unconfirmed data
+### Retentio 72 horarum cum tutela pro datis nondum confirmatis
 
-The scripts now default to a 72-hour retention window:
+Scripta nunc ad fenestram retentionis 72 horarum per defaltum redeunt:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` vetera loga horaria removet tantum si congruens marker confirmationis localis `.taped` exstat.
+- `computer-b-send-archives.sh` vetera archiva localia removet tantum si et marker `.sent` et marker localis `.taped` exstant.
+- `computer-c-write-to-tape.sh` vetera archiva removet tantum quae iam markers `.taped` habent.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Quam ob rem files quae nondum feliciter translata et in taenia scripta sunt servantur etiam si vetustiores sunt quam `RETENTION_HOURS` (defaltum `72`).
+In Computer B, purgatio localis markers locales `.taped` requirit (exempli causa ex gradu sync-back vel processu confirmationis manualis).
+In Computer C, aetas retentionis ex tempore modificationis marker `.taped` metitur (plerumque tempore scripturae in taeniam feliciter peractae statuitur).

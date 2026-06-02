@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (ไทย)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+สคริปต์เชลล์แบบโต้ตอบที่พาใช้งานขั้นตอนทั่วไปของเทปแม่เหล็กด้วย `mt` และ `tar`.
 
-## Language Documentation Index
+## ดัชนีเอกสารภาษา
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## สคริปต์
 
-| Script | Target OS |
+| สคริปต์ | ระบบปฏิบัติการเป้าหมาย |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+ทั้งสองสคริปต์ทำงานตามลำดับเดียวกัน:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. ขอให้ผู้ใช้ยืนยันว่าใส่เทปแล้ว.
+2. รีไวน์เทปกลับต้น.
+3. แสดงสถานะเทป.
+4. แสดงรายการเนื้อหาของอาร์ไคฟ์ที่ตำแหน่งไฟล์ 0, 1, 2 และ 3 ด้วย `tar t`.
+5. นำเทปออกจากโหมดใช้งาน (offline).
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+แต่ละขั้นจะหยุดและรอให้ผู้ใช้กด **Enter** ก่อนดำเนินการต่อ ทำให้เหมาะกับการสาธิตแบบโต้ตอบหรือการสอนแบบทีละขั้น.
 
-## Differences Between the Two Scripts
+## ความแตกต่างระหว่างสองสคริปต์
 
-### 1. Tape device path
+### 1. พาธของอุปกรณ์เทป
 
-The scripts target different tape device nodes:
+สคริปต์ใช้โหนดอุปกรณ์เทปคนละตัว:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+ทั้งสองเป็นอุปกรณ์แบบไม่รีไวน์อัตโนมัติ (คำนำหน้า `n`) จึงคงตำแหน่งเทปไว้ระหว่างคำสั่ง และสคริปต์ควบคุมตำแหน่งเองด้วย `mt rewind` และ `mt fsf`.
 
-### 2. Tape loading step
+### 2. ขั้นตอนโหลดเทป
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: เรียก `mt -f /dev/nsa0 load` ตอนเริ่ม เพื่อโหลดตลับเทปเข้าไดรฟ์เชิงกลก่อนรีไวน์.
+- **OpenBSD**: ข้ามคำสั่ง `load` เพราะ `mt(1)` บน OpenBSD ไม่รองรับ subcommand `load`. สคริปต์ OpenBSD จึงสมมติว่าใส่เทปไว้แล้วและรีไวน์ทันที.
 
-## OpenBSD A-to-B-to-C Log Pipeline Scripts
+## สคริปต์ไปป์ไลน์ล็อก OpenBSD A-to-B-to-C
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+ไดเรกทอรี `scripts/` มีสคริปต์สำหรับสถานการณ์ที่คอมพิวเตอร์ OpenBSD B รับ rsyslog จากคอมพิวเตอร์ A, จัดกลุ่มรายวัน, ส่งไปยังหนึ่งในหลายเซิร์ฟเวอร์คอมพิวเตอร์ C และให้คอมพิวเตอร์ C เขียนลงเทป.
 
-| Script | Purpose |
+| สคริปต์ | วัตถุประสงค์ |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | สร้างไฟล์ล็อกแบบหมุนรายชั่วโมงจากไฟล์ rsyslog ที่ใช้งานอยู่บนคอมพิวเตอร์ B. |
+| `scripts/computer-b-daily-archive.sh` | รวมล็อกรายชั่วโมงของหนึ่งวัน (`YYYYMMDD`) เป็นอาร์ไคฟ์ `.tar.gz` แบบมีช่วงเวลา บนคอมพิวเตอร์ B โดยไม่นำชั่วโมงปัจจุบันเข้าไปเพื่อลดปัญหาชนกับการเขียนที่กำลังทำงาน. |
+| `scripts/computer-b-send-archives.sh` | ส่งอาร์ไคฟ์รายวันที่ยังไม่ส่ง (`.tar.gz` และตัวเลือก `.tar.gz.enc`) จากคอมพิวเตอร์ B ไปยังคอมพิวเตอร์ C หนึ่งหรือหลายเครื่องผ่าน `scp`. |
+| `scripts/computer-c-receive-archives.sh` | ตรวจสอบอาร์ไคฟ์ plaintext ที่เข้ามา และเข้าคิวอาร์ไคฟ์ plaintext/เข้ารหัสเพื่อเขียนลงเทป. |
+| `scripts/computer-c-write-to-tape.sh` | เขียนอาร์ไคฟ์ plaintext หรือเข้ารหัสที่อยู่ในคิวลงเทป ตรวจพื้นที่ วางต่อท้ายอย่างปลอดภัย และทำเครื่องหมายว่าเขียนแล้ว. |
+| `scripts/computer-c-inventory-tape.sh` | พิมพ์สารบัญเทปตาม file marker เพื่อให้ผู้ปฏิบัติงานหาอาร์ไคฟ์ได้เร็ว. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | สแกนตำแหน่งไฟล์บนเทปเพื่อหาอาร์ไคฟ์ที่ต้องการ ถอดรหัสเมื่อจำเป็น และบันทึกข้อมูลกู้คืนลงไฟล์. |
+| `scripts/test-computer-a-b-c-integration.sh` | รันทดสอบการเชื่อมต่อ A→B→C แบบกำหนดผลได้แน่นอนในเครื่องเดียว (รวมการกู้คืนจากเทป) โดยไม่ขึ้นกับเวลาจริง. |
 
-Typical scheduling:
+ตารางเวลาที่ใช้บ่อย:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- รัน `computer-b-hourly-rotate.sh` ทุกชั่วโมง (cron บน B).
+- รัน `computer-b-daily-archive.sh` วันละครั้ง (cron บน B).
+- รัน `computer-b-send-archives.sh` หลังสร้างอาร์ไคฟ์ (cron บน B).
+- รัน `computer-c-receive-archives.sh` เป็นระยะบน C.
+- รัน `computer-c-write-to-tape.sh` เป็นระยะบน C โดยระบุอุปกรณ์เทปที่ถูกต้อง.
+- รัน `computer-c-inventory-tape.sh` บน C เมื่อต้องการสารบัญแบบ marker-by-marker.
+- รัน `computer-c-restore-archive-from-tape.sh` บน C เมื่อต้องการกู้อาร์ไคฟ์เฉพาะรายการเพื่อตรวจสอบ.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+สคริปต์ไปป์ไลน์ทั้งหมดส่งข้อความปฏิบัติการไปยัง syslog ผ่าน `logger` (เช่นดูได้จาก rsyslog/journaling) เพิ่มเติมจากข้อความที่แสดงในคอนโซล.
 
-### Multi-server send from Computer B
+### การส่งหลายเซิร์ฟเวอร์จากคอมพิวเตอร์ B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+`computer-b-send-archives.sh` รองรับทั้งโหมดเซิร์ฟเวอร์เดียวและหลายเซิร์ฟเวอร์:
 
-- Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
-- Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
+- เซิร์ฟเวอร์เดียว: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
+- หลายเซิร์ฟเวอร์: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+ตัวเลือกฝั่งไคลเอนต์สำหรับเลือกเซิร์ฟเวอร์:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- ระบุเซิร์ฟเวอร์เดียวในอาร์กิวเมนต์เพื่อบังคับไปที่คอมพิวเตอร์ C เครื่องเดียว.
+- ระบุหลายเซิร์ฟเวอร์เพื่อรองรับ fallback.
+- ตั้งค่า `PREFERRED_SERVER=user@host` เพื่อเลือกเซิร์ฟเวอร์เฉพาะจากรายการที่ให้มา.
 
-Busy handling options on Computer B:
+ตัวเลือกจัดการสถานะ busy บนคอมพิวเตอร์ B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (ค่าเริ่มต้น: `.busy`): ไฟล์ marker ที่ตรวจสอบฝั่งปลายทาง.
+- `BUSY_RETRY_SECONDS` (ค่าเริ่มต้น: `60`): เวลารอระหว่างการลองใหม่เมื่อเซิร์ฟเวอร์ไม่ว่าง.
+- `BUSY_MAX_RETRIES` (ค่าเริ่มต้น: `10`): จำนวนครั้งลองใหม่สูงสุดต่อเซิร์ฟเวอร์.
 
-### Busy state publication from Computer C
+### การเผยแพร่สถานะ busy จากคอมพิวเตอร์ C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+`computer-c-write-to-tape.sh` จะสร้าง busy marker ขณะกำลังเขียนอาร์ไคฟ์ลงเทป และลบออกเมื่อว่าง.
 
-- `BUSY_MARKER` (default: `<received_dir>/.busy`)
+- `BUSY_MARKER` (ค่าเริ่มต้น: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+ตั้งค่า `REMOTE_BUSY_MARKER` บนคอมพิวเตอร์ B ให้ชี้ไปยังตำแหน่ง marker ที่คอมพิวเตอร์ C ใช้.
 
-### Tape safety and append behavior on Computer C
+### ความปลอดภัยของเทปและพฤติกรรมการต่อท้ายบนคอมพิวเตอร์ C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+ก่อนเขียนแต่ละอาร์ไคฟ์ `computer-c-write-to-tape.sh` จะตรวจความจุเทป/อุปกรณ์ที่มี และต้องมีอย่างน้อย:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+ตัวแปรที่เกี่ยวข้อง:
 
-- `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_SAFETY_MARGIN_BYTES` (ค่าเริ่มต้น: `10485760`)
+- `TAPE_AVAILABLE_BYTES` (override สำหรับพื้นที่ว่างที่ทราบแน่ชัด)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (อนุญาตให้เขียนแม้ตรวจพื้นที่ไม่ได้)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+สำหรับอุปกรณ์เทปจริง ตัวเขียนจะเลื่อนไปท้ายข้อมูล (`mt eom`/`mt eod`) ก่อนเขียน จึงเป็นการต่อท้ายหลายอาร์ไคฟ์แทนการเขียนทับข้อมูลเก่า.
 
-### Human-readable timestamps in filenames
+### ชื่อไฟล์ที่มี timestamp อ่านง่าย
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- ล็อกรายชั่วโมงตั้งชื่อแบบ: `rsyslog-2026-06-01T1600.log`
+- อาร์ไคฟ์รายวันตั้งชื่อแบบ: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+ช่วงเวลาของอาร์ไคฟ์รายวันอิงจากไฟล์รายชั่วโมงไฟล์แรกและสุดท้ายที่ถูกรวมจริง.
+ชื่อนี้ออกแบบให้คนอ่านเข้าใจง่ายเมื่อไล่ดูช่วงวัน/เวลาของเหตุการณ์.
+ชั่วโมงปัจจุบันถูกตัดออกโดยตั้งใจ เพื่อไม่ส่งข้อมูลที่กำลังถูกเขียนอยู่.
 
-### Optional OpenSSL encryption for daily archives
+### การเข้ารหัส OpenSSL แบบเลือกใช้สำหรับอาร์ไคฟ์รายวัน
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+`computer-b-daily-archive.sh` สามารถเข้ารหัสอาร์ไคฟ์ด้วย OpenSSL หลังสร้าง tarball แล้ว:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` สำหรับการเข้ารหัสแบบ symmetric (`openssl enc`, cipher ค่าเริ่มต้น `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` สำหรับการเข้ารหัสด้วยใบรับรองผู้รับ (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` สำหรับเลือก OpenSSL cipher ทั้งโหมด key-file และ certificate (ค่าเริ่มต้น: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+ตั้งค่าได้ครั้งละตัวเลือกเดียวเท่านั้น เอาต์พุตที่เข้ารหัสจะใช้ `.tar.gz.enc`.
+เพื่อความปลอดภัย สคริปต์จะปฏิเสธ cipher ที่อ่อนแอหรือไม่ใช่ AEAD และบังคับใช้ cipher กลุ่ม GCM/poly1305.
 
-### Archive recovery from tape on Computer C
+### การกู้อาร์ไคฟ์จากเทปบนคอมพิวเตอร์ C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+ใช้ `computer-c-restore-archive-from-tape.sh` เพื่อหาอาร์ไคฟ์ที่ต้องการ โดยค้นไฟล์บนเทปจากต้นไปตามลำดับ:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
-  - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+- สำหรับชื่ออาร์ไคฟ์เช่น `rsyslog-<start>_to_<end>.tar.gz` (หรือ `.tar.gz.enc`) สคริปต์จะระบุรายการที่ถูกต้องโดยตรวจว่าไฟล์รายชั่วโมงขอบเขตมีอยู่ใน payload ที่กู้คืน.
+- หากรูปแบบการตั้งชื่ออาร์ไคฟ์ต่างออกไป ให้ตั้ง `TARGET_MEMBER_GLOB` เป็นแพทเทิร์น shell ของ member ที่ต้องมีในอาร์ไคฟ์.
+- หากอาร์ไคฟ์ถูกเข้ารหัส ให้กำหนดค่าถอดรหัสตามต้องการ:
+  - `OPENSSL_DECRYPT_KEY_FILE` (โหมด symmetric `openssl enc`; decrypt cipher ค่าเริ่มต้น: `aes-256-gcm`)
+  - `OPENSSL_DECRYPT_CERT_FILE` และ `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (โหมดถอดรหัส S/MIME)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+เอาต์พุตที่กู้คืนจะถูกเขียนเป็นไฟล์ `.tar.gz` แบบ plaintext เพื่อให้ตรวจได้ด้วยเครื่องมืออย่าง `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### การทำ inventory สารบัญเทปบนคอมพิวเตอร์ C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+ใช้ `computer-c-inventory-tape.sh` เพื่อพิมพ์สารบัญแบบ marker-by-marker:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+คอลัมน์เอาต์พุตประกอบด้วย:
 
-- `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `file_marker`: ตำแหน่ง file marker ของเทปแบบเริ่มที่ศูนย์
+- `status`: `ok`, `decrypted` หรือ `unreadable`
+- `encrypted`: ต้องถอดรหัสเพื่อตรวจ entry หรือไม่ (`yes`/`no`)
+- `archive_hint`: ชื่อแนวอาร์ไคฟ์ที่อนุมานได้เมื่อระบุขอบเขตได้
+- `first_member` / `last_member`: tar member ตัวแรกและตัวสุดท้ายที่พบใน marker นั้น
+- `member_count`: จำนวน tar member ที่พบใน marker นั้น
+- `bytes`: จำนวนไบต์ดิบที่อ่านได้ใน marker นั้น
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+ข้อมูลนี้ช่วยให้ผู้ปฏิบัติงานระบุ marker index ที่ต้อง seek (`mt fsf <N>`) ก่อนทำการกู้คืน.
 
-### Deterministic A/B/C integration test
+### การทดสอบรวมระบบ A/B/C แบบกำหนดผลได้แน่นอน
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+ใช้ `scripts/test-computer-a-b-c-integration.sh` เพื่อตรวจสอบการทำงานครบเส้นทางของคอมพิวเตอร์ A, B และ C โดยไม่ขึ้นกับเวลาที่ผ่านไป:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+สคริปต์นี้จะ:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. จำลองให้ A เขียนล็อก.
+2. รันการหมุนล็อกและสร้างอาร์ไคฟ์รายวันบน B.
+3. จำลองการโอนไปยังโฟลเดอร์ incoming ของ C.
+4. รัน receive + write-to-tape บน C.
+5. กู้อาร์ไคฟ์จากเทปและตรวจสอบเนื้อหา.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+สคริปต์ใช้ day stamp คงที่ (`TEST_DAY_STAMP`, ค่าเริ่มต้น `20260101`) จึงทำซ้ำผลได้และไม่ผูกกับวัน/เวลาปัจจุบัน.
 
-### 72-hour retention with safety for unconfirmed data
+### การเก็บรักษา 72 ชั่วโมง พร้อมความปลอดภัยสำหรับข้อมูลที่ยังไม่ยืนยัน
 
-The scripts now default to a 72-hour retention window:
+สคริปต์ตั้งค่าเริ่มต้นเป็นหน้าต่างการเก็บรักษา 72 ชั่วโมง:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` จะลบล็อกเก่ารายชั่วโมงเฉพาะเมื่อมี `.taped` confirmation marker ในเครื่องที่ตรงกัน.
+- `computer-b-send-archives.sh` จะลบอาร์ไคฟ์เก่าในเครื่องเฉพาะเมื่อมีทั้ง `.sent` และ `.taped` confirmation marker ในเครื่อง.
+- `computer-c-write-to-tape.sh` จะลบเฉพาะอาร์ไคฟ์เก่าที่มี `.taped` marker แล้ว.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+ผลคือไฟล์ที่ยังส่งไม่สำเร็จหรือยังไม่ถูกบันทึกลงเทปจะยังถูกเก็บไว้ แม้เก่ากว่า `RETENTION_HOURS` (ค่าเริ่มต้น `72`).
+บนคอมพิวเตอร์ B การล้างข้อมูลในเครื่องต้องมี `.taped` marker ในเครื่อง (เช่นจากขั้นตอน sync-back หรือการยืนยันด้วยมือ).
+บนคอมพิวเตอร์ C อายุการเก็บรักษาจะนับจากเวลาแก้ไขของ `.taped` marker (ปกติถูกตั้งตอนเขียนเทปสำเร็จ).
