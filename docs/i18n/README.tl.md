@@ -1,8 +1,8 @@
 # FreeBSDOpenBSDTapeOps (Tagalog)
 
-Interactive shell scripts that walk through common magnetic tape operations using `mt` and `tar`.
+Mga interaktibong shell script na gumagabay sa karaniwang operasyon ng magnetic tape gamit ang `mt` at `tar`.
 
-## Language Documentation Index
+## Indeks ng Dokumentasyon ng Wika
 
 - [US English](docs/i18n/README.en-US.md)
 - [Deutsch (German)](docs/i18n/README.de.md)
@@ -44,189 +44,189 @@ Interactive shell scripts that walk through common magnetic tape operations usin
 - [עברית (Hebrew)](docs/i18n/README.he.md)
 
 
-## Scripts
+## Mga Script
 
-| Script | Target OS |
+| Script | Target na OS |
 |---|---|
 | `scriptedDemo.sh` | FreeBSD |
 | `scriptedDemo_openbsd.sh` | OpenBSD |
 
-Both scripts perform the same sequence of operations:
+Parehong script ay nagsasagawa ng iisang pagkakasunod ng operasyon:
 
-1. Prompt the user to confirm the tape is loaded.
-2. Rewind the tape.
-3. Print the tape status.
-4. List the contents of archives at file positions 0, 1, 2, and 3 using `tar t`.
-5. Take the tape offline.
+1. Hilingin sa user na kumpirmahing naka-load ang tape.
+2. I-rewind ang tape.
+3. I-print ang status ng tape.
+4. Ilista ang nilalaman ng mga archive sa file positions 0, 1, 2, at 3 gamit ang `tar t`.
+5. Ilagay ang tape sa offline.
 
-Each step pauses and waits for the user to press **Enter** before continuing, making the scripts suitable as interactive demonstrations or guided walkthroughs.
+Bawat hakbang ay humihinto at naghihintay na pindutin ng user ang **Enter** bago magpatuloy, kaya ang mga script ay angkop para sa interaktibong demo o guided walkthrough.
 
-## Differences Between the Two Scripts
+## Pagkakaiba ng Dalawang Script
 
-### 1. Tape device path
+### 1. Path ng tape device
 
-The scripts target different tape device nodes:
+Magkaiba ang tape device node na tina-target ng mga script:
 
 - **FreeBSD** (`scriptedDemo.sh`): `/dev/nsa0`
 - **OpenBSD** (`scriptedDemo_openbsd.sh`): `/dev/nrst0`
 
-Both are non-rewinding device nodes (the `n` prefix), so the tape position is preserved between commands and the scripts control positioning explicitly with `mt rewind` and `mt fsf`.
+Pareho silang non-rewinding device nodes (prefix na `n`), kaya napapanatili ang posisyon ng tape sa pagitan ng mga command at tahasang kinokontrol ng scripts ang pagposisyon gamit ang `mt rewind` at `mt fsf`.
 
-### 2. Tape loading step
+### 2. Hakbang sa pag-load ng tape
 
-- **FreeBSD**: Issues `mt -f /dev/nsa0 load` at startup to mechanically load the tape cartridge into the drive before rewinding.
-- **OpenBSD**: Skips the `load` command because OpenBSD's `mt(1)` does not support a `load` subcommand. The OpenBSD script assumes the tape is already present in the drive and proceeds directly to rewind.
+- **FreeBSD**: Nagpapatakbo ng `mt -f /dev/nsa0 load` sa startup para mekanikal na i-load ang tape cartridge sa drive bago mag-rewind.
+- **OpenBSD**: Nilalampasan ang command na `load` dahil hindi suportado ng `mt(1)` ng OpenBSD ang `load` subcommand. Ipinapalagay ng OpenBSD script na nasa drive na ang tape at direktang magre-rewind.
 
 ## OpenBSD A-to-B-to-C Log Pipeline Scripts
 
-The `scripts/` directory provides scripts for the scenario where OpenBSD Computer B receives rsyslog entries from Computer A, batches them daily, sends them to one of several Computer C servers, and Computer C writes them to tape.
+Ang direktoryong `scripts/` ay may mga script para sa sitwasyong tumatanggap ang OpenBSD Computer B ng rsyslog entries mula sa Computer A, iniipon ang mga ito araw-araw, ipinapadala sa isa sa maraming Computer C servers, at isinusulat ng Computer C sa tape.
 
-| Script | Purpose |
+| Script | Layunin |
 |---|---|
-| `scripts/computer-b-hourly-rotate.sh` | Creates an hourly rotated log from the active rsyslog input file on Computer B. |
-| `scripts/computer-b-daily-archive.sh` | Bundles one day (`YYYYMMDD`) of hourly logs into a time-ranged `.tar.gz` archive on Computer B, excluding the current hour to avoid active-write conflicts. |
-| `scripts/computer-b-send-archives.sh` | Sends unsent daily archives (`.tar.gz` and optional `.tar.gz.enc`) from Computer B to one or more Computer C servers over `scp`. |
-| `scripts/computer-c-receive-archives.sh` | Validates incoming plaintext archives and queues plaintext/encrypted archives for tape. |
-| `scripts/computer-c-write-to-tape.sh` | Writes queued plaintext or encrypted archives to tape, checks space, appends safely, and marks them recorded. |
-| `scripts/computer-c-inventory-tape.sh` | Prints a tape table-of-contents by file marker so operators can locate archives quickly. |
-| `scripts/computer-c-restore-archive-from-tape.sh` | Scans tape file positions for a requested archive, decrypts when needed, and saves recovered data to a file. |
-| `scripts/test-computer-a-b-c-integration.sh` | Runs a deterministic local A→B→C integration test (including tape restore) that does not depend on wall-clock timing. |
+| `scripts/computer-b-hourly-rotate.sh` | Gumagawa ng hourly rotated log mula sa aktibong rsyslog input file sa Computer B. |
+| `scripts/computer-b-daily-archive.sh` | Binubuo ang isang araw (`YYYYMMDD`) ng hourly logs sa time-ranged `.tar.gz` archive sa Computer B, at hindi isinasama ang kasalukuyang oras upang maiwasan ang active-write conflicts. |
+| `scripts/computer-b-send-archives.sh` | Ipinapadala ang hindi pa naipapadalang daily archives (`.tar.gz` at optional `.tar.gz.enc`) mula Computer B papunta sa isa o higit pang Computer C servers sa `scp`. |
+| `scripts/computer-c-receive-archives.sh` | Vina-validate ang mga papasok na plaintext archive at ipinipila ang plaintext/encrypted archives para sa tape. |
+| `scripts/computer-c-write-to-tape.sh` | Isinusulat ang naka-queue na plaintext o encrypted archives sa tape, tinitingnan ang space, ligtas na ina-append, at minamarkahang recorded. |
+| `scripts/computer-c-inventory-tape.sh` | Nagpi-print ng tape table-of-contents ayon sa file marker para mabilis mahanap ng operator ang archives. |
+| `scripts/computer-c-restore-archive-from-tape.sh` | Ini-scan ang tape file positions para sa hiniling na archive, nagde-decrypt kung kailangan, at sine-save ang recovered data sa file. |
+| `scripts/test-computer-a-b-c-integration.sh` | Nagpapatakbo ng deterministikong lokal na A→B→C integration test (kasama ang tape restore) na hindi nakadepende sa wall-clock timing. |
 
-Typical scheduling:
+Karaniwang iskedyul:
 
-- Run `computer-b-hourly-rotate.sh` every hour (cron on B).
-- Run `computer-b-daily-archive.sh` once per day (cron on B).
-- Run `computer-b-send-archives.sh` after archive creation (cron on B).
-- Run `computer-c-receive-archives.sh` periodically on C.
-- Run `computer-c-write-to-tape.sh` periodically on C with the correct tape device.
-- Run `computer-c-inventory-tape.sh` on C when you need a marker-by-marker table of contents.
-- Run `computer-c-restore-archive-from-tape.sh` on C when you need to recover a specific archive for inspection.
+- Patakbuhin ang `computer-b-hourly-rotate.sh` kada oras (cron sa B).
+- Patakbuhin ang `computer-b-daily-archive.sh` isang beses kada araw (cron sa B).
+- Patakbuhin ang `computer-b-send-archives.sh` pagkatapos gumawa ng archive (cron sa B).
+- Patakbuhin ang `computer-c-receive-archives.sh` nang pana-panahon sa C.
+- Patakbuhin ang `computer-c-write-to-tape.sh` nang pana-panahon sa C gamit ang tamang tape device.
+- Patakbuhin ang `computer-c-inventory-tape.sh` sa C kapag kailangan mo ng marker-by-marker table of contents.
+- Patakbuhin ang `computer-c-restore-archive-from-tape.sh` sa C kapag kailangan mong ibalik ang partikular na archive para sa inspeksyon.
 
-All pipeline scripts also emit operational messages to syslog via `logger` (for example, visible through rsyslog/journaling) in addition to console output.
+Lahat ng pipeline scripts ay nagpapadala rin ng operational messages sa syslog sa pamamagitan ng `logger` (halimbawa, nakikita sa rsyslog/journaling) bukod sa console output.
 
-### Multi-server send from Computer B
+### Multi-server send mula Computer B
 
-`computer-b-send-archives.sh` supports both single-server mode and multi-server mode:
+Sinusuportahan ng `computer-b-send-archives.sh` ang single-server mode at multi-server mode:
 
 - Single-server: `computer-b-send-archives.sh <archive_dir> <user@host> <remote_dir>`
 - Multi-server: `computer-b-send-archives.sh <archive_dir> <remote_dir> <user@host> [user@host...]`
 
-Client-side server selection options:
+Mga opsyon sa pagpili ng server sa client side:
 
-- Provide one server in arguments to pin to one Computer C.
-- Provide multiple servers to allow fallback.
-- Set `PREFERRED_SERVER=user@host` to choose one specific server from the provided list.
+- Magbigay ng isang server sa arguments para i-pin sa isang Computer C.
+- Magbigay ng maraming server para payagan ang fallback.
+- Itakda ang `PREFERRED_SERVER=user@host` para pumili ng isang partikular na server mula sa ibinigay na listahan.
 
-Busy handling options on Computer B:
+Mga opsyon sa paghawak ng busy state sa Computer B:
 
-- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file checked on the remote side.
-- `BUSY_RETRY_SECONDS` (default: `60`): wait time between retries while server is busy.
-- `BUSY_MAX_RETRIES` (default: `10`): max retry attempts per server.
+- `REMOTE_BUSY_MARKER` (default: `.busy`): marker file na chine-check sa remote side.
+- `BUSY_RETRY_SECONDS` (default: `60`): oras ng paghihintay sa pagitan ng retries habang busy ang server.
+- `BUSY_MAX_RETRIES` (default: `10`): maximum retry attempts kada server.
 
-### Busy state publication from Computer C
+### Paglalathala ng busy state mula Computer C
 
-`computer-c-write-to-tape.sh` creates a busy marker while actively writing archives to tape and removes it when idle.
+Gumagawa ang `computer-c-write-to-tape.sh` ng busy marker habang aktibong nagsusulat ng archives sa tape at inaalis ito kapag idle.
 
 - `BUSY_MARKER` (default: `<received_dir>/.busy`)
 
-Point `REMOTE_BUSY_MARKER` on Computer B to the marker location used by Computer C.
+Ituro ang `REMOTE_BUSY_MARKER` sa Computer B sa marker location na ginagamit ng Computer C.
 
-### Tape safety and append behavior on Computer C
+### Tape safety at append behavior sa Computer C
 
-Before writing each archive, `computer-c-write-to-tape.sh` checks for available tape/device capacity and requires at least:
+Bago isulat ang bawat archive, tinitingnan ng `computer-c-write-to-tape.sh` ang available na tape/device capacity at nangangailangan ng hindi bababa sa:
 
 `archive_size + TAPE_SAFETY_MARGIN_BYTES`
 
-Relevant variables:
+Mga kaugnay na variable:
 
 - `TAPE_SAFETY_MARGIN_BYTES` (default: `10485760`)
-- `TAPE_AVAILABLE_BYTES` (override for known available space)
-- `ALLOW_UNKNOWN_TAPE_SPACE=1` (allows writing if space cannot be detected)
+- `TAPE_AVAILABLE_BYTES` (override para sa kilalang available space)
+- `ALLOW_UNKNOWN_TAPE_SPACE=1` (pinapahintulutan ang pagsusulat kung hindi ma-detect ang space)
 
-For real tape devices, the writer seeks to end-of-data (`mt eom`/`mt eod`) before writing, so multiple archives are appended instead of overwriting previous tape contents.
+Para sa tunay na tape devices, hinahanap ng writer ang end-of-data (`mt eom`/`mt eod`) bago magsulat, kaya ina-append ang maraming archive sa halip na ma-overwrite ang naunang laman ng tape.
 
-### Human-readable timestamps in filenames
+### Human-readable timestamps sa filenames
 
-- Hourly logs are named like: `rsyslog-2026-06-01T1600.log`
-- Daily archives are named like: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
+- Ang hourly logs ay pinapangalanang tulad ng: `rsyslog-2026-06-01T1600.log`
+- Ang daily archives ay pinapangalanang tulad ng: `rsyslog-2026-06-01T0000_to_2026-06-01T2300.tar.gz`
 
-Daily archive ranges are based on the actual first and last hourly files included in the archive.
-These names are intended to be readable by people scanning for event date/time windows.
-The current hour is intentionally excluded from archive creation so active writes are not transmitted.
+Ang daily archive ranges ay batay sa aktuwal na una at huling hourly files na naisama sa archive.
+Ang mga pangalang ito ay nilayon para madaling basahin ng tao habang naghahanap ng event date/time windows.
+Sadyang hindi isinasama ang kasalukuyang oras sa paggawa ng archive para hindi maipadala ang active writes.
 
-### Optional OpenSSL encryption for daily archives
+### Opsyonal na OpenSSL encryption para sa daily archives
 
-`computer-b-daily-archive.sh` can encrypt archives with OpenSSL after creating the tarball:
+Maaaring i-encrypt ng `computer-b-daily-archive.sh` ang archives gamit ang OpenSSL pagkatapos malikha ang tarball:
 
-- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` for symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
-- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` for recipient-certificate encryption (`openssl smime`).
-- `OPENSSL_ENCRYPT_CIPHER` to choose the OpenSSL cipher for both key-file and certificate modes (default: `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_KEY_FILE=/path/to/keyfile` para sa symmetric encryption (`openssl enc`, default cipher `aes-256-gcm`).
+- `OPENSSL_ENCRYPT_CERT_FILE=/path/to/cert.pem` para sa recipient-certificate encryption (`openssl smime`).
+- `OPENSSL_ENCRYPT_CIPHER` para pumili ng OpenSSL cipher para sa key-file at certificate modes (default: `aes-256-gcm`).
 
-Only one of these options may be set at a time. Encrypted outputs use `.tar.gz.enc`.
-For security, the script rejects weak or non-AEAD cipher choices and requires GCM/poly1305-class ciphers.
+Isa lang sa mga opsyong ito ang puwedeng itakda sa isang pagkakataon. Ang encrypted outputs ay gumagamit ng `.tar.gz.enc`.
+Para sa seguridad, tinatanggihan ng script ang mahihinang o non-AEAD cipher choices at nangangailangan ng GCM/poly1305-class ciphers.
 
-### Archive recovery from tape on Computer C
+### Pag-recover ng archive mula tape sa Computer C
 
-Use `computer-c-restore-archive-from-tape.sh` to locate a specific archive by searching tape files in order from the beginning:
+Gamitin ang `computer-c-restore-archive-from-tape.sh` para hanapin ang isang partikular na archive sa pamamagitan ng pag-scan ng tape files ayon sa pagkakasunod mula simula:
 
 ```sh
 scripts/computer-c-restore-archive-from-tape.sh <tape_device> <archive_name> <output_file>
 ```
 
-- For archive names like `rsyslog-<start>_to_<end>.tar.gz` (or `.tar.gz.enc`), the script identifies the correct match by checking that boundary hourly files are present in the recovered payload.
-- If your archive naming is different, set `TARGET_MEMBER_GLOB` to a shell pattern matching a member that must exist in the archive.
-- If an archive is encrypted, provide decryption settings as needed:
+- Para sa archive names na tulad ng `rsyslog-<start>_to_<end>.tar.gz` (o `.tar.gz.enc`), kinikilala ng script ang tamang match sa pag-check na naroon ang boundary hourly files sa recovered payload.
+- Kung iba ang archive naming mo, itakda ang `TARGET_MEMBER_GLOB` sa shell pattern na tumutugma sa member na dapat umiiral sa archive.
+- Kung encrypted ang archive, ibigay ang kinakailangang decryption settings:
   - `OPENSSL_DECRYPT_KEY_FILE` (symmetric `openssl enc` mode; default decrypt cipher: `aes-256-gcm`)
-  - `OPENSSL_DECRYPT_CERT_FILE` and `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
+  - `OPENSSL_DECRYPT_CERT_FILE` at `OPENSSL_DECRYPT_PRIVATE_KEY_FILE` (S/MIME decrypt mode)
 
-The recovered output is written as a plaintext `.tar.gz` file so it can be inspected with tools like `tar -tzf`.
+Ang recovered output ay isinusulat bilang plaintext `.tar.gz` file para ma-inspect gamit ang tools tulad ng `tar -tzf`.
 
-### Tape table-of-contents inventory on Computer C
+### Tape table-of-contents inventory sa Computer C
 
-Use `computer-c-inventory-tape.sh` to print a marker-by-marker table of contents:
+Gamitin ang `computer-c-inventory-tape.sh` para mag-print ng marker-by-marker na table of contents:
 
 ```sh
 scripts/computer-c-inventory-tape.sh <tape_device>
 ```
 
-The output columns include:
+Kasama sa output columns ang:
 
 - `file_marker`: zero-based tape file marker position
-- `status`: `ok`, `decrypted`, or `unreadable`
-- `encrypted`: whether decryption was needed to inspect the entry (`yes`/`no`)
-- `archive_hint`: inferred archive-style name when boundaries can be recognized
-- `first_member` / `last_member`: first and last tar members seen in that marker
-- `member_count`: number of tar members found in that marker
-- `bytes`: raw bytes read at that marker
+- `status`: `ok`, `decrypted`, o `unreadable`
+- `encrypted`: kung kinailangan ang decryption para siyasatin ang entry (`yes`/`no`)
+- `archive_hint`: inferred archive-style name kapag nakikilala ang boundaries
+- `first_member` / `last_member`: una at huling tar members na nakita sa marker na iyon
+- `member_count`: bilang ng tar members na natagpuan sa marker na iyon
+- `bytes`: raw bytes na nabasa sa marker na iyon
 
-This lets an operator identify the marker index to seek (`mt fsf <N>`) before restore operations.
+Ito ay tumutulong sa operator na tukuyin ang marker index na ise-seek (`mt fsf <N>`) bago ang restore operations.
 
-### Deterministic A/B/C integration test
+### Deterministikong A/B/C integration test
 
-Use `scripts/test-computer-a-b-c-integration.sh` to validate end-to-end integration of Computers A, B, and C regardless of elapsed time:
+Gamitin ang `scripts/test-computer-a-b-c-integration.sh` para i-validate ang end-to-end integration ng Computers A, B, at C anuman ang lumipas na oras:
 
 ```sh
 scripts/test-computer-a-b-c-integration.sh
 ```
 
-This script:
+Ang script na ito ay:
 
-1. Simulates A writing logs.
-2. Runs B rotation and daily archive creation.
-3. Simulates transfer into C incoming.
-4. Runs C receive + write-to-tape.
-5. Restores the archive from tape and validates content.
+1. Nagsi-simulate na nagsusulat ng logs ang A.
+2. Pinapatakbo ang rotation at daily archive creation sa B.
+3. Nagsi-simulate ng transfer papasok sa C.
+4. Pinapatakbo ang receive + write-to-tape sa C.
+5. Nirere-restore ang archive mula tape at vina-validate ang content.
 
-It uses a fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) so behavior is repeatable and not tied to current date/time.
+Gumagamit ito ng fixed day stamp (`TEST_DAY_STAMP`, default `20260101`) kaya repeatable ang behavior at hindi nakatali sa kasalukuyang petsa/oras.
 
-### 72-hour retention with safety for unconfirmed data
+### 72-hour retention na may kaligtasan para sa hindi pa kumpirmadong data
 
-The scripts now default to a 72-hour retention window:
+Default na ngayon ang scripts sa 72-hour retention window:
 
-- `computer-b-hourly-rotate.sh` only removes old hourly logs when a matching local `.taped` confirmation marker exists.
-- `computer-b-send-archives.sh` only removes old local archives when both `.sent` and local `.taped` confirmation markers exist.
-- `computer-c-write-to-tape.sh` only removes old archives that already have `.taped` markers.
+- `computer-b-hourly-rotate.sh` nag-aalis lang ng lumang hourly logs kapag may tumutugmang lokal na `.taped` confirmation marker.
+- `computer-b-send-archives.sh` nag-aalis lang ng lumang lokal na archives kapag parehong may `.sent` at lokal na `.taped` confirmation markers.
+- `computer-c-write-to-tape.sh` nag-aalis lang ng lumang archives na mayroon nang `.taped` markers.
 
-As a result, files that are not yet successfully transmitted and recorded to tape are retained even when older than `RETENTION_HOURS` (default `72`).
-On Computer B, local cleanup requires local `.taped` markers (for example from a sync-back step or manual confirmation process).
-On Computer C, retention age is measured from `.taped` marker modification time (normally set at successful tape write time).
+Bilang resulta, pinananatili ang files na hindi pa matagumpay na naipapadala at naitatala sa tape kahit mas luma pa sa `RETENTION_HOURS` (default `72`).
+Sa Computer B, ang lokal na cleanup ay nangangailangan ng lokal na `.taped` markers (halimbawa mula sa sync-back step o manual confirmation process).
+Sa Computer C, ang retention age ay sinusukat mula sa `.taped` marker modification time (karaniwang itinatakda sa oras ng matagumpay na tape write).
